@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <style>
-        /* ========== RESET & BASE ========== */
+         /* ========== RESET & BASE ========== */
         * {
             margin: 0;
             padding: 0;
@@ -914,21 +914,136 @@
         
         const loadingSystem = new LoadingSystem();
         
+        // ==================== SIMPLE VALIDATION SYSTEM ====================
+        class ValidationSystem {
+            constructor() {
+                this.formElements = {
+                    name: document.getElementById('productName'),
+                    category: document.getElementById('productCategory'),
+                    description: document.getElementById('productDescription'),
+                    price: document.getElementById('productPrice')
+                };
+            }
+            
+            // Simple field validation
+            validateField(field) {
+                if (!field) return false;
+                const value = field.value.trim();
+                return value.length > 0;
+            }
+            
+            validatePrice() {
+                const priceInput = this.formElements.price;
+                if (!priceInput) return false;
+                
+                const price = parseInt(priceInput.value) || 0;
+                return price >= 500 && price <= 1000000;
+            }
+            
+            validateSelection(selectionKey) {
+                return selections[selectionKey] && selections[selectionKey].length > 0;
+            }
+            
+            validateAllSelections() {
+                const selectionKeys = ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'];
+                return selectionKeys.every(key => this.validateSelection(key));
+            }
+            
+            validateImages() {
+                return uploadedImages.length > 0;
+            }
+            
+            validateForm() {
+                // Check basic fields
+                const basicValid = this.validateField(this.formElements.name) &&
+                                 this.validateField(this.formElements.category) &&
+                                 this.validateField(this.formElements.description);
+                
+                if (!basicValid) {
+                    console.log('Basic fields invalid');
+                    return false;
+                }
+                
+                // Check price
+                if (!this.validatePrice()) {
+                    console.log('Price invalid');
+                    return false;
+                }
+                
+                // Check selections
+                if (!this.validateAllSelections()) {
+                    console.log('Selections invalid');
+                    return false;
+                }
+                
+                // Check images
+                if (!this.validateImages()) {
+                    console.log('Images invalid');
+                    return false;
+                }
+                
+                console.log('Form is valid!');
+                return true;
+            }
+            
+            // Visual validation feedback
+            updateVisualValidation() {
+                // Name
+                const nameParent = this.formElements.name?.parentElement;
+                if (nameParent) {
+                    nameParent.classList.toggle('has-error', !this.validateField(this.formElements.name));
+                }
+                
+                // Category
+                const categoryParent = this.formElements.category?.parentElement;
+                if (categoryParent) {
+                    categoryParent.classList.toggle('has-error', !this.validateField(this.formElements.category));
+                }
+                
+                // Description
+                const descriptionParent = this.formElements.description?.parentElement;
+                if (descriptionParent) {
+                    descriptionParent.classList.toggle('has-error', !this.validateField(this.formElements.description));
+                }
+                
+                // Price
+                const priceParent = this.formElements.price?.parentElement?.parentElement;
+                if (priceParent) {
+                    priceParent.classList.toggle('has-error', !this.validatePrice());
+                }
+                
+                // Selections
+                ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'].forEach(key => {
+                    const grid = document.getElementById(`${key}Grid`);
+                    const parent = grid?.parentElement;
+                    if (parent) {
+                        parent.classList.toggle('has-error', !this.validateSelection(key));
+                    }
+                });
+                
+                // Images
+                const imageParent = document.getElementById('uploadBox')?.parentElement;
+                if (imageParent) {
+                    imageParent.classList.toggle('has-error', !this.validateImages());
+                }
+            }
+        }
+        
+        const validationSystem = new ValidationSystem();
+        
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
             initializeCheckboxGrids();
             setupEventListeners();
             updateSuggestionCode();
-            
-            // Add small delay to ensure everything is loaded
-            setTimeout(() => {
-                updateSubmitButton();
-                analytics.logEvent('add_product_page_view');
-            }, 100);
+            updateSubmitButton();
+            analytics.logEvent('add_product_page_view');
         });
 
         // ==================== CHECKBOX GRIDS INITIALIZATION ====================
         function initializeCheckboxGrids() {
+            console.log('Initializing checkbox grids...');
             // Initialize all checkbox grids
             initializeGrid('colorGrid', formData.colors, 'colors');
             initializeGrid('departmentGrid', formData.departments, 'departments');
@@ -962,13 +1077,15 @@
                 const checkbox = document.getElementById(checkboxId);
                 if (checkbox) {
                     checkbox.addEventListener('change', function() {
+                        console.log(`${selectionKey} checkbox changed: ${item.name} = ${this.checked}`);
                         if (this.checked) {
                             selections[selectionKey].push(item.name);
                         } else {
                             const index = selections[selectionKey].indexOf(item.name);
                             if (index > -1) selections[selectionKey].splice(index, 1);
                         }
-                        validateSelection(selectionKey);
+                        console.log(`${selectionKey} selections:`, selections[selectionKey]);
+                        validationSystem.updateVisualValidation();
                         updateSuggestionCode();
                         updateSubmitButton();
                     });
@@ -1077,8 +1194,10 @@
             }
         }
 
-        // ==================== IMAGE UPLOAD ====================
+        // ==================== EVENT LISTENERS ====================
         function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
             // Upload button
             const uploadBtn = document.getElementById('uploadBtn');
             if (uploadBtn) {
@@ -1118,41 +1237,18 @@
                 });
             }
 
-            // Input validation
-            const inputs = [
-                'productName', 'productCategory', 'productDescription'
-            ];
-            
+            // Input validation for basic fields
+            const inputs = ['productName', 'productCategory', 'productDescription', 'productPrice', 'originalPrice'];
             inputs.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.addEventListener('input', () => {
-                        validateField(element);
+                        validationSystem.updateVisualValidation();
                         updateSuggestionCode();
                         updateSubmitButton();
                     });
-                    element.addEventListener('blur', () => validateField(element));
                 }
             });
-
-            // Price validation
-            const priceInput = document.getElementById('productPrice');
-            if (priceInput) {
-                priceInput.addEventListener('input', () => {
-                    validatePrice();
-                    updateSuggestionCode();
-                    updateSubmitButton();
-                });
-            }
-
-            // Original price validation
-            const originalPrice = document.getElementById('originalPrice');
-            if (originalPrice) {
-                originalPrice.addEventListener('input', () => {
-                    validateOriginalPrice();
-                    updateSubmitButton();
-                });
-            }
 
             // Reset button
             const resetBtn = document.getElementById('resetBtn');
@@ -1165,8 +1261,11 @@
             if (submitBtn) {
                 submitBtn.addEventListener('click', submitProduct);
             }
+            
+            console.log('Event listeners setup complete');
         }
 
+        // ==================== IMAGE UPLOAD ====================
         async function handleImageUpload(e) {
             const files = Array.from(e.target.files);
             await handleImageFiles(files);
@@ -1201,6 +1300,8 @@
             }
             
             notificationSystem.remove(notificationId);
+            validationSystem.updateVisualValidation();
+            updateSubmitButton();
         }
 
         async function uploadImageToImgBB(file) {
@@ -1225,8 +1326,6 @@
                         name: file.name
                     });
                     updateImagePreview();
-                    validateImages();
-                    updateSubmitButton();
                     notificationSystem.remove(uploadId);
                     notificationSystem.show('success', `Uploaded ${file.name}`, 2000);
                 } else {
@@ -1263,146 +1362,48 @@
                     const index = parseInt(this.getAttribute('data-index'));
                     uploadedImages.splice(index, 1);
                     updateImagePreview();
-                    validateImages();
+                    validationSystem.updateVisualValidation();
                     updateSubmitButton();
                 });
             });
         }
 
-        // ==================== VALIDATION FUNCTIONS ====================
-        function validateField(element) {
-            if (!element) return false;
-            
-            const value = element.value.trim();
-            const parent = element.parentElement;
-            
-            if (!parent) return false;
-            
-            if (!value) {
-                parent.classList.add('has-error');
-                return false;
-            } else {
-                parent.classList.remove('has-error');
-                return true;
-            }
-        }
-
-        function validatePrice() {
-            const priceInput = document.getElementById('productPrice');
-            if (!priceInput) return false;
-            
-            const price = parseInt(priceInput.value) || 0;
-            const parent = priceInput.parentElement?.parentElement;
-            
-            if (!parent) return false;
-            
-            if (price < 500 || price > 1000000) {
-                parent.classList.add('has-error');
-                return false;
-            } else {
-                parent.classList.remove('has-error');
-                return true;
-            }
-        }
-
-        function validateOriginalPrice() {
-            const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || 0;
-            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
-            
-            if (originalPrice && originalPrice <= price) {
-                notificationSystem.show('error', 'Original price must be higher than sale price', 3000);
-                return false;
-            }
-            return true;
-        }
-
-        function validateSelection(selectionKey) {
-            const grid = document.getElementById(`${selectionKey}Grid`);
-            if (!grid) return false;
-            
-            const parent = grid.parentElement;
-            if (!parent) return false;
-            
-            if (selections[selectionKey].length === 0) {
-                parent.classList.add('has-error');
-                return false;
-            } else {
-                parent.classList.remove('has-error');
-                return true;
-            }
-        }
-
-        function validateImages() {
-            const imageError = document.getElementById('imageError');
-            const imageSection = document.getElementById('uploadBox')?.parentElement;
-            
-            if (!imageSection) return false;
-            
-            if (uploadedImages.length === 0) {
-                imageSection.classList.add('has-error');
-                if (imageError) imageError.style.display = 'block';
-                return false;
-            } else {
-                imageSection.classList.remove('has-error');
-                if (imageError) imageError.style.display = 'none';
-                return true;
-            }
-        }
-
-        function validateAllSelections() {
-            const selectionKeys = ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'];
-            let allValid = true;
-            
-            selectionKeys.forEach(key => {
-                if (!validateSelection(key)) {
-                    allValid = false;
-                }
-            });
-            
-            return allValid;
-        }
-
-        function validateForm() {
-            // First validate basic fields
-            const nameField = document.getElementById('productName');
-            const categoryField = document.getElementById('productCategory');
-            const descriptionField = document.getElementById('productDescription');
-            
-            const basicFieldsValid = 
-                validateField(nameField) && 
-                validateField(categoryField) && 
-                validateField(descriptionField);
-            
-            if (!basicFieldsValid) return false;
-            
-            // Validate price
-            if (!validatePrice()) return false;
-            
-            // Validate selections
-            if (!validateAllSelections()) return false;
-            
-            // Validate images
-            if (!validateImages()) return false;
-            
-            return true;
-        }
-
+        // ==================== SUBMIT BUTTON UPDATES ====================
         function updateSubmitButton() {
             const submitBtn = document.getElementById('submitBtn');
-            if (!submitBtn) return;
+            if (!submitBtn) {
+                console.error('Submit button not found!');
+                return;
+            }
             
-            const isValid = validateForm();
+            const isValid = validationSystem.validateForm();
+            console.log('Form validation result:', isValid);
+            
             submitBtn.disabled = !isValid;
+            
+            if (isValid) {
+                console.log('Submit button should be enabled');
+            } else {
+                console.log('Submit button is disabled - validation failed');
+            }
         }
 
         // ==================== FORM SUBMISSION ====================
         async function submitProduct() {
-            if (!validateForm()) {
+            console.log('Submitting product...');
+            
+            if (!validationSystem.validateForm()) {
                 notificationSystem.show('error', 'Please fix all errors before submitting', 3000);
                 return;
             }
 
-            if (!validateOriginalPrice()) return;
+            // Validate original price
+            const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || 0;
+            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
+            if (originalPrice && originalPrice <= price) {
+                notificationSystem.show('error', 'Original price must be higher than sale price', 3000);
+                return;
+            }
 
             try {
                 await loadingSystem.withLoading(async () => {
@@ -1440,6 +1441,8 @@
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
 
+                    console.log('Saving product:', productData);
+                    
                     // Save to Firestore
                     const docRef = await db.collection('products').add(productData);
                     
@@ -1468,6 +1471,8 @@
 
         // ==================== FORM RESET ====================
         function resetForm() {
+            console.log('Resetting form...');
+            
             // Reset text inputs
             const nameInput = document.getElementById('productName');
             const categoryInput = document.getElementById('productCategory');
@@ -1491,17 +1496,15 @@
                 cb.checked = false;
             });
             
-            // Reset validation errors
-            document.querySelectorAll('.has-error').forEach(el => {
-                el.classList.remove('has-error');
-            });
-            
             // Reset images
             uploadedImages = [];
             updateImagePreview();
             
             // Reset suggestion code
             updateSuggestionCode();
+            
+            // Reset validation
+            validationSystem.updateVisualValidation();
             
             // Update submit button
             updateSubmitButton();
