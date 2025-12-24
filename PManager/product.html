@@ -1,1 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Add Product - INGABO</title>
+    <!-- Preload boxicons to avoid slow network warning -->
+    <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/fonts/boxicons.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase v8 for compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <style>
+         /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 375px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .container {
+            padding: 0 12px;
+        }
+        
+        /* ========== HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .back-button i {
+            font-size: 18px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .logo-img {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .logo-text h1 {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        /* ========== NOTIFICATION SYSTEM ========== */
+        .notification-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+            pointer-events: auto;
+            border-left: 4px solid;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        .notification.loading {
+            border-left-color: #17a2b8;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .notification.success .notification-icon {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-icon {
+            color: #dc3545;
+        }
+        
+        .notification.loading .notification-icon {
+            color: #17a2b8;
+        }
+        
+        .notification-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ========== FORM CONTAINER ========== */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            margin: 15px 0 70px;
+            padding: 20px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff6a00;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* ========== FORM SECTIONS ========== */
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: #ff6a00;
+        }
+        
+        /* ========== FORM GROUPS ========== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        
+        .required-star {
+            color: #ff0000;
+            margin-left: 2px;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #ff6a00;
+            background: white;
+        }
+        
+        .form-textarea {
+            min-height: 90px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        /* ========== CHECKBOX GRID ========== */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .checkbox-option {
+            display: none;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 10px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+        }
+        
+        .checkbox-label:hover {
+            border-color: #ff6a00;
+        }
+        
+        .checkbox-option:checked + .checkbox-label {
+            border-color: #ff6a00;
+            background: rgba(255, 106, 0, 0.05);
+            font-weight: 500;
+        }
+        
+        .checkbox-icon {
+            color: #666;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .checkbox-option:checked + .checkbox-label .checkbox-icon {
+            color: #ff6a00;
+        }
+        
+        /* ========== PRICE INPUT ========== */
+        .price-container {
+            position: relative;
+        }
+        
+        .price-input {
+            padding-left: 50px !important;
+        }
+        
+        .currency-label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .price-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        /* ========== IMAGE UPLOAD ========== */
+        .image-upload-box {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            margin-top: 5px;
+        }
+        
+        .upload-icon {
+            font-size: 32px;
+            color: #ff6a00;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .upload-button {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ========== CODE DISPLAY ========== */
+        .code-box {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .code-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .code-value {
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            word-break: break-all;
+        }
+        
+        /* ========== VALIDATION ERROR ========== */
+        .error-text {
+            color: #ff0000;
+            font-size: 11px;
+            margin-top: 4px;
+            display: none;
+        }
+        
+        .has-error .form-input,
+        .has-error .form-select,
+        .has-error .form-textarea {
+            border-color: #ff0000;
+        }
+        
+        .has-error .checkbox-grid {
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .has-error .error-text {
+            display: block;
+        }
+        
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6a00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ========== FORM ACTIONS ========== */
+        .form-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            max-width: 375px;
+            margin: 0 auto;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .action-button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(to right, #ff6a00, #ff8c42);
+            color: white;
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .reset-btn {
+            background: #f8f8f8;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* ========== HELPER TEXT ========== */
+        .helper-text {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Processing...</div>
+    </div>
+    
+    <div class="container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <a href="index.html" class="back-button">
+                    <i class='bx bx-arrow-back'></i>
+                    <span>Back</span>
+                </a>
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                    </div>
+                </div>
+                <div style="width: 60px;"></div>
+            </div>
+        </header>
+        
+        <!-- Form Container -->
+        <div class="form-container">
+            <h2 class="form-title">Add New Product</h2>
+            
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class='bx bx-info-circle'></i>
+                    Basic Information
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Product Name<span class="required-star">*</span></label>
+                    <input type="text" class="form-input" id="productName" placeholder="Enter product name">
+                    <div class="error-text">Product name is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Category<span class="required-star">*</span></label>
+                    <select class="form-select" id="productCategory">
+                        <option value="">Select category</option>
+                        <option value="Shoes">Shoes</option>
+                        <option value="T-shirts">T-shirts</option>
+                        <option value="Pants">Pants</option>
+                        <option value="Watches">Watches</option>
+                        <option value="Necklace">Necklace</option>
+                        <option value="Bracelets">Bracelets</option>
+                        <option value="Caps">Caps</option>
+                    </select>
+                    <div class="error-text">Category is required</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description<span class="required-star">*</span></label>
+                    <textarea class="form-textarea" id="productDescription" placeholder="Describe the product..."></textarea>
+                    <div class="error-text">Description is required</div>
+                </div>
+            </div>
+            
+            <!-- Product Details -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class='bx bx-cog'></i>
+                    Product Details
+                </div>
+                
+                <!-- Department Checkboxes -->
+                <div class="form-group">
+                    <label class="form-label">Department<span class="required-star">*</span></label>
+                    <div class="checkbox-grid" id="departmentGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="error-text">Select at least one department</div>
+                </div>
+                
+                <!-- Size Checkboxes -->
+                <div class="form-group">
+                    <label class="form-label">Size<span class="required-star">*</span></label>
+                    <div class="checkbox-grid" id="sizeGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="error-text">Select at least one size</div>
+                </div>
+                
+                <!-- Age Group Checkboxes -->
+                <div class="form-group">
+                    <label class="form-label">Age Group<span class="required-star">*</span></label>
+                    <div class="checkbox-grid" id="ageGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="error-text">Select at least one age group</div>
+                </div>
+                
+                <!-- Status Checkboxes -->
+                <div class="form-group">
+                    <label class="form-label">Status<span class="required-star">*</span></label>
+                    <div class="checkbox-grid" id="statusGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="error-text">Select at least one status</div>
+                </div>
+            </div>
+            
+            <!-- Colors -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class='bx bx-palette'></i>
+                    Colors<span class="required-star">*</span>
+                </div>
+                
+                <div class="checkbox-grid" id="colorGrid">
+                    <!-- Generated by JS -->
+                </div>
+                <div class="error-text">Select at least one color</div>
+            </div>
+            
+            <!-- Pricing -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class='bx bx-dollar-circle'></i>
+                    Pricing
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Price (RWF)<span class="required-star">*</span></label>
+                    <div class="price-container">
+                        <span class="currency-label">RWF</span>
+                        <input type="number" class="form-input price-input" id="productPrice" min="500" max="1000000" placeholder="0">
+                    </div>
+                    <div class="price-range">
+                        <span>Min: 500 RWF</span>
+                        <span>Max: 1,000,000 RWF</span>
+                    </div>
+                    <div class="error-text">Price must be between 500 and 1,000,000 RWF</div>
+                    <div class="helper-text">Wealth: <span id="wealthCategory">-</span></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Original Price (RWF)</label>
+                    <div class="price-container">
+                        <span class="currency-label">RWF</span>
+                        <input type="number" class="form-input price-input" id="originalPrice" placeholder="Optional">
+                    </div>
+                    <div class="helper-text">For sale/discount display</div>
+                </div>
+            </div>
+            
+            <!-- Images -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class='bx bx-image'></i>
+                    Product Images<span class="required-star">*</span>
+                </div>
+                
+                <div class="image-upload-box" id="uploadBox">
+                    <div class="upload-icon">
+                        <i class='bx bx-cloud-upload'></i>
+                    </div>
+                    <div class="upload-text">
+                        Tap to upload product photos
+                    </div>
+                    <button type="button" class="upload-button" id="uploadBtn">
+                        <i class='bx bx-camera'></i> Choose Photos
+                    </button>
+                    <div class="helper-text">Max 5 images, 2MB each</div>
+                </div>
+                
+                <div class="image-preview" id="imagePreview"></div>
+                <div class="error-text" id="imageError">At least one image is required</div>
+                
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            </div>
+            
+            <!-- Suggestion Code -->
+            <div class="form-section" style="border-bottom: none;">
+                <div class="section-title">
+                    <i class='bx bx-code'></i>
+                    Suggestion Code
+                </div>
+                
+                <div class="code-box">
+                    <div class="code-label">Personalization Code:</div>
+                    <div class="code-value" id="suggestionCode">-</div>
+                    <div class="helper-text">This code helps with personalized recommendations</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="button" class="action-button reset-btn" id="resetBtn">
+                <i class='bx bx-reset'></i> Clear
+            </button>
+            <button type="button" class="action-button submit-btn" id="submitBtn" disabled>
+                <span id="submitText">Add Product</span>
+                <div class="spinner" id="submitSpinner" style="display: none;"></div>
+            </button>
+        </div>
+    </div>
 
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
+            authDomain: "ingabo-store.firebaseapp.com",
+            projectId: "ingabo-store",
+            storageBucket: "ingabo-store.firebasestorage.app",
+            messagingSenderId: "1059301382626",
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
+            measurementId: "G-QSXTGP9R1Q"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const analytics = firebase.analytics();
+
+        // ==================== GLOBAL VARIABLES ====================
+        const IMGBB_API_KEY = '7275819de7bfd56f03b903f483157d22';
+        let uploadedImages = [];
+        
+        // Data configurations
+        const formData = {
+            colors: [
+                { name: 'White', hex: '#FFFFFF', icon: 'bx bx-circle' },
+                { name: 'Black', hex: '#000000', icon: 'bx bx-circle' },
+                { name: 'Blue', hex: '#0000FF', icon: 'bx bx-circle' },
+                { name: 'Green', hex: '#008000', icon: 'bx bx-circle' },
+                { name: 'Red', hex: '#FF0000', icon: 'bx bx-circle' },
+                { name: 'Yellow', hex: '#FFFF00', icon: 'bx bx-circle' },
+                { name: 'Chocolate', hex: '#D2691E', icon: 'bx bx-circle' },
+                { name: 'Purple', hex: '#800080', icon: 'bx bx-circle' },
+                { name: 'Orange', hex: '#FFA500', icon: 'bx bx-circle' },
+                { name: 'Sky-blue', hex: '#87CEEB', icon: 'bx bx-circle' },
+                { name: 'Reddish', hex: '#FF6347', icon: 'bx bx-circle' },
+                { name: 'Pink', hex: '#FFC0CB', icon: 'bx bx-circle' }
+            ],
+            departments: [
+                { name: 'Men', icon: 'bx bx-male' },
+                { name: 'Women', icon: 'bx bx-female' }
+            ],
+            sizes: [
+                { name: 'Small', icon: 'bx bx-s' },
+                { name: 'Medium', icon: 'bx bx-m' },
+                { name: 'Large', icon: 'bx bx-l' }
+            ],
+            ageGroups: [
+                { name: 'All', icon: 'bx bx-group' },
+                { name: 'Young', icon: 'bx bx-child' },
+                { name: 'Teens', icon: 'bx bx-user' },
+                { name: 'Adult', icon: 'bx bx-user-circle' },
+                { name: 'Old', icon: 'bx bx-user-voice' }
+            ],
+            statuses: [
+                { name: 'New', icon: 'bx bx-package' },
+                { name: 'Used', icon: 'bx bx-recycle' }
+            ]
+        };
+
+        // Selected values
+        const selections = {
+            colors: [],
+            departments: [],
+            sizes: [],
+            ageGroups: [],
+            statuses: []
+        };
+
+        // ==================== NOTIFICATION SYSTEM ====================
+        class NotificationSystem {
+            constructor() {
+                this.container = document.getElementById('notificationContainer');
+                this.notifications = [];
+            }
+            
+            show(type, message, duration = 3000) {
+                const id = Date.now().toString();
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.id = `notification-${id}`;
+                
+                let icon = '';
+                switch(type) {
+                    case 'success':
+                        icon = '<i class="bx bx-check-circle notification-icon"></i>';
+                        break;
+                    case 'error':
+                        icon = '<i class="bx bx-error-circle notification-icon"></i>';
+                        break;
+                    case 'loading':
+                        icon = '<div class="loading-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+                        break;
+                }
+                
+                notification.innerHTML = `
+                    ${icon}
+                    <div class="notification-text">${message}</div>
+                    <button class="notification-close" onclick="notificationSystem.remove('${id}')">
+                        <i class='bx bx-x'></i>
+                    </button>
+                `;
+                
+                this.container.appendChild(notification);
+                this.notifications.push(id);
+                
+                // Auto remove if not loading type
+                if (type !== 'loading' && duration > 0) {
+                    setTimeout(() => this.remove(id), duration);
+                }
+                
+                return id;
+            }
+            
+            remove(id) {
+                const notification = document.getElementById(`notification-${id}`);
+                if (notification) {
+                    notification.style.animation = 'slideDown 0.3s ease reverse';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                        const index = this.notifications.indexOf(id);
+                        if (index > -1) this.notifications.splice(index, 1);
+                    }, 300);
+                }
+            }
+            
+            clearAll() {
+                this.notifications.forEach(id => this.remove(id));
+                this.notifications = [];
+            }
+        }
+        
+        const notificationSystem = new NotificationSystem();
+        
+        // ==================== LOADING SYSTEM ====================
+        class LoadingSystem {
+            constructor() {
+                this.overlay = document.getElementById('loadingOverlay');
+                this.text = document.getElementById('loadingText');
+            }
+            
+            show(message = 'Processing...') {
+                this.text.textContent = message;
+                this.overlay.classList.add('active');
+            }
+            
+            hide() {
+                this.overlay.classList.remove('active');
+            }
+            
+            async withLoading(action, message = 'Processing...') {
+                this.show(message);
+                try {
+                    const result = await action();
+                    return result;
+                } finally {
+                    this.hide();
+                }
+            }
+        }
+        
+        const loadingSystem = new LoadingSystem();
+        
+        // ==================== SIMPLE VALIDATION SYSTEM ====================
+        class ValidationSystem {
+            constructor() {
+                this.formElements = {
+                    name: document.getElementById('productName'),
+                    category: document.getElementById('productCategory'),
+                    description: document.getElementById('productDescription'),
+                    price: document.getElementById('productPrice')
+                };
+            }
+            
+            // Simple field validation
+            validateField(field) {
+                if (!field) return false;
+                const value = field.value.trim();
+                return value.length > 0;
+            }
+            
+            validatePrice() {
+                const priceInput = this.formElements.price;
+                if (!priceInput) return false;
+                
+                const price = parseInt(priceInput.value) || 0;
+                return price >= 500 && price <= 1000000;
+            }
+            
+            validateSelection(selectionKey) {
+                return selections[selectionKey] && selections[selectionKey].length > 0;
+            }
+            
+            validateAllSelections() {
+                const selectionKeys = ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'];
+                return selectionKeys.every(key => this.validateSelection(key));
+            }
+            
+            validateImages() {
+                return uploadedImages.length > 0;
+            }
+            
+            validateForm() {
+                // Check basic fields
+                const basicValid = this.validateField(this.formElements.name) &&
+                                 this.validateField(this.formElements.category) &&
+                                 this.validateField(this.formElements.description);
+                
+                if (!basicValid) {
+                    console.log('Basic fields invalid');
+                    return false;
+                }
+                
+                // Check price
+                if (!this.validatePrice()) {
+                    console.log('Price invalid');
+                    return false;
+                }
+                
+                // Check selections
+                if (!this.validateAllSelections()) {
+                    console.log('Selections invalid');
+                    return false;
+                }
+                
+                // Check images
+                if (!this.validateImages()) {
+                    console.log('Images invalid');
+                    return false;
+                }
+                
+                console.log('Form is valid!');
+                return true;
+            }
+            
+            // Visual validation feedback
+            updateVisualValidation() {
+                // Name
+                const nameParent = this.formElements.name?.parentElement;
+                if (nameParent) {
+                    nameParent.classList.toggle('has-error', !this.validateField(this.formElements.name));
+                }
+                
+                // Category
+                const categoryParent = this.formElements.category?.parentElement;
+                if (categoryParent) {
+                    categoryParent.classList.toggle('has-error', !this.validateField(this.formElements.category));
+                }
+                
+                // Description
+                const descriptionParent = this.formElements.description?.parentElement;
+                if (descriptionParent) {
+                    descriptionParent.classList.toggle('has-error', !this.validateField(this.formElements.description));
+                }
+                
+                // Price
+                const priceParent = this.formElements.price?.parentElement?.parentElement;
+                if (priceParent) {
+                    priceParent.classList.toggle('has-error', !this.validatePrice());
+                }
+                
+                // Selections
+                ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'].forEach(key => {
+                    const grid = document.getElementById(`${key}Grid`);
+                    const parent = grid?.parentElement;
+                    if (parent) {
+                        parent.classList.toggle('has-error', !this.validateSelection(key));
+                    }
+                });
+                
+                // Images
+                const imageParent = document.getElementById('uploadBox')?.parentElement;
+                if (imageParent) {
+                    imageParent.classList.toggle('has-error', !this.validateImages());
+                }
+            }
+        }
+        
+        const validationSystem = new ValidationSystem();
+        
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            initializeCheckboxGrids();
+            setupEventListeners();
+            updateSuggestionCode();
+            updateSubmitButton();
+            analytics.logEvent('add_product_page_view');
+        });
+
+        // ==================== CHECKBOX GRIDS INITIALIZATION ====================
+        function initializeCheckboxGrids() {
+            console.log('Initializing checkbox grids...');
+            // Initialize all checkbox grids
+            initializeGrid('colorGrid', formData.colors, 'colors');
+            initializeGrid('departmentGrid', formData.departments, 'departments');
+            initializeGrid('sizeGrid', formData.sizes, 'sizes');
+            initializeGrid('ageGrid', formData.ageGroups, 'ageGroups');
+            initializeGrid('statusGrid', formData.statuses, 'statuses');
+        }
+        
+        function initializeGrid(gridId, items, selectionKey) {
+            const grid = document.getElementById(gridId);
+            if (!grid) {
+                console.error(`Grid element not found: ${gridId}`);
+                return;
+            }
+            
+            grid.innerHTML = '';
+            
+            items.forEach(item => {
+                const checkboxId = `${selectionKey}-${item.name.toLowerCase().replace(/\s+/g, '-')}`;
+                const html = `
+                    <input type="checkbox" id="${checkboxId}" class="checkbox-option" value="${item.name}">
+                    <label for="${checkboxId}" class="checkbox-label">
+                        ${item.icon ? `<i class="${item.icon} checkbox-icon"></i>` : ''}
+                        ${item.hex ? `<span class="color-preview" style="background-color: ${item.hex};"></span>` : ''}
+                        <span>${item.name}</span>
+                    </label>
+                `;
+                grid.insertAdjacentHTML('beforeend', html);
+                
+                // Add event listener
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        console.log(`${selectionKey} checkbox changed: ${item.name} = ${this.checked}`);
+                        if (this.checked) {
+                            selections[selectionKey].push(item.name);
+                        } else {
+                            const index = selections[selectionKey].indexOf(item.name);
+                            if (index > -1) selections[selectionKey].splice(index, 1);
+                        }
+                        console.log(`${selectionKey} selections:`, selections[selectionKey]);
+                        validationSystem.updateVisualValidation();
+                        updateSuggestionCode();
+                        updateSubmitButton();
+                    });
+                }
+            });
+        }
+
+        // ==================== SUGGESTION CODE GENERATION ====================
+        function generateSuggestionCode() {
+            const category = document.getElementById('productCategory')?.value || '';
+            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
+            
+            // Metric mappings
+            const metricMappings = {
+                category: {
+                    'Shoes': 'A', 'T-shirts': 'B', 'Pants': 'C',
+                    'Watches': 'D', 'Necklace': 'E', 'Bracelets': 'F', 'Caps': 'G'
+                },
+                department: { 'Men': 'A', 'Women': 'B' },
+                color: {
+                    'White': 'A', 'Black': 'B', 'Blue': 'C', 'Green': 'D',
+                    'Red': 'E', 'Yellow': 'F', 'Chocolate': 'G', 'Purple': 'H',
+                    'Orange': 'I', 'Sky-blue': 'J', 'Reddish': 'K', 'Pink': 'L'
+                },
+                size: { 'Small': 'A', 'Medium': 'B', 'Large': 'C' },
+                age: { 'All': 'A', 'Young': 'B', 'Teens': 'C', 'Adult': 'D', 'Old': 'E' },
+                status: { 'New': 'A', 'Used': 'B' },
+                wealth: { 'Poor': 'A', 'Moderate': 'B', 'Rich': 'C' }
+            };
+
+            let code = '';
+            
+            // Category (single selection)
+            code += (category && metricMappings.category[category]) || 'X';
+            code += '-';
+            
+            // Department (multiple)
+            if (selections.departments.length > 0) {
+                const deptCodes = selections.departments.map(d => metricMappings.department[d] || 'X');
+                code += deptCodes.join('+');
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            // Color (multiple)
+            if (selections.colors.length > 0) {
+                const colorCodes = selections.colors.map(c => metricMappings.color[c] || 'X');
+                code += colorCodes.join('+');
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            // Size (multiple)
+            if (selections.sizes.length > 0) {
+                const sizeCodes = selections.sizes.map(s => metricMappings.size[s] || 'X');
+                code += sizeCodes.join('+');
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            // Age (multiple)
+            if (selections.ageGroups.length > 0) {
+                const ageCodes = selections.ageGroups.map(a => metricMappings.age[a] || 'X');
+                code += ageCodes.join('+');
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            // Status (multiple)
+            if (selections.statuses.length > 0) {
+                const statusCodes = selections.statuses.map(s => metricMappings.status[s] || 'X');
+                code += statusCodes.join('+');
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            // Wealth (auto-calculate)
+            let wealth = '';
+            if (price >= 500 && price <= 20000) wealth = 'Poor';
+            else if (price > 20000 && price <= 50000) wealth = 'Moderate';
+            else if (price > 50000 && price <= 1000000) wealth = 'Rich';
+            
+            // Update wealth display
+            const wealthDisplay = document.getElementById('wealthCategory');
+            if (wealthDisplay) {
+                wealthDisplay.textContent = wealth || '-';
+                wealthDisplay.style.color = wealth ? '#ff6a00' : '#888';
+                wealthDisplay.style.fontWeight = wealth ? '600' : '400';
+            }
+            
+            code += (wealth && metricMappings.wealth[wealth]) || 'X';
+            
+            return code;
+        }
+
+        function updateSuggestionCode() {
+            const code = generateSuggestionCode();
+            const display = document.getElementById('suggestionCode');
+            if (display) {
+                display.textContent = code;
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
+            // Upload button
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', () => {
+                    const fileInput = document.getElementById('fileInput');
+                    if (fileInput) fileInput.click();
+                });
+            }
+
+            // File input change
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleImageUpload);
+            }
+
+            // Drag and drop for images
+            const uploadBox = document.getElementById('uploadBox');
+            if (uploadBox) {
+                uploadBox.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadBox.style.borderColor = '#ff6a00';
+                    uploadBox.style.background = 'rgba(255, 106, 0, 0.05)';
+                });
+
+                uploadBox.addEventListener('dragleave', () => {
+                    uploadBox.style.borderColor = '#e0e0e0';
+                    uploadBox.style.background = '#fafafa';
+                });
+
+                uploadBox.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadBox.style.borderColor = '#e0e0e0';
+                    uploadBox.style.background = '#fafafa';
+                    
+                    const files = Array.from(e.dataTransfer.files);
+                    handleImageFiles(files);
+                });
+            }
+
+            // Input validation for basic fields
+            const inputs = ['productName', 'productCategory', 'productDescription', 'productPrice', 'originalPrice'];
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', () => {
+                        validationSystem.updateVisualValidation();
+                        updateSuggestionCode();
+                        updateSubmitButton();
+                    });
+                }
+            });
+
+            // Reset button
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', resetForm);
+            }
+
+            // Submit button
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', submitProduct);
+            }
+            
+            console.log('Event listeners setup complete');
+        }
+
+        // ==================== IMAGE UPLOAD ====================
+        async function handleImageUpload(e) {
+            const files = Array.from(e.target.files);
+            await handleImageFiles(files);
+        }
+
+        async function handleImageFiles(files) {
+            const notificationId = notificationSystem.show('loading', 'Uploading images...', 0);
+            
+            // Validate files
+            const validFiles = files.filter(file => {
+                if (file.size > 2 * 1024 * 1024) {
+                    notificationSystem.show('error', `${file.name} is too large (max 2MB)`);
+                    return false;
+                }
+                if (!file.type.startsWith('image/')) {
+                    notificationSystem.show('error', `${file.name} is not an image`);
+                    return false;
+                }
+                return true;
+            });
+
+            // Check limit
+            if (uploadedImages.length + validFiles.length > 5) {
+                notificationSystem.show('error', 'Maximum 5 images allowed');
+                notificationSystem.remove(notificationId);
+                return;
+            }
+
+            // Upload each file
+            for (const file of validFiles) {
+                await uploadImageToImgBB(file);
+            }
+            
+            notificationSystem.remove(notificationId);
+            validationSystem.updateVisualValidation();
+            updateSubmitButton();
+        }
+
+        async function uploadImageToImgBB(file) {
+            const uploadId = notificationSystem.show('loading', `Uploading ${file.name}...`, 0);
+            
+            const formData = new FormData();
+            formData.append('key', IMGBB_API_KEY);
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    uploadedImages.push({
+                        url: data.data.url,
+                        thumb: data.data.thumb.url,
+                        name: file.name
+                    });
+                    updateImagePreview();
+                    notificationSystem.remove(uploadId);
+                    notificationSystem.show('success', `Uploaded ${file.name}`, 2000);
+                } else {
+                    throw new Error(data.error?.message || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                notificationSystem.remove(uploadId);
+                notificationSystem.show('error', `Failed: ${file.name}`, 3000);
+            }
+        }
+
+        function updateImagePreview() {
+            const container = document.getElementById('imagePreview');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            uploadedImages.forEach((image, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <img src="${image.thumb}" alt="Image ${index + 1}">
+                    <button type="button" class="remove-btn" data-index="${index}">
+                        <i class='bx bx-x'></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+
+            // Add remove event listeners
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    uploadedImages.splice(index, 1);
+                    updateImagePreview();
+                    validationSystem.updateVisualValidation();
+                    updateSubmitButton();
+                });
+            });
+        }
+
+        // ==================== SUBMIT BUTTON UPDATES ====================
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            if (!submitBtn) {
+                console.error('Submit button not found!');
+                return;
+            }
+            
+            const isValid = validationSystem.validateForm();
+            console.log('Form validation result:', isValid);
+            
+            submitBtn.disabled = !isValid;
+            
+            if (isValid) {
+                console.log('Submit button should be enabled');
+            } else {
+                console.log('Submit button is disabled - validation failed');
+            }
+        }
+
+        // ==================== FORM SUBMISSION ====================
+        async function submitProduct() {
+            console.log('Submitting product...');
+            
+            if (!validationSystem.validateForm()) {
+                notificationSystem.show('error', 'Please fix all errors before submitting', 3000);
+                return;
+            }
+
+            // Validate original price
+            const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || 0;
+            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
+            if (originalPrice && originalPrice <= price) {
+                notificationSystem.show('error', 'Original price must be higher than sale price', 3000);
+                return;
+            }
+
+            try {
+                await loadingSystem.withLoading(async () => {
+                    // Get form values
+                    const price = parseInt(document.getElementById('productPrice')?.value) || 0;
+                    const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || price;
+                    const discount = originalPrice > price ? 
+                        Math.round((1 - price / originalPrice) * 100) : 0;
+
+                    // Calculate wealth category
+                    let wealthCategory = '';
+                    if (price >= 500 && price <= 20000) wealthCategory = 'Poor';
+                    else if (price > 20000 && price <= 50000) wealthCategory = 'Moderate';
+                    else if (price > 50000 && price <= 1000000) wealthCategory = 'Rich';
+
+                    // Prepare product data
+                    const productData = {
+                        name: document.getElementById('productName')?.value.trim() || '',
+                        description: document.getElementById('productDescription')?.value.trim() || '',
+                        category: document.getElementById('productCategory')?.value || '',
+                        department: selections.departments,
+                        color: selections.colors,
+                        size: selections.sizes,
+                        age: selections.ageGroups,
+                        status: selections.statuses,
+                        wealth: wealthCategory,
+                        price: price,
+                        originalPrice: originalPrice > price ? originalPrice : null,
+                        discount: discount > 0 ? discount : null,
+                        images: uploadedImages.map(img => img.url),
+                        suggestionCode: generateSuggestionCode(),
+                        active: true,
+                        featured: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    console.log('Saving product:', productData);
+                    
+                    // Save to Firestore
+                    const docRef = await db.collection('products').add(productData);
+                    
+                    // Analytics
+                    analytics.logEvent('product_added', {
+                        product_id: docRef.id,
+                        category: productData.category,
+                        price: productData.price
+                    });
+
+                    // Success
+                    notificationSystem.show('success', `Product added successfully! ID: ${docRef.id}`, 4000);
+                    
+                    // Auto-reset after 3 seconds
+                    setTimeout(() => {
+                        resetForm();
+                        notificationSystem.show('success', 'Form cleared. Add another product.', 3000);
+                    }, 3000);
+                }, 'Saving product...');
+
+            } catch (error) {
+                console.error('Error:', error);
+                notificationSystem.show('error', `Failed to add product: ${error.message}`, 4000);
+            }
+        }
+
+        // ==================== FORM RESET ====================
+        function resetForm() {
+            console.log('Resetting form...');
+            
+            // Reset text inputs
+            const nameInput = document.getElementById('productName');
+            const categoryInput = document.getElementById('productCategory');
+            const descriptionInput = document.getElementById('productDescription');
+            const priceInput = document.getElementById('productPrice');
+            const originalPriceInput = document.getElementById('originalPrice');
+            
+            if (nameInput) nameInput.value = '';
+            if (categoryInput) categoryInput.value = '';
+            if (descriptionInput) descriptionInput.value = '';
+            if (priceInput) priceInput.value = '';
+            if (originalPriceInput) originalPriceInput.value = '';
+            
+            // Reset all checkbox selections
+            Object.keys(selections).forEach(key => {
+                selections[key] = [];
+            });
+            
+            // Uncheck all checkboxes
+            document.querySelectorAll('.checkbox-option').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            // Reset images
+            uploadedImages = [];
+            updateImagePreview();
+            
+            // Reset suggestion code
+            updateSuggestionCode();
+            
+            // Reset validation
+            validationSystem.updateVisualValidation();
+            
+            // Update submit button
+            updateSubmitButton();
+        }
+    </script>
+</body>
+</html>
