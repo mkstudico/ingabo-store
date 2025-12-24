@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Product Manager - INGABO</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 375px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .container {
+            padding: 0 12px;
+        }
+        
+        /* ========== HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo-img {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .logo-text h1 {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        .logo-text p {
+            font-size: 11px;
+            color: #666;
+            margin-top: -2px;
+        }
+        
+        /* ========== LOGIN SCREEN ========== */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+        
+        .login-icon {
+            font-size: 60px;
+            color: #ff6a00;
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: #ff6a00;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .login-button:hover {
+            background: #e55a00;
+        }
+        
+        .login-error {
+            color: #ff0000;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* ========== DASHBOARD CONTENT ========== */
+        .dashboard-screen {
+            display: none;
+        }
+        
+        .welcome-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* ========== TOOLS LIST ========== */
+        .tools-section {
+            margin-top: 20px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tools-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .tool-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-item:hover {
+            background: #f9f9f9;
+            transform: translateX(5px);
+        }
+        
+        .tool-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .tool-content {
+            flex: 1;
+        }
+        
+        .tool-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .tool-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .tool-arrow {
+            color: #999;
+            font-size: 18px;
+        }
+        
+        /* ========== COLOR CODED ICONS ========== */
+        .tool-bgremover .tool-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .tool-addproduct .tool-icon { background: linear-gradient(135deg, #ff6a00, #ff8c42); }
+        .tool-manage .tool-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .tool-users .tool-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .tool-sales .tool-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        
+        /* ========== LOGOUT BUTTON ========== */
+        .logout-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .logout-button {
+            background: #f8f8f8;
+            color: #666;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-button:hover {
+            background: #eee;
+        }
+        
+        /* ========== NOTIFICATION SYSTEM ========== */
+        .notification-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+            pointer-events: auto;
+            border-left: 4px solid;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ========== HIDDEN CLASS ========== */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-icon">
+                <i class='bx bx-lock-alt'></i>
+            </div>
+            <h2 class="login-title">Product Manager</h2>
+            <p class="login-subtitle">Enter password to access tools</p>
+            
+            <input type="password" class="login-input" id="passwordInput" placeholder="Enter password" maxlength="20">
+            <button class="login-button" id="loginButton">Access Tools</button>
+            
+            <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+            
+            <div style="margin-top: 30px; font-size: 11px; color: #999;">
+                Default password: ora@123
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Screen -->
+    <div class="dashboard-screen" id="dashboardScreen">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                        <p>Product Manager Tools</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-title">Product Manager Tools</div>
+                <div class="welcome-subtitle">Access all product management utilities</div>
+            </div>
+            
+            <!-- Tools List -->
+            <div class="tools-section">
+                <div class="section-title">Available Tools</div>
+                
+                <div class="tools-list">
+                    <!-- Background Remover -->
+                    <a href="bgremover.html" class="tool-item tool-bgremover">
+                        <div class="tool-icon">
+                            <i class='bx bx-magic'></i>
+                        </div>
+                        <div class="tool-content">
+                            <div class="tool-title">Background Remover</div>
+                            <div class="tool-desc">Remove backgrounds from product images</div>
+                        </div>
+                        <div class="tool-arrow">
+                            <i class='bx bx-chevron-right'></i>
+                        </div>
+                    </a>
+                    
+                    <!-- Add Product -->
+                    <a href="product.html" class="tool-item tool-addproduct">
+                        <div class="tool-icon">
+                            <i class='bx bx-plus-circle'></i>
+                        </div>
+                        <div class="tool-content">
+                            <div class="tool-title">Add Product</div>
+                            <div class="tool-desc">Add new products to the store</div>
+                        </div>
+                        <div class="tool-arrow">
+                            <i class='bx bx-chevron-right'></i>
+                        </div>
+                    </a>
+                    
+                    <!-- Manage Products -->
+                    <a href="managep.html" class="tool-item tool-manage">
+                        <div class="tool-icon">
+                            <i class='bx bx-edit'></i>
+                        </div>
+                        <div class="tool-content">
+                            <div class="tool-title">Manage Products</div>
+                            <div class="tool-desc">Edit, update or remove products</div>
+                        </div>
+                        <div class="tool-arrow">
+                            <i class='bx bx-chevron-right'></i>
+                        </div>
+                    </a>
+                    
+                    <!-- Users -->
+                    <a href="users.html" class="tool-item tool-users">
+                        <div class="tool-icon">
+                            <i class='bx bx-user'></i>
+                        </div>
+                        <div class="tool-content">
+                            <div class="tool-title">Users</div>
+                            <div class="tool-desc">Manage user accounts and permissions</div>
+                        </div>
+                        <div class="tool-arrow">
+                            <i class='bx bx-chevron-right'></i>
+                        </div>
+                    </a>
+                    
+                    <!-- Sales -->
+                    <a href="sales.html" class="tool-item tool-sales">
+                        <div class="tool-icon">
+                            <i class='bx bx-dollar-circle'></i>
+                        </div>
+                        <div class="tool-content">
+                            <div class="tool-title">Sales</div>
+                            <div class="tool-desc">View sales data and analytics</div>
+                        </div>
+                        <div class="tool-arrow">
+                            <i class='bx bx-chevron-right'></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Logout Button -->
+            <div class="logout-section">
+                <button class="logout-button" id="logoutButton">
+                    <i class='bx bx-log-out'></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script>
+        // ==================== PASSWORD CONFIG ====================
+        const CORRECT_PASSWORD = "ora@123";
+        
+        // ==================== NOTIFICATION SYSTEM ====================
+        class NotificationSystem {
+            constructor() {
+                this.container = document.getElementById('notificationContainer');
+            }
+            
+            show(type, message, duration = 3000) {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                
+                let icon = '';
+                switch(type) {
+                    case 'success':
+                        icon = '<i class="bx bx-check-circle" style="color: #28a745; font-size: 20px;"></i>';
+                        break;
+                    case 'error':
+                        icon = '<i class="bx bx-error-circle" style="color: #dc3545; font-size: 20px;"></i>';
+                        break;
+                }
+                
+                notification.innerHTML = `
+                    ${icon}
+                    <div style="flex: 1; font-size: 13px; font-weight: 500;">${message}</div>
+                `;
+                
+                this.container.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.animation = 'slideDown 0.3s ease reverse';
+                        setTimeout(() => notification.parentNode.removeChild(notification), 300);
+                    }
+                }, duration);
+            }
+        }
+        
+        const notificationSystem = new NotificationSystem();
+        
+        // ==================== PASSWORD CHECK ====================
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const loginError = document.getElementById('loginError');
+            const password = passwordInput.value.trim();
+            
+            if (password === CORRECT_PASSWORD) {
+                // Success - show dashboard
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').style.display = 'block';
+                
+                // Clear password field
+                passwordInput.value = '';
+                loginError.style.display = 'none';
+                
+                // Show welcome notification
+                notificationSystem.show('success', 'Access granted! Welcome to Product Manager Tools.');
+                
+                // Store login state in sessionStorage
+                sessionStorage.setItem('productManagerLoggedIn', 'true');
+            } else {
+                // Error - show error message
+                loginError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                // Shake animation for wrong password
+                passwordInput.style.animation = 'none';
+                setTimeout(() => {
+                    passwordInput.style.animation = 'shake 0.5s ease';
+                }, 10);
+                
+                // Add shake animation
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        25% { transform: translateX(-5px); }
+                        75% { transform: translateX(5px); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // ==================== LOGOUT FUNCTION ====================
+        function logout() {
+            // Show login screen
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            
+            // Clear session storage
+            sessionStorage.removeItem('productManagerLoggedIn');
+            
+            // Show logout notification
+            notificationSystem.show('success', 'Logged out successfully.');
+        }
+        
+        // ==================== EVENT LISTENERS ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in from session storage
+            if (sessionStorage.getItem('productManagerLoggedIn') === 'true') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').style.display = 'block';
+            }
+            
+            // Login button click
+            document.getElementById('loginButton').addEventListener('click', checkPassword);
+            
+            // Enter key in password field
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logoutButton').addEventListener('click', logout);
+            
+            // Focus password input on load
+            document.getElementById('passwordInput').focus();
+        });
+        
+        // ==================== TOOL ITEM HOVER EFFECTS ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to tool items
+            const toolItems = document.querySelectorAll('.tool-item');
+            
+            toolItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f9f9f9';
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
