@@ -6,13 +6,12 @@
     <title>INGABO Online Shop</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase v8 for compatibility (FIXED) -->
+    <!-- Firebase v8 for compatibility -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <style>
-        /* Reset and base styles */
+        /* ========== RESET & BASE ========== */
         * {
             margin: 0;
             padding: 0;
@@ -20,81 +19,56 @@
             font-family: 'Poppins', sans-serif;
         }
         
+        :root {
+            --primary-color: #ff6a00;
+            --secondary-color: #ff8c42;
+            --text-dark: #333;
+            --text-light: #666;
+            --text-lighter: #888;
+            --bg-light: #f9f9f9;
+            --bg-white: #ffffff;
+            --border-color: #e5e5e5;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+        
         body {
-            background-color: #f9f9f9;
-            color: #333;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 15px;
+            padding: 0 20px;
         }
         
-        /* Announcement Banner */
-        .announcement-banner {
-            background-color: #ff6a00;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 500;
-            display: none;
-        }
-        
-        .announcement-banner.show {
-            display: block;
-        }
-        
-        .announcement-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .announcement-banner a {
-            color: white;
-            text-decoration: underline;
-            font-weight: 600;
-        }
-        
-        /* Paused Mode Overlay */
-        .paused-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .paused-overlay.active {
-            display: flex;
-        }
-        
-        /* Top Header */
+        /* ========== HEADER & NAVIGATION ========== */
         .top-header {
-            background-color: #fff;
-            border-bottom: 1px solid #e5e5e5;
-            padding: 10px 0;
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
         }
         
         .header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
         }
         
         .logo-area {
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
         
         .logo-img {
@@ -108,402 +82,561 @@
         }
         
         .logo-text h1 {
-            font-size: 20px;
-            font-weight: bold;
-            text-transform: uppercase;
+            font-size: 22px;
+            font-weight: 700;
             color: #000;
+            line-height: 1;
         }
         
         .logo-text span {
-            font-size: 12px;
-            color: #666;
+            font-size: 11px;
+            color: var(--text-lighter);
         }
         
-        .search-area {
+        .search-container {
             flex: 1;
-            max-width: 500px;
-            margin: 0 30px;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        .search-wrapper {
             position: relative;
         }
         
         .search-bar {
             width: 100%;
             padding: 12px 20px;
-            border: 1px solid #ddd;
+            padding-right: 45px;
+            border: 1px solid var(--border-color);
             border-radius: 25px;
             font-size: 14px;
+            background: var(--bg-light);
+            transition: var(--transition);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
         }
         
         .search-button {
             position: absolute;
             right: 5px;
-            top: 5px;
-            height: calc(100% - 10px);
-            background-color: #ff6a00;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 36px;
+            width: 36px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 20px;
-            padding: 0 20px;
-            font-weight: bold;
+            border-radius: 50%;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .search-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .search-suggestions.active {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+        }
+        
+        .suggestion-item:hover {
+            background-color: var(--bg-light);
+        }
+        
+        .suggestion-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .suggestion-info {
+            flex: 1;
+        }
+        
+        .suggestion-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        
+        .suggestion-price {
+            font-size: 13px;
+            color: var(--primary-color);
+            font-weight: 600;
         }
         
         .header-right {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
         }
         
         .cart-button {
             display: flex;
             align-items: center;
             gap: 8px;
-            background-color: white;
-            color: #333;
-            border: 1px solid #ddd;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
             border-radius: 25px;
-            padding: 8px 15px;
-            font-weight: bold;
+            padding: 8px 16px;
+            font-weight: 500;
             cursor: pointer;
+            transition: var(--transition);
         }
         
-        .cart-icon {
-            font-size: 16px;
+        .cart-button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
         
         .auth-links {
             display: flex;
             gap: 15px;
-            font-size: 14px;
         }
         
         .auth-links a {
-            color: #333;
+            color: var(--text-dark);
             text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
         }
         
         .auth-links a:hover {
-            color: #ff6a00;
+            color: var(--primary-color);
         }
         
-        /* Main Layout */
-        .main-layout {
+        /* ========== BREADCRUMB NAVIGATION ========== */
+        .breadcrumb {
+            background: var(--bg-white);
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .breadcrumb.active {
+            display: block;
+        }
+        
+        .breadcrumb-content {
             display: flex;
-            gap: 20px;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .breadcrumb-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .breadcrumb-separator {
+            color: var(--text-lighter);
+        }
+        
+        /* ========== MAIN LAYOUT ========== */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 25px;
             margin-top: 20px;
         }
         
-        /* Left Sidebar */
-        .left-sidebar {
-            width: 260px;
-            background-color: #f2f2f2;
-            border-radius: 4px;
+        /* ========== SIDEBAR - CATEGORIES ========== */
+        .sidebar {
+            background: var(--bg-white);
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 90px;
         }
         
         .category-header {
-            background-color: #ff6a00;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 15px;
-            font-weight: bold;
+            padding: 18px;
+            font-weight: 600;
+            font-size: 16px;
             text-align: center;
         }
         
         .category-list {
             list-style: none;
-            padding: 15px 0;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .category-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            border-bottom: 1px solid #e5e5e5;
+            gap: 12px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            font-size: 14px;
+            transition: var(--transition);
         }
         
         .category-item:hover {
-            background-color: #e8e8e8;
+            background-color: var(--bg-light);
+            color: var(--primary-color);
+        }
+        
+        .category-item.active {
+            background-color: rgba(255, 106, 0, 0.1);
+            color: var(--primary-color);
+            font-weight: 500;
         }
         
         .category-icon {
-            width: 20px;
+            font-size: 18px;
+            color: inherit;
+            width: 24px;
             text-align: center;
-            color: #000;
-            font-weight: bold;
-        }
-        
-        /* Main Hero Section */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .hero-section {
-            position: relative;
-            border-radius: 4px;
-            overflow: hidden;
-            height: 250px;
-            background-color: #e0e0e0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            width: 80%;
-            margin: 0 auto;
-        }
-        
-        .hero-overlay {
-            position: absolute;
-            top: 50%;
-            left: 30px;
-            transform: translateY(-50%);
-            color: white;
-        }
-        
-        .hero-title {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-        
-        .hero-button {
-            background-color: #ff6a00;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 12px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .carousel-dots {
-            position: absolute;
-            right: 20px;
-            bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: rgba(255,255,255,0.5);
-            cursor: pointer;
-        }
-        
-        .dot.active {
-            background-color: white;
-        }
-        
-        /* Product Categories */
-        .product-categories {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, auto);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .category-card {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 8px;
-            padding: 15px;
-            height: 120px;
-            display: flex;
-            align-items: flex-end;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        
-        .category-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .category-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 0 20px 20px 0;
-            border-color: transparent #ff6a00 transparent transparent;
-        }
-        
-        .category-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            z-index: 1;
         }
         
         .category-name {
-            font-weight: bold;
-            font-size: 16px;
-            color: white;
-            z-index: 2;
-            position: relative;
+            flex: 1;
+            font-size: 14px;
         }
         
-        /* Right Sidebar */
-        .right-sidebar {
-            width: 260px;
+        .category-count {
+            background: var(--bg-light);
+            color: var(--text-light);
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
         
-        .account-area {
-            background-color: white;
-            border-radius: 4px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
+        /* ========== HERO SECTION ========== */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
+            padding: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
         }
         
-        .account-logo {
-            width: 50px;
-            height: 50px;
-            margin: 0 auto 15px;
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
         }
         
-        .account-title {
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #333;
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
         }
         
-        .account-buttons {
+        .hero-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        
+        .hero-button {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .hero-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* ========== FEATURED CATEGORIES ========== */
+        .featured-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .featured-category-card {
+            background: var(--bg-white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .featured-category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .category-image {
+            height: 120px;
+            overflow: hidden;
+        }
+        
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .featured-category-card:hover .category-image img {
+            transform: scale(1.05);
+        }
+        
+        .category-info {
+            padding: 15px;
+        }
+        
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        .category-product-count {
+            font-size: 12px;
+            color: var(--text-lighter);
+        }
+        
+        /* ========== TOP PICKS SECTION ========== */
+        .top-picks-section {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-header {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-        }
-        
-        .login-button {
-            background-color: #ff6a00;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            flex: 1;
-        }
-        
-        .register-button {
-            background-color: white;
-            color: #333;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            flex: 1;
-        }
-        
-        /* Top Picks Section */
-        .top-picks-section {
-            margin-top: 30px;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 4px;
+            align-items: center;
+            margin-bottom: 25px;
         }
         
         .section-title {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
         }
         
-        .orange-dot {
+        .section-icon {
             width: 12px;
             height: 12px;
-            background-color: #ff6a00;
+            background: var(--primary-color);
             border-radius: 50%;
         }
         
         .section-title h2 {
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #333;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .view-all-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .top-picks-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
         }
         
-        .top-pick-card {
-            background-color: white;
-            border: 1px solid #e5e5e5;
-            border-radius: 4px;
-            padding: 12px;
+        .top-pick-category {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            transition: var(--transition);
         }
         
-        .card-header {
+        .top-pick-category:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(255, 106, 0, 0.1);
+        }
+        
+        .category-header-mini {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
         }
         
-        .card-title {
-            font-weight: 500;
-            color: #333;
+        .category-title-mini {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .category-products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .category-product {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .category-product img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .category-product:hover img {
+            transform: scale(1.1);
+        }
+        
+        /* ========== PRODUCTS GRID ========== */
+        .products-section {
+            display: none;
+        }
+        
+        .products-section.active {
+            display: block;
+        }
+        
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .products-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .products-count {
+            color: var(--text-light);
             font-size: 14px;
         }
         
-        .view-all-link {
-            color: #888;
-            font-size: 12px;
-            text-decoration: none;
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
         }
         
-        .view-all-link:hover {
-            color: #ff6a00;
+        .product-card {
+            background: var(--bg-white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
         }
         
-        .product-images {
-            display: flex;
-            gap: 8px;
-            justify-content: space-between;
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff0000;
+            color: white;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            z-index: 2;
         }
         
         .product-image {
-            width: 100%;
-            aspect-ratio: 1;
-            background-color: white;
-            border: 1px solid #e5e5e5;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 10px;
-            flex: 1;
+            height: 180px;
             overflow: hidden;
         }
         
@@ -511,299 +644,173 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: var(--transition);
         }
         
-        /* Today's Deal Section */
-        .todays-deal-section {
-            margin-top: 30px;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 4px;
-            position: relative;
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
         }
         
-        .deal-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-top: 20px;
+        .product-info {
+            padding: 15px;
         }
         
-        .deal-card {
-            background-color: white;
-            border: 1px solid #e5e5e5;
-            border-radius: 4px;
-            padding: 10px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        
-        .deal-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .relevance-indicator {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            display: none;
-        }
-        
-        .relevance-indicator.show {
-            display: block;
-        }
-        
-        .discount-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #ff0000;
-            color: white;
-            padding: 3px 8px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 1;
-        }
-        
-        .deal-image {
-            width: 100%;
-            height: 120px;
-            background-color: #f8f8f8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .deal-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .deal-img-placeholder {
-            width: 80%;
-            height: 80%;
-            background-color: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 12px;
-        }
-        
-        .original-badge {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background-color: #ff6a00;
-            color: white;
-            padding: 2px 6px;
-            font-size: 10px;
-            border-radius: 2px;
-        }
-        
-        .deal-title {
-            font-size: 12px;
-            color: #333;
+        .product-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
             margin-bottom: 8px;
             line-height: 1.4;
-            height: 34px;
-            overflow: hidden;
-        }
-        
-        .deal-price {
-            color: #ff0000;
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 3px;
-        }
-        
-        .original-price {
-            color: #888;
-            font-size: 11px;
-            text-decoration: line-through;
-        }
-        
-        .navigation-button {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
             height: 40px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            color: #666;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
         
-        /* Footer Sections */
-        .footer-sections {
-            margin-top: 30px;
-            background-color: white;
-            padding: 30px;
-            border-radius: 4px;
-            border-top: 2px solid #f0f0f0;
-        }
-        
-        .footer-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 30px;
-        }
-        
-        .footer-column {
-            padding: 10px;
-        }
-        
-        .footer-title {
-            font-weight: bold;
+        .product-price {
             font-size: 16px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .subscription-form {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .email-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .subscribe-button {
-            background-color: #ff6a00;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 15px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        
-        .helper-text {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.4;
-        }
-        
-        .sell-text {
-            font-size: 14px;
-            color: #333;
+            font-weight: 700;
+            color: var(--primary-color);
             margin-bottom: 5px;
         }
         
-        .join-text {
-            color: #ff6a00;
-            font-weight: bold;
-            font-size: 14px;
+        .product-original-price {
+            font-size: 13px;
+            color: var(--text-lighter);
+            text-decoration: line-through;
         }
         
-        .social-icons {
+        .product-meta {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-light);
             margin-top: 10px;
         }
         
-        .social-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            text-decoration: none;
-            background-color: #000;
-        }
-        
-        /* Footer Links */
-        .footer-links {
-            margin-top: 30px;
-            background-color: #f2f2f2;
-            padding: 30px;
-            border-radius: 4px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
-        }
-        
-        .links-column h3 {
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .links-list {
-            list-style: none;
-        }
-        
-        .links-list li {
-            margin-bottom: 8px;
-        }
-        
-        .links-list a {
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .links-list a:hover {
-            color: #ff6a00;
-        }
-        
-        .contact-info {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        /* Loading State */
+        /* ========== LOADING STATES ========== */
         .loading {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 200px;
-            font-size: 16px;
-            color: #666;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-light);
         }
         
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #ff6a00;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 15px;
+            margin-bottom: 15px;
         }
         
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--border-color);
+            margin-bottom: 15px;
+        }
+        
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .category-list {
+                max-height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            .search-container {
+                order: 3;
+                max-width: 100%;
+                margin-top: 10px;
+            }
+            
+            .top-picks-grid,
+            .products-grid,
+            .featured-categories {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .hero-section {
+                padding: 30px 20px;
+            }
+            
+            .hero-title {
+                font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .top-picks-grid,
+            .products-grid,
+            .featured-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .category-products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-right {
+                gap: 10px;
+            }
+            
+            .cart-button span {
+                display: none;
+            }
+            
+            .auth-links a span {
+                display: none;
+            }
+        }
+        
+        /* ========== UTILITY CLASSES ========== */
+        .hidden {
+            display: none !important;
+        }
+        
+        .active {
+            display: block !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -822,17 +829,24 @@
         <!-- Top Header -->
         <header class="top-header">
             <div class="header-content">
-                <div class="logo-area">
+                <a href="#" class="logo-area" id="logoLink">
                     <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
                     <div class="logo-text">
                         <h1>INGABO</h1>
                         <span>Online shop</span>
                     </div>
-                </div>
+                </a>
                 
-                <div class="search-area">
-                    <input type="text" class="search-bar" placeholder="What are you looking for?">
-                    <button class="search-button">Search</button>
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <input type="text" class="search-bar" id="searchBar" placeholder="Search for products, categories, brands...">
+                        <button class="search-button" id="searchButton">
+                            <i class='bx bx-search'></i>
+                        </button>
+                        <div class="search-suggestions" id="searchSuggestions">
+                            <!-- Search suggestions will be populated here -->
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="header-right">
@@ -841,157 +855,106 @@
                         <span>Cart</span>
                     </button>
                     <div class="auth-links">
-                        <a href="#" id="loginLink"><i class='bx bx-user'></i> Login</a>
-                        <a href="#" id="registerLink"><i class='bx bx-user-plus'></i> Register</a>
+                        <a href="#" id="loginLink"><i class='bx bx-user'></i> <span>Login</span></a>
+                        <a href="#" id="registerLink"><i class='bx bx-user-plus'></i> <span>Register</span></a>
                     </div>
                 </div>
             </div>
         </header>
         
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb" id="breadcrumb">
+            <div class="breadcrumb-content">
+                <div class="breadcrumb-item" id="homeBreadcrumb">
+                    <i class='bx bx-home'></i>
+                    <span>Home</span>
+                </div>
+                <div class="breadcrumb-separator">/</div>
+                <div class="breadcrumb-item" id="currentBreadcrumb">
+                    <span>All Products</span>
+                </div>
+            </div>
+        </div>
+        
         <!-- Main Layout -->
         <div class="main-layout">
-            <!-- Left Sidebar -->
-            <aside class="left-sidebar">
+            <!-- Sidebar - Categories -->
+            <aside class="sidebar">
                 <div class="category-header">Shop by Category</div>
                 <ul class="category-list" id="categoryList">
-                    <!-- Categories will be loaded from Firebase -->
-                    <div class="loading">Loading categories...</div>
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div>Loading categories...</div>
+                    </div>
                 </ul>
             </aside>
             
             <!-- Main Content -->
             <main class="main-content">
-                <!-- Hero Section -->
+                <!-- Hero Section (Default View) -->
                 <section class="hero-section" id="heroSection">
-                    <div class="hero-overlay">
-                        <div class="hero-title" id="heroTitle">Wholesale Market</div>
+                    <div class="hero-content">
+                        <h1 class="hero-title">Wholesale Market</h1>
+                        <p class="hero-subtitle">Discover amazing products at wholesale prices. Quality guaranteed with personalized recommendations just for you.</p>
                         <button class="hero-button" id="heroButton">
-                            GO SHOPPING <i class='bx bx-chevron-right'></i>
+                            Start Shopping <i class='bx bx-chevron-right'></i>
                         </button>
                     </div>
-                    <div class="carousel-dots" id="carouselDots"></div>
                 </section>
                 
-                <!-- Product Categories -->
-                <div class="product-categories" id="productCategories">
-                    <!-- Category cards will be loaded from Firebase -->
-                    <div class="loading">Loading featured categories...</div>
-                </div>
-                
-                <!-- Top Picks Section -->
-                <section class="top-picks-section">
-                    <div class="section-title">
-                        <div class="orange-dot"></div>
-                        <h2>INGABO TOP PICKS</h2>
+                <!-- Featured Categories (Default View) -->
+                <section class="featured-categories-section" id="featuredCategoriesSection">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon"></div>
+                            <h2>Featured Categories</h2>
+                        </div>
                     </div>
-                    
+                    <div class="featured-categories" id="featuredCategories">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading categories...</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Top Picks Section (Default View) -->
+                <section class="top-picks-section" id="topPicksSection">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon"></div>
+                            <h2>INGABO TOP PICKS</h2>
+                        </div>
+                        <a href="#" class="view-all-link" id="viewAllTopPicks">
+                            View All <i class='bx bx-chevron-right'></i>
+                        </a>
+                    </div>
                     <div class="top-picks-grid" id="topPicksGrid">
-                        <!-- Top picks will be loaded from Firebase -->
-                        <div class="loading">Loading top picks...</div>
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading top picks...</div>
+                        </div>
                     </div>
                 </section>
                 
-                <!-- Today's Deal Section -->
-                <section class="todays-deal-section">
-                    <div class="section-title">
-                        <div class="orange-dot"></div>
-                        <h2>Personalized Recommendations</h2>
+                <!-- Products Grid (Filtered/Search View) -->
+                <section class="products-section" id="productsSection">
+                    <div class="products-header">
+                        <div>
+                            <h2 class="products-title" id="productsTitle">Products</h2>
+                            <div class="products-count" id="productsCount">0 products found</div>
+                        </div>
                     </div>
-                    
-                    <div class="deal-grid" id="dealGrid">
-                        <!-- Personalized products will be loaded from Firebase -->
-                        <div class="loading">Loading personalized deals...</div>
+                    <div class="products-grid" id="productsGrid">
+                        <!-- Products will be populated here -->
                     </div>
-                    
-                    <div class="navigation-button" id="nextButton"><i class='bx bx-chevron-right'></i></div>
+                    <div class="empty-state hidden" id="emptyProducts">
+                        <i class='bx bx-package'></i>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </div>
                 </section>
-                
-                <!-- Footer Sections -->
-                <div class="footer-sections">
-                    <div class="footer-columns">
-                        <div class="footer-column">
-                            <div class="footer-title">Subscription</div>
-                            <div class="subscription-form">
-                                <input type="email" class="email-input" placeholder="Please enter your email">
-                                <button class="subscribe-button">Subscribe</button>
-                            </div>
-                            <div class="helper-text">Register now for updates on promotions and coupons</div>
-                        </div>
-                        
-                        <div class="footer-column">
-                            <div class="footer-title">Sell on INGABO</div>
-                            <div class="sell-text">Join us</div>
-                        </div>
-                        
-                        <div class="footer-column">
-                            <div class="footer-title">Stay Connected</div>
-                            <div class="social-icons">
-                                <a href="#" class="social-icon"><i class='bx bxl-facebook'></i></a>
-                                <a href="#" class="social-icon"><i class='bx bxl-twitter'></i></a>
-                                <a href="#" class="social-icon"><i class='bx bxl-whatsapp'></i></a>
-                                <a href="#" class="social-icon"><i class='bx bx-message-rounded'></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Footer Links -->
-                <div class="footer-links">
-                    <div class="links-column">
-                        <h3>FAQs</h3>
-                        <ul class="links-list">
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Shipping information</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> How to buy</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> How to pay</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Return policy</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Terms</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Contact support</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="links-column">
-                        <h3>Browse by Category</h3>
-                        <ul class="links-list">
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Women's Shoes</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Men's Shoes</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Dresses</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Rings</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Shoulder Bags</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Bottoms</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Hair Wear</a></li>
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Baby Kids</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="links-column">
-                        <h3>About</h3>
-                        <ul class="links-list">
-                            <li><a href="#"><i class='bx bx-chevron-right'></i> Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="links-column">
-                        <h3>Contact Us</h3>
-                        <div class="contact-info">
-                            <div><i class='bx bx-map'></i> Address: Kigali, Rwanda</div>
-                            <div><i class='bx bx-phone'></i> Phone: +250 788 123 456</div>
-                            <div><i class='bx bx-envelope'></i> Email: info@ingabo.com</div>
-                        </div>
-                    </div>
-                </div>
             </main>
-            
-            <!-- Right Sidebar -->
-            <aside class="right-sidebar">
-                <div class="account-area">
-                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="account-logo">
-                    <div class="account-title" id="userGreeting">Welcome to INGABO</div>
-                    <div class="account-buttons">
-                        <button class="login-button" id="sidebarLogin"><i class='bx bx-user'></i> Login</button>
-                        <button class="register-button" id="sidebarRegister"><i class='bx bx-user-plus'></i> Register</button>
-                    </div>
-                </div>
-            </aside>
         </div>
     </div>
 
@@ -1007,90 +970,42 @@
             measurementId: "G-QSXTGP9R1Q"
         };
 
-        // Initialize Firebase (FIXED - using v8 compatibility version)
+        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
-        } else {
-            firebase.app(); // if already initialized, use that one
         }
-        
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const analytics = firebase.analytics();
-
-        // ==================== MOBILE REDIRECTION ====================
-        function checkMobileRedirect() {
-            const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isSmallScreen = window.innerWidth < 768;
-            
-            if (isMobile || isSmallScreen) {
-                window.location.href = "indexp.html";
-            }
-        }
-
-        // Check on page load and resize
-        window.addEventListener('load', checkMobileRedirect);
-        window.addEventListener('resize', checkMobileRedirect);
 
         // ==================== GLOBAL VARIABLES ====================
         let currentUser = null;
         let userPersonalCode = '';
+        let userTrackingData = [];
         let allProducts = [];
+        let allCategories = [];
+        let featuredCategories = [];
         let sitePersonalization = null;
-        let currentDealPage = 0;
-        const dealsPerPage = 10;
+        let currentCategory = null;
+        let currentSearch = '';
+        let searchTimeout = null;
 
         // ==================== PERSONALIZATION ALGORITHM ====================
         // Metric mappings for Suggestion Code generation
         const metricMappings = {
             category: {
-                'Shoes': 'A',
-                'T-shirts': 'B',
-                'Pants': 'C',
-                'Watches': 'D',
-                'Necklace': 'E',
-                'Bracelets': 'F',
-                'Caps': 'G'
+                'Shoes': 'A', 'T-shirts': 'B', 'Pants': 'C',
+                'Watches': 'D', 'Necklace': 'E', 'Bracelets': 'F', 'Caps': 'G'
             },
-            department: {
-                'Men': 'A',
-                'Women': 'B'
-            },
+            department: { 'Men': 'A', 'Women': 'B' },
             color: {
-                'White': 'A',
-                'Black': 'B',
-                'Blue': 'C',
-                'Green': 'D',
-                'Red': 'E',
-                'Yellow': 'F',
-                'Chocolate': 'G',
-                'Purple': 'H',
-                'Orange': 'I',
-                'Sky-blue': 'J',
-                'Reddish': 'K',
-                'Pink': 'L'
+                'White': 'A', 'Black': 'B', 'Blue': 'C', 'Green': 'D',
+                'Red': 'E', 'Yellow': 'F', 'Chocolate': 'G', 'Purple': 'H',
+                'Orange': 'I', 'Sky-blue': 'J', 'Reddish': 'K', 'Pink': 'L'
             },
-            size: {
-                'Small': 'A',
-                'Medium': 'B',
-                'Large': 'C'
-            },
-            age: {
-                'All': 'A',
-                'Young': 'B',
-                'Teens': 'C',
-                'Adult': 'D',
-                'Old': 'E'
-            },
-            status: {
-                'New': 'A',
-                'Used': 'B'
-            },
-            wealth: {
-                'Poor': 'A',
-                'Moderate': 'B',
-                'Rich': 'C'
-            }
+            size: { 'Small': 'A', 'Medium': 'B', 'Large': 'C' },
+            age: { 'All': 'A', 'Young': 'B', 'Teens': 'C', 'Adult': 'D', 'Old': 'E' },
+            status: { 'New': 'A', 'Used': 'B' },
+            wealth: { 'Poor': 'A', 'Moderate': 'B', 'Rich': 'C' }
         };
 
         // Generate Suggestion Code for a product
@@ -1104,7 +1019,8 @@
             code += '-';
             
             // Department
-            code += (product.department && metricMappings.department[product.department]) || 'X';
+            const department = Array.isArray(product.department) ? product.department[0] : product.department;
+            code += (department && metricMappings.department[department]) || 'X';
             code += '-';
             
             // Color (can have multiple)
@@ -1112,16 +1028,19 @@
             code += colors.map(c => metricMappings.color[c] || 'X').join('+');
             code += '-';
             
-            // Size
-            code += (product.size && metricMappings.size[product.size]) || 'X';
+            // Size (can have multiple)
+            const sizes = product.size ? (Array.isArray(product.size) ? product.size : [product.size]) : ['X'];
+            code += sizes.map(s => metricMappings.size[s] || 'X').join('+');
             code += '-';
             
-            // Age
-            code += (product.age && metricMappings.age[product.age]) || 'X';
+            // Age (can have multiple)
+            const ages = product.age ? (Array.isArray(product.age) ? product.age : [product.age]) : ['X'];
+            code += ages.map(a => metricMappings.age[a] || 'X').join('+');
             code += '-';
             
-            // Status
-            code += (product.status && metricMappings.status[product.status]) || 'X';
+            // Status (can have multiple)
+            const statuses = product.status ? (Array.isArray(product.status) ? product.status : [product.status]) : ['X'];
+            code += statuses.map(s => metricMappings.status[s] || 'X').join('+');
             code += '-';
             
             // Wealth
@@ -1132,7 +1051,19 @@
 
         // Generate Personal Code for a user
         function generatePersonalCode(userData) {
-            if (!userData) return 'GUEST-CODE';
+            if (!userData) {
+                // Try to get from localStorage
+                const storedData = localStorage.getItem('ingabo_guest_data');
+                if (storedData) {
+                    try {
+                        userData = JSON.parse(storedData);
+                    } catch (e) {
+                        return 'GUEST-CODE';
+                    }
+                } else {
+                    return 'GUEST-CODE';
+                }
+            }
             
             let code = '';
             
@@ -1147,18 +1078,29 @@
             // Use age for age preference
             if (userData.age) {
                 let ageCategory = 'Adult';
-                if (userData.age < 18) ageCategory = 'Teens';
-                else if (userData.age < 25) ageCategory = 'Young';
-                else if (userData.age > 60) ageCategory = 'Old';
+                const age = parseInt(userData.age);
+                if (age < 18) ageCategory = 'Teens';
+                else if (age < 25) ageCategory = 'Young';
+                else if (age > 60) ageCategory = 'Old';
                 code += metricMappings.age[ageCategory] || 'X';
             } else {
                 code += 'X';
             }
             code += '-';
             
-            // Generate random preferences for other metrics (these would be updated based on views)
-            const randomCategories = ['A', 'B', 'C', 'D'];
-            code += randomCategories.join('+');
+            // Generate preferences based on viewing history
+            const viewingHistory = getViewingHistory();
+            if (viewingHistory.length > 0) {
+                const colorPreferences = viewingHistory.map(item => item.color).flat().filter(Boolean);
+                const uniqueColors = [...new Set(colorPreferences)];
+                if (uniqueColors.length > 0) {
+                    code += uniqueColors.map(c => metricMappings.color[c] || 'X').slice(0, 3).join('+');
+                } else {
+                    code += 'X';
+                }
+            } else {
+                code += 'X';
+            }
             
             return code;
         }
@@ -1209,8 +1151,13 @@
                     return { ...product, matchScore };
                 });
                 
-                // Sort by match score (descending)
-                scoredProducts.sort((a, b) => b.matchScore - a.matchScore);
+                // Sort by match score (descending), then random for same scores
+                scoredProducts.sort((a, b) => {
+                    if (b.matchScore !== a.matchScore) {
+                        return b.matchScore - a.matchScore;
+                    }
+                    return Math.random() - 0.5;
+                });
                 
                 return scoredProducts;
             } catch (error) {
@@ -1219,602 +1166,506 @@
             }
         }
 
-        // ==================== FIREBASE DATA LOADING ====================
-        async function loadSitePersonalization() {
+        // ==================== USER TRACKING & LOCAL STORAGE ====================
+        function getViewingHistory() {
             try {
-                const doc = await db.collection('site_personalization').doc('settings').get();
-                if (doc.exists) {
-                    sitePersonalization = doc.data();
-                    applySitePersonalization();
-                    
-                    // Listen for real-time updates
-                    db.collection('site_personalization').doc('settings')
-                        .onSnapshot((snapshot) => {
-                            if (snapshot.exists) {
-                                sitePersonalization = snapshot.data();
-                                applySitePersonalization();
-                            }
-                        }, (error) => {
-                            console.error('Error listening to site personalization:', error);
-                        });
-                }
-            } catch (error) {
-                console.error('Error loading site personalization:', error);
+                const history = localStorage.getItem('ingabo_viewing_history');
+                return history ? JSON.parse(history) : [];
+            } catch (e) {
+                return [];
             }
         }
 
-        async function loadCategories() {
+        function addToViewingHistory(product) {
             try {
-                const categoryList = document.getElementById('categoryList');
-                if (!categoryList) return;
+                const history = getViewingHistory();
+                const existingIndex = history.findIndex(item => item.productId === product.id);
                 
-                // Clear loading message
-                categoryList.innerHTML = '';
-                
-                const snapshot = await db.collection('categories').orderBy('order').get();
-                
-                if (snapshot.empty) {
-                    // Create default categories if none exist
-                    const defaultCategories = [
-                        { name: 'Clothing', icon: 'bx bx-t-shirt', order: 1 },
-                        { name: 'Shoes', icon: 'bx bx-walk', order: 2 },
-                        { name: 'Electronics', icon: 'bx bx-chip', order: 3 },
-                        { name: 'Accessories', icon: 'bx bx-watch', order: 4 }
-                    ];
-                    
-                    defaultCategories.forEach(category => {
-                        const li = document.createElement('li');
-                        li.className = 'category-item';
-                        li.innerHTML = `
-                            <i class='bx ${category.icon} category-icon'></i>
-                            <span>${category.name}</span>
-                        `;
-                        li.addEventListener('click', () => filterByCategory(category.name));
-                        categoryList.appendChild(li);
-                    });
-                    return;
+                if (existingIndex > -1) {
+                    history.splice(existingIndex, 1);
                 }
                 
-                snapshot.forEach(doc => {
-                    const category = doc.data();
-                    const li = document.createElement('li');
-                    li.className = 'category-item';
-                    li.innerHTML = `
-                        <i class='bx ${category.icon || 'bx-category'} category-icon'></i>
-                        <span>${category.name}</span>
-                    `;
-                    li.addEventListener('click', () => filterByCategory(category.id || category.name));
-                    categoryList.appendChild(li);
+                history.unshift({
+                    productId: product.id,
+                    category: product.category,
+                    color: product.color || [],
+                    timestamp: new Date().toISOString()
                 });
-            } catch (error) {
-                console.error('Error loading categories:', error);
-                const categoryList = document.getElementById('categoryList');
-                if (categoryList) {
-                    categoryList.innerHTML = '<li class="category-item">Error loading categories</li>';
+                
+                // Keep only last 50 items
+                if (history.length > 50) {
+                    history.pop();
                 }
+                               localStorage.setItem('ingabo_viewing_history', JSON.stringify(history));
+                updateUserPersonalization();
+            } catch (e) {
+                console.error('Error adding to viewing history:', e);
             }
         }
 
-        async function loadFeaturedCategories() {
-            try {
-                const container = document.getElementById('productCategories');
-                if (!container) return;
-                
-                // Clear loading message
-                container.innerHTML = '';
-                
-                const snapshot = await db.collection('featured_categories').limit(4).get();
-                
-                if (snapshot.empty) {
-                    // Create default featured categories
-                    const defaultFeatured = [
-                        { name: "Men's Shoes", imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
-                        { name: "Women's Shoes", imageUrl: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
-                        { name: "iPhone", imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
-                        { name: "Accessories", imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }
-                    ];
-                    
-                    defaultFeatured.forEach((category, index) => {
-                        const card = document.createElement('div');
-                        card.className = 'category-card';
-                        card.style.backgroundImage = `url('${category.imageUrl}')`;
-                        card.innerHTML = `<div class="category-name">${category.name}</div>`;
-                        card.addEventListener('click', () => filterByCategory(category.name));
-                        container.appendChild(card);
-                    });
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const category = doc.data();
-                    const card = document.createElement('div');
-                    card.className = 'category-card';
-                    card.style.backgroundImage = `url('${category.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'}')`;
-                    card.innerHTML = `<div class="category-name">${category.name}</div>`;
-                    card.addEventListener('click', () => filterByCategory(category.categoryId || category.name));
-                    container.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Error loading featured categories:', error);
-            }
-        }
-
-        async function loadTopPicks() {
-            try {
-                const container = document.getElementById('topPicksGrid');
-                if (!container) return;
-                
-                // Clear loading message
-                container.innerHTML = '';
-                
-                const snapshot = await db.collection('products')
-                    .where('active', '==', true)
-                    .where('featured', '==', true)
-                    .limit(12)
-                    .get();
-                
-                if (snapshot.empty) {
-                    container.innerHTML = '<div class="top-pick-card"><div class="card-header"><div class="card-title">No featured products yet</div></div></div>';
-                    return;
-                }
-                
-                // Group products by category
-                const productsByCategory = {};
-                snapshot.forEach(doc => {
-                    const product = doc.data();
-                    product.id = doc.id;
-                    
-                    const category = product.category || 'Uncategorized';
-                    if (!productsByCategory[category]) {
-                        productsByCategory[category] = [];
-                    }
-                    productsByCategory[category].push(product);
-                });
-                
-                // Create top pick cards for each category
-                Object.keys(productsByCategory).forEach(category => {
-                    const products = productsByCategory[category].slice(0, 5);
-                    
-                    const card = document.createElement('div');
-                    card.className = 'top-pick-card';
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <div class="card-title">${category}</div>
-                            <a href="#" class="view-all-link" data-category="${category}">View All</a>
-                        </div>
-                        <div class="product-images">
-                            ${products.map(product => `
-                                <div class="product-image" data-product="${product.id}">
-                                    ${product.images && product.images[0] ? 
-                                        `<img src="${product.images[0]}" alt="${product.name || 'Product'}" loading="lazy">` : 
-                                        `<i class='bx bx-image'></i>`
-                                    }
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    
-                    // Add click events to product images
-                    card.querySelectorAll('.product-image').forEach(img => {
-                        img.addEventListener('click', function() {
-                            const productId = this.getAttribute('data-product');
-                            if (productId) {
-                                window.location.href = `view.html?id=${productId}`;
-                            }
-                        });
-                    });
-                    
-                    // Add click event to view all link
-                    const viewAllLink = card.querySelector('.view-all-link');
-                    if (viewAllLink) {
-                        viewAllLink.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const category = this.getAttribute('data-category');
-                            filterByCategory(category);
-                        });
-                    }
-                    
-                    container.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Error loading top picks:', error);
-                const container = document.getElementById('topPicksGrid');
-                if (container) {
-                    container.innerHTML = '<div class="top-pick-card"><div class="card-header"><div class="card-title">Error loading products</div></div></div>';
-                }
-            }
-        }
-
-        async function loadPersonalizedDeals() {
-            try {
-                const container = document.getElementById('dealGrid');
-                if (!container) return;
-                
-                // Clear loading message
-                container.innerHTML = '<div class="loading">Loading deals...</div>';
-                
-                // First load all products
-                const snapshot = await db.collection('products').where('active', '==', true).limit(50).get();
-                allProducts = [];
-                
-                snapshot.forEach(doc => {
-                    const product = doc.data();
-                    product.id = doc.id;
-                    product.suggestionCode = generateSuggestionCode(product);
-                    allProducts.push(product);
-                });
-                
-                if (allProducts.length === 0) {
-                    container.innerHTML = '<div class="deal-card"><div class="deal-title">No products available yet</div></div>';
-                    return;
-                }
-                
-                // Sort products based on personalization algorithm
-                const sortedProducts = sortProductsPersonalized(allProducts, userPersonalCode);
-                
-                // Display current page of deals
-                displayDealsPage(sortedProducts);
-            } catch (error) {
-                console.error('Error loading personalized deals:', error);
-                const container = document.getElementById('dealGrid');
-                if (container) {
-                    container.innerHTML = '<div class="deal-card"><div class="deal-title">Error loading products</div></div>';
-                }
-            }
-        }
-
-        function displayDealsPage(products) {
-            const container = document.getElementById('dealGrid');
-            if (!container || !products || products.length === 0) return;
+        function updateUserPersonalization() {
+            // Update user's personal code based on viewing history
+            const viewingHistory = getViewingHistory();
             
-            const startIndex = currentDealPage * dealsPerPage;
-            const endIndex = startIndex + dealsPerPage;
-            const pageProducts = products.slice(startIndex, endIndex);
+            if (viewingHistory.length === 0) {
+                userPersonalCode = 'GUEST-CODE';
+                return;
+            }
             
-            container.innerHTML = '';
+            // Extract preferences from viewing history
+            const preferences = {
+                categories: {},
+                colors: {},
+                departments: {},
+                priceRange: { min: Infinity, max: 0 }
+            };
             
-            pageProducts.forEach((product, index) => {
-                if (!product) return;
+            viewingHistory.forEach(item => {
+                // Track category preferences
+                if (item.category) {
+                    preferences.categories[item.category] = (preferences.categories[item.category] || 0) + 1;
+                }
                 
-                const dealCard = document.createElement('div');
-                dealCard.className = 'deal-card';
-                dealCard.innerHTML = `
-                    ${product.discount ? `<div class="discount-badge">-${product.discount}%</div>` : ''}
-                    <div class="relevance-indicator ${index < 3 ? 'show' : ''}"></div>
-                    <div class="deal-image">
-                        ${product.images && product.images[0] ? 
-                            `<img src="${product.images[0]}" alt="${product.name || 'Product'}" loading="lazy">` : 
-                            `<div class="deal-img-placeholder"><i class='bx bx-image'></i></div>`
-                        }
-                        ${product.originalPrice ? `<div class="original-badge">Original</div>` : ''}
-                    </div>
-                    <div class="deal-title">${product.name || 'Unnamed Product'}</div>
-                    <div class="deal-price">${formatPrice(product.price || 0)} RWF</div>
-                    ${product.originalPrice ? `<div class="original-price">${formatPrice(product.originalPrice)} RWF</div>` : ''}
-                `;
+                // Track color preferences
+                if (item.color && Array.isArray(item.color)) {
+                    item.color.forEach(color => {
+                        preferences.colors[color] = (preferences.colors[color] || 0) + 1;
+                    });
+                }
                 
-                dealCard.addEventListener('click', () => {
-                    // Track product view for personalization
-                    trackProductView(product.id);
-                    window.location.href = `view.html?id=${product.id}`;
-                });
+                // Track department preferences
+                if (item.department) {
+                    preferences.departments[item.department] = (preferences.departments[item.department] || 0) + 1;
+                }
                 
-                container.appendChild(dealCard);
+                // Track price range
+                if (item.price) {
+                    preferences.priceRange.min = Math.min(preferences.priceRange.min, item.price);
+                    preferences.priceRange.max = Math.max(preferences.priceRange.max, item.price);
+                }
             });
             
-            // Update next button state
-            const nextButton = document.getElementById('nextButton');
-            if (nextButton) {
-                const hasMoreProducts = (currentDealPage + 1) * dealsPerPage < products.length;
-                nextButton.style.display = hasMoreProducts ? 'flex' : 'none';
-            }
-        }
-
-        // ==================== HELPER FUNCTIONS ====================
-        function formatPrice(price) {
-            if (!price) return '0';
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        function filterByCategory(category) {
-            // This would filter products by category
-            console.log('Filtering by category:', category);
-            // In a full implementation, this would update the product display
-            // For now, redirect to view page with category filter
-            window.location.href = `view.html?category=${encodeURIComponent(category)}`;
-        }
-
-        async function trackProductView(productId) {
-            if (!currentUser || !productId) return;
+            // Generate enhanced personal code
+            userPersonalCode = generateEnhancedPersonalCode(preferences);
             
-            try {
-                await db.collection('user_activity').add({
-                    userId: currentUser.uid,
-                    productId: productId,
-                    type: 'view',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Update user's personal code based on viewing history
-                updateUserPersonalCode();
-            } catch (error) {
-                console.error('Error tracking product view:', error);
+            // If user is authenticated, update in Firestore
+            if (currentUser) {
+                updateUserInFirestore(preferences);
             }
         }
 
-        async function updateUserPersonalCode() {
+        function generateEnhancedPersonalCode(preferences) {
+            let code = '';
+            
+            // Department (based on most viewed)
+            const topDepartment = Object.keys(preferences.departments)
+                .sort((a, b) => preferences.departments[b] - preferences.departments[a])[0];
+            code += (topDepartment && metricMappings.department[topDepartment]) || 'X';
+            code += '-';
+            
+            // Color (top 3 most viewed colors)
+            const topColors = Object.keys(preferences.colors)
+                .sort((a, b) => preferences.colors[b] - preferences.colors[a])
+                .slice(0, 3);
+            if (topColors.length > 0) {
+                code += topColors.map(c => metricMappings.color[c] || 'X').join('+');
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            // Age preference (inferred from viewing patterns)
+            // For now, default to Adult
+            code += metricMappings.age['Adult'] || 'X';
+            code += '-';
+            
+            // Status preference (assume New based on viewing)
+            code += metricMappings.status['New'] || 'X';
+            code += '-';
+            
+            // Wealth preference (based on price range)
+            const avgPrice = (preferences.priceRange.min + preferences.priceRange.max) / 2;
+            let wealthCategory = 'Moderate';
+            if (avgPrice <= 20000) wealthCategory = 'Poor';
+            else if (avgPrice > 50000) wealthCategory = 'Rich';
+            code += metricMappings.wealth[wealthCategory] || 'X';
+            
+            return code;
+        }
+
+        async function updateUserInFirestore(preferences) {
             if (!currentUser) return;
             
             try {
-                // Get user's viewing history
-                const snapshot = await db.collection('user_activity')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'view')
-                    .orderBy('timestamp', 'desc')
-                    .limit(50)
-                    .get();
-                
-                // Analyze viewing patterns to update preferences
-                const userDoc = await db.collection('users').doc(currentUser.uid).get();
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
-                    userPersonalCode = generatePersonalCode(userData);
-                }
+                await db.collection('users').doc(currentUser.uid).update({
+                    preferences: preferences,
+                    personalCode: userPersonalCode,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
             } catch (error) {
-                console.error('Error updating personal code:', error);
+                console.error('Error updating user preferences:', error);
             }
         }
 
-        // ==================== SITE PERSONALIZATION ====================
-        function applySitePersonalization() {
-            if (!sitePersonalization) return;
+        // ==================== PRODUCT RECOMMENDATION ALGORITHM ====================
+        function getPersonalizedRecommendations(limit = 12) {
+            if (!allProducts || allProducts.length === 0) return [];
             
-            // Apply background image
-            if (sitePersonalization.backgroundImage) {
-                document.body.style.backgroundImage = `url('${sitePersonalization.backgroundImage}')`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundAttachment = 'fixed';
+            // Get viewing history
+            const viewingHistory = getViewingHistory();
+            
+            if (viewingHistory.length === 0 || userPersonalCode === 'GUEST-CODE') {
+                // Random fallback
+                return getRandomProducts(limit);
             }
             
-            // Apply accent color
-            if (sitePersonalization.accentColor) {
-                const accentColor = sitePersonalization.accentColor;
+            // Calculate similarity scores for all products
+            const scoredProducts = allProducts.map(product => {
+                // Skip products already viewed
+                if (viewingHistory.some(item => item.productId === product.id)) {
+                    return { ...product, similarityScore: -1 };
+                }
                 
-                // Update all elements with accent color
-                const elementsToUpdate = [
-                    '.category-header',
-                    '.hero-button',
-                    '.search-button',
-                    '.login-button',
-                    '.subscribe-button',
-                    '.original-badge'
-                ];
-                
-                elementsToUpdate.forEach(selector => {
-                    const elements = document.querySelectorAll(selector);
-                    elements.forEach(el => {
-                        if (el) el.style.backgroundColor = accentColor;
+                const similarityScore = calculateProductSimilarity(product, viewingHistory);
+                return { ...product, similarityScore };
+            });
+            
+            // Sort by similarity score (descending)
+            scoredProducts.sort((a, b) => b.similarityScore - a.similarityScore);
+            
+            // Get top recommendations
+            const recommendations = scoredProducts
+                .filter(p => p.similarityScore > 0)
+                .slice(0, limit);
+            
+            // If not enough recommendations, fill with random products
+            if (recommendations.length < limit) {
+                const remaining = limit - recommendations.length;
+                const randomProducts = getRandomProducts(remaining, recommendations.map(p => p.id));
+                recommendations.push(...randomProducts);
+            }
+            
+            return recommendations;
+        }
+
+        function calculateProductSimilarity(product, viewingHistory) {
+            let score = 0;
+            const weights = {
+                category: 3,
+                department: 2,
+                color: 1.5,
+                price: 1,
+                status: 0.5
+            };
+            
+            // Calculate average preferences from viewing history
+            const avgPreferences = {
+                category: {},
+                department: {},
+                color: {},
+                priceRange: { min: Infinity, max: 0 },
+                status: {}
+            };
+            
+            viewingHistory.forEach(item => {
+                if (item.category) {
+                    avgPreferences.category[item.category] = (avgPreferences.category[item.category] || 0) + 1;
+                }
+                if (item.department) {
+                    avgPreferences.department[item.department] = (avgPreferences.department[item.department] || 0) + 1;
+                }
+                if (item.color) {
+                    const colors = Array.isArray(item.color) ? item.color : [item.color];
+                    colors.forEach(color => {
+                        avgPreferences.color[color] = (avgPreferences.color[color] || 0) + 1;
                     });
-                });
-                
-                // Update orange dot
-                document.querySelectorAll('.orange-dot').forEach(el => {
-                    if (el) el.style.backgroundColor = accentColor;
-                });
+                }
+                if (item.price) {
+                    avgPreferences.priceRange.min = Math.min(avgPreferences.priceRange.min, item.price);
+                    avgPreferences.priceRange.max = Math.max(avgPreferences.priceRange.max, item.price);
+                }
+                if (item.status) {
+                    avgPreferences.status[item.status] = (avgPreferences.status[item.status] || 0) + 1;
+                }
+            });
+            
+            // Category match
+            if (product.category && avgPreferences.category[product.category]) {
+                score += weights.category * (avgPreferences.category[product.category] / viewingHistory.length);
             }
             
-            // Apply announcements
-            const announcementBanner = document.getElementById('announcementBanner');
-            const announcementContent = document.getElementById('announcementContent');
+            // Department match
+            const productDepartments = Array.isArray(product.department) ? product.department : [product.department];
+            productDepartments.forEach(dept => {
+                if (dept && avgPreferences.department[dept]) {
+                    score += weights.department * (avgPreferences.department[dept] / viewingHistory.length);
+                }
+            });
             
-            if (announcementBanner && announcementContent) {
-                if (sitePersonalization.announcements && sitePersonalization.announcements.length > 0) {
-                    const activeAnnouncement = sitePersonalization.announcements.find(a => a.active);
-                    if (activeAnnouncement) {
-                        announcementContent.innerHTML = activeAnnouncement.content;
-                        announcementBanner.classList.add('show');
-                    } else {
-                        announcementBanner.classList.remove('show');
+            // Color match
+            const productColors = Array.isArray(product.color) ? product.color : [product.color];
+            productColors.forEach(color => {
+                if (color && avgPreferences.color[color]) {
+                    score += weights.color * (avgPreferences.color[color] / viewingHistory.length);
+                }
+            });
+            
+            // Price similarity (within 20% of average range)
+            const avgPrice = (avgPreferences.priceRange.min + avgPreferences.priceRange.max) / 2;
+            const priceDiff = Math.abs(product.price - avgPrice) / avgPrice;
+            if (priceDiff <= 0.2) {
+                score += weights.price * (1 - priceDiff);
+            }
+            
+            // Status match
+            const productStatuses = Array.isArray(product.status) ? product.status : [product.status];
+            productStatuses.forEach(status => {
+                if (status && avgPreferences.status[status]) {
+                    score += weights.status * (avgPreferences.status[status] / viewingHistory.length);
+                }
+            });
+            
+            // Suggestion code match
+            const codeMatchScore = calculateMatchScore(userPersonalCode, product.suggestionCode);
+            score += codeMatchScore * 2;
+            
+            return score;
+        }
+
+        function getRandomProducts(count, excludeIds = []) {
+            const availableProducts = allProducts.filter(p => !excludeIds.includes(p.id));
+            
+            // Fisher-Yates shuffle
+            const shuffled = [...availableProducts];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            
+            return shuffled.slice(0, count);
+        }
+
+        // ==================== REAL-TIME UPDATES ====================
+        function initializeRealtimeUpdates() {
+            // Listen for site personalization changes
+            db.collection('site_personalization').doc('config')
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        sitePersonalization = doc.data();
+                        applySitePersonalization();
                     }
-                } else {
-                    announcementBanner.classList.remove('show');
-                }
-            }
+                });
             
-            // Apply website status
-            const pausedOverlay = document.getElementById('pausedOverlay');
-            if (pausedOverlay) {
-                if (sitePersonalization.status === 'PAUSED') {
-                    pausedOverlay.classList.add('active');
-                    document.body.style.filter = 'grayscale(100%)';
-                    
-                    // Disable interactive elements
-                    document.querySelectorAll('button, a, input').forEach(el => {
-                        if (el) {
-                            el.style.pointerEvents = 'none';
-                            el.style.opacity = '0.6';
+            // Listen for product changes
+            db.collection('products')
+                .where('active', '==', true)
+                .onSnapshot((snapshot) => {
+                    const changes = snapshot.docChanges();
+                    if (changes.length > 0) {
+                        // Update products
+                        allProducts = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        }));
+                        
+                        // Re-process categories
+                        processCategories();
+                        
+                        // Update current view if needed
+                        if (currentCategory) {
+                            if (currentCategory === 'all') {
+                                showAllProducts();
+                            } else {
+                                showProductsByCategory(currentCategory);
+                            }
+                        } else if (currentSearch) {
+                            performSearch(currentSearch);
                         }
-                    });
-                } else {
-                    pausedOverlay.classList.remove('active');
-                    document.body.style.filter = 'none';
-                    
-                    // Re-enable interactive elements
-                    document.querySelectorAll('button, a, input').forEach(el => {
-                        if (el) {
-                            el.style.pointerEvents = 'auto';
-                            el.style.opacity = '1';
-                        }
-                    });
-                }
-            }
-            
-            // Apply hero section customization
-            const heroSection = document.getElementById('heroSection');
-            const heroTitle = document.getElementById('heroTitle');
-            
-            if (sitePersonalization.heroImage && heroSection) {
-                heroSection.style.backgroundImage = `url('${sitePersonalization.heroImage}')`;
-            }
-            
-            if (sitePersonalization.heroTitle && heroTitle) {
-                heroTitle.textContent = sitePersonalization.heroTitle;
-            }
-        }
-
-        // ==================== AUTHENTICATION ====================
-        function setupAuth() {
-            // Check current auth state
-            auth.onAuthStateChanged(async (user) => {
-                currentUser = user;
-                
-                const userGreeting = document.getElementById('userGreeting');
-                const loginLink = document.getElementById('loginLink');
-                const sidebarLogin = document.getElementById('sidebarLogin');
-                
-                if (user) {
-                    // User is signed in
-                    if (userGreeting) userGreeting.textContent = `Welcome, ${user.displayName || user.email || 'User'}`;
-                    if (loginLink) loginLink.innerHTML = `<i class='bx bx-user'></i> ${user.displayName || user.email || 'Account'}`;
-                    if (sidebarLogin) sidebarLogin.innerHTML = `<i class='bx bx-user'></i> Account`;
-                    
-                    // Load user data and generate personal code
-                    try {
-                        const userDoc = await db.collection('users').doc(user.uid).get();
-                        if (userDoc.exists) {
-                            const userData = userDoc.data();
-                            userPersonalCode = generatePersonalCode(userData);
-                        } else {
-                            userPersonalCode = 'GUEST-CODE';
-                        }
-                    } catch (error) {
-                        console.error('Error loading user data:', error);
-                        userPersonalCode = 'GUEST-CODE';
                     }
-                } else {
-                    // User is signed out
-                    if (userGreeting) userGreeting.textContent = 'Welcome to INGABO';
-                    if (loginLink) loginLink.innerHTML = '<i class=\'bx bx-user\'></i> Login';
-                    if (sidebarLogin) sidebarLogin.innerHTML = '<i class=\'bx bx-user\'></i> Login';
-                    userPersonalCode = 'GUEST-CODE';
-                }
-                
-                // Load personalized deals with updated user code
-                loadPersonalizedDeals();
-            });
-            
-            // Setup login buttons
-            const loginButtons = document.querySelectorAll('#loginLink, #sidebarLogin');
-            loginButtons.forEach(button => {
-                if (button) {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        if (currentUser) {
-                            // Already logged in, go to account page
-                            window.location.href = 'settings.html';
-                        } else {
-                            window.location.href = 'login.html';
-                        }
-                    });
-                }
-            });
-            
-            // Setup register buttons
-            const registerButtons = document.querySelectorAll('#registerLink, #sidebarRegister');
-            registerButtons.forEach(button => {
-                if (button) {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        window.location.href = 'login.html?register=true';
-                    });
-                }
-            });
-        }
-
-        // ==================== EVENT LISTENERS ====================
-        function setupEventListeners() {
-            // Next button for deals
-            const nextButton = document.getElementById('nextButton');
-            if (nextButton) {
-                nextButton.addEventListener('click', () => {
-                    currentDealPage++;
-                    loadPersonalizedDeals();
                 });
-            }
-
-            // Hero button
-            const heroButton = document.getElementById('heroButton');
-            if (heroButton) {
-                heroButton.addEventListener('click', () => {
-                    window.location.href = 'view.html?category=featured';
-                });
-            }
-
-            // Search functionality
-            const searchButton = document.querySelector('.search-button');
-            const searchBar = document.querySelector('.search-bar');
-            
-            if (searchButton) {
-                searchButton.addEventListener('click', performSearch);
-            }
-            
-            if (searchBar) {
-                searchBar.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') performSearch();
-                });
-            }
-        }
-
-        function performSearch() {
-            const searchBar = document.querySelector('.search-bar');
-            const query = searchBar ? searchBar.value.trim() : '';
-            if (query) {
-                window.location.href = `view.html?search=${encodeURIComponent(query)}`;
-            }
         }
 
         // ==================== INITIALIZATION ====================
-        async function initializeApp() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('Initializing INGABO Store...');
             
-            // Check mobile redirection
-            checkMobileRedirect();
-            
-            // Setup authentication
-            setupAuth();
-            
-            // Setup event listeners
-            setupEventListeners();
+            // Initialize Firebase
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             
             // Load site personalization
             await loadSitePersonalization();
             
-            // Load categories and featured content
-            try {
-                await Promise.all([
-                    loadCategories(),
-                    loadFeaturedCategories(),
-                    loadTopPicks()
-                ]);
-            } catch (error) {
-                console.error('Error loading initial data:', error);
+            // Initialize authentication
+            initializeAuth();
+            
+            // Load products
+            await loadAllProducts();
+            
+            // Initialize search
+            initializeSearch();
+            
+            // Initialize event listeners
+            initializeEventListeners();
+            
+            // Initialize real-time updates
+            initializeRealtimeUpdates();
+            
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            const searchParam = urlParams.get('search');
+            
+            if (categoryParam) {
+                showProductsByCategory(categoryParam);
+            } else if (searchParam) {
+                document.getElementById('searchBar').value = searchParam;
+                performSearch(searchParam);
             }
             
-            // Initialize analytics
-            try {
-                analytics.logEvent('page_view', {
-                    page_title: 'Homepage',
-                    page_location: window.location.href
+            // Display personalized recommendations in a dedicated section
+            displayPersonalizedRecommendations();
+            
+            console.log('INGABO Store initialized successfully!');
+        });
+
+        // ==================== PERSONALIZED RECOMMENDATIONS DISPLAY ====================
+        function displayPersonalizedRecommendations() {
+            const recommendations = getPersonalizedRecommendations(8);
+            
+            // Create recommendations section if it doesn't exist
+            let recSection = document.getElementById('personalizedRecommendations');
+            if (!recSection) {
+                recSection = document.createElement('section');
+                recSection.id = 'personalizedRecommendations';
+                recSection.className = 'products-section';
+                recSection.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon" style="background: #28a745;"></div>
+                            <h2>Recommended For You</h2>
+                        </div>
+                    </div>
+                    <div class="products-grid" id="recommendationsGrid"></div>
+                    <div class="empty-state hidden" id="emptyRecommendations">
+                        <i class='bx bx-star'></i>
+                        <h3>No recommendations yet</h3>
+                        <p>Start browsing products to get personalized recommendations</p>
+                    </div>
+                `;
+                
+                // Insert after top picks section
+                const topPicksSection = document.getElementById('topPicksSection');
+                if (topPicksSection) {
+                    topPicksSection.parentNode.insertBefore(recSection, topPicksSection.nextSibling);
+                }
+            }
+            
+            const container = document.getElementById('recommendationsGrid');
+            const emptyState = document.getElementById('emptyRecommendations');
+            
+            if (recommendations.length === 0) {
+                if (container) container.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            if (emptyState) emptyState.classList.add('hidden');
+            
+            if (container) {
+                container.innerHTML = recommendations.map(product => {
+                    const mainImage = product.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image';
+                    const discount = product.discount ? Math.round(product.discount) : 0;
+                    
+                    return `
+                        <div class="product-card" data-product-id="${product.id}">
+                            ${discount > 0 ? `<div class="product-badge">${discount}% OFF</div>` : ''}
+                            <div class="product-image">
+                                <img src="${mainImage}" 
+                                     alt="${product.name}"
+                                     onerror="this.src='https://via.placeholder.com/300x200?text=Product'">
+                            </div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">${formatPrice(product.price)} RWF</div>
+                                <div class="product-meta">
+                                    <span>${product.category || 'Uncategorized'}</span>
+                                    <span><i class='bx bx-star' style="color: #ffc107;"></i> Recommended</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Add click events
+                document.querySelectorAll('#recommendationsGrid .product-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        viewProduct(productId);
+                    });
                 });
-            } catch (error) {
-                console.error('Error logging analytics:', error);
             }
-            
-            console.log('INGABO Store initialized successfully');
         }
 
-        // Start the application
-        window.addEventListener('DOMContentLoaded', initializeApp);
+        // ==================== UTILITY FUNCTIONS ====================
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+
+        // ==================== OFFLINE SUPPORT ====================
+        function initializeOfflineSupport() {
+            // Check if browser supports service workers
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    }).catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+            }
+            
+            // Cache critical assets
+            const criticalAssets = [
+                'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css',
+                'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
+                'https://i.ibb.co/1fjd5Ncn/logo.png'
+            ];
+            
+            // Preload critical assets
+            criticalAssets.forEach(asset => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = asset.includes('.css') ? 'style' : 'image';
+                link.href = asset;
+                document.head.appendChild(link);
+            });
+        }
+
+        // Initialize offline support
+        initializeOfflineSupport();
     </script>
 </body>
 </html>
