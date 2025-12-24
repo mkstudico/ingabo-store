@@ -6,12 +6,13 @@
     <title>INGABO Online Shop</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase v8 for compatibility -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Firebase SDK - COMPAT VERSION -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <style>
-        /* ========== RESET & BASE ========== */
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
@@ -19,56 +20,81 @@
             font-family: 'Poppins', sans-serif;
         }
         
-        :root {
-            --primary-color: #ff6a00;
-            --secondary-color: #ff8c42;
-            --text-dark: #333;
-            --text-light: #666;
-            --text-lighter: #888;
-            --bg-light: #f9f9f9;
-            --bg-white: #ffffff;
-            --border-color: #e5e5e5;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --transition: all 0.3s ease;
-        }
-        
         body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
+            background-color: #f9f9f9;
+            color: #333;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
         
-        /* ========== HEADER & NAVIGATION ========== */
-        .top-header {
-            background-color: var(--bg-white);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 0;
-            position: sticky;
+        /* Announcement Banner */
+        .announcement-banner {
+            background-color: #ff6a00;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .announcement-banner.show {
+            display: block;
+        }
+        
+        .announcement-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .announcement-banner a {
+            color: white;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        
+        /* Paused Mode Overlay */
+        .paused-overlay {
+            position: fixed;
             top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow);
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .paused-overlay.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .top-header {
+            background-color: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 10px 0;
         }
         
         .header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
         }
         
         .logo-area {
             display: flex;
             align-items: center;
             gap: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
         }
         
         .logo-img {
@@ -82,735 +108,888 @@
         }
         
         .logo-text h1 {
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
             color: #000;
-            line-height: 1;
         }
         
         .logo-text span {
-            font-size: 11px;
-            color: var(--text-lighter);
+            font-size: 12px;
+            color: #666;
         }
         
-        .search-container {
+        .search-area {
             flex: 1;
-            max-width: 600px;
-            position: relative;
-        }
-        
-        .search-wrapper {
+            max-width: 500px;
+            margin: 0 30px;
             position: relative;
         }
         
         .search-bar {
             width: 100%;
             padding: 12px 20px;
-            padding-right: 45px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #ddd;
             border-radius: 25px;
             font-size: 14px;
-            background: var(--bg-light);
-            transition: var(--transition);
-        }
-        
-        .search-bar:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--bg-white);
-            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
         }
         
         .search-button {
             position: absolute;
             right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 36px;
-            width: 36px;
-            background-color: var(--primary-color);
+            top: 5px;
+            height: calc(100% - 10px);
+            background-color: #ff6a00;
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 20px;
+            padding: 0 20px;
+            font-weight: bold;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
         }
         
-        .search-button:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        .search-suggestions {
+        /* Search Results Dropdown */
+        .search-results {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background: var(--bg-white);
+            background: white;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-top: 5px;
             max-height: 400px;
             overflow-y: auto;
             display: none;
-            z-index: 1001;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
-        .search-suggestions.active {
+        .search-results.active {
             display: block;
         }
         
-        .suggestion-item {
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
+        .search-result-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            transition: var(--transition);
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
         }
         
-        .suggestion-item:hover {
-            background-color: var(--bg-light);
+        .search-result-item:hover {
+            background: #f8f8f8;
         }
         
-        .suggestion-item img {
+        .search-result-img {
             width: 40px;
             height: 40px;
             object-fit: cover;
             border-radius: 4px;
+            margin-right: 12px;
         }
         
-        .suggestion-info {
+        .search-result-info {
             flex: 1;
         }
         
-        .suggestion-name {
+        .search-result-name {
             font-size: 14px;
             font-weight: 500;
-            color: var(--text-dark);
             margin-bottom: 2px;
         }
         
-        .suggestion-price {
+        .search-result-price {
             font-size: 13px;
-            color: var(--primary-color);
+            color: #ff6a00;
             font-weight: 600;
+        }
+        
+        .search-result-category {
+            font-size: 11px;
+            color: #888;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
         }
         
         .header-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
         }
         
         .cart-button {
             display: flex;
             align-items: center;
             gap: 8px;
-            background-color: var(--bg-white);
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
             border-radius: 25px;
-            padding: 8px 16px;
-            font-weight: 500;
+            padding: 8px 15px;
+            font-weight: bold;
             cursor: pointer;
-            transition: var(--transition);
         }
         
-        .cart-button:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+        .cart-icon {
+            font-size: 16px;
         }
         
         .auth-links {
             display: flex;
             gap: 15px;
+            font-size: 14px;
         }
         
         .auth-links a {
-            color: var(--text-dark);
+            color: #333;
             text-decoration: none;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: var(--transition);
         }
         
         .auth-links a:hover {
-            color: var(--primary-color);
+            color: #ff6a00;
         }
         
-        /* ========== BREADCRUMB NAVIGATION ========== */
-        .breadcrumb {
-            background: var(--bg-white);
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .breadcrumb.active {
-            display: block;
-        }
-        
-        .breadcrumb-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .breadcrumb-item:hover {
-            color: var(--primary-color);
-        }
-        
-        .breadcrumb-item.active {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-        
-        .breadcrumb-separator {
-            color: var(--text-lighter);
-        }
-        
-        /* ========== MAIN LAYOUT ========== */
+        /* Main Layout */
         .main-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 25px;
+            display: flex;
+            gap: 20px;
             margin-top: 20px;
         }
         
-        /* ========== SIDEBAR - CATEGORIES ========== */
-        .sidebar {
-            background: var(--bg-white);
-            border-radius: 8px;
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 260px;
+            background-color: #f2f2f2;
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            height: fit-content;
-            position: sticky;
-            top: 90px;
         }
         
         .category-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: #ff6a00;
             color: white;
-            padding: 18px;
-            font-weight: 600;
-            font-size: 16px;
+            padding: 15px;
+            font-weight: bold;
             text-align: center;
         }
         
         .category-list {
             list-style: none;
-            max-height: 500px;
-            overflow-y: auto;
+            padding: 15px 0;
         }
         
         .category-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e5e5;
             cursor: pointer;
-            transition: var(--transition);
+            font-size: 14px;
+            transition: background 0.2s;
         }
         
         .category-item:hover {
-            background-color: var(--bg-light);
-            color: var(--primary-color);
-        }
-        
-        .category-item.active {
-            background-color: rgba(255, 106, 0, 0.1);
-            color: var(--primary-color);
-            font-weight: 500;
+            background-color: #e8e8e8;
         }
         
         .category-icon {
-            font-size: 18px;
-            color: inherit;
-            width: 24px;
+            width: 20px;
             text-align: center;
+            color: #000;
+            font-weight: bold;
         }
         
-        .category-name {
-            flex: 1;
-            font-size: 14px;
-        }
-        
-        .category-count {
-            background: var(--bg-light);
-            color: var(--text-light);
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-        
-        /* ========== MAIN CONTENT ========== */
+        /* Main Hero Section */
         .main-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
         }
         
-        /* ========== HERO SECTION ========== */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 8px;
-            padding: 40px;
-            color: white;
             position: relative;
+            border-radius: 4px;
             overflow: hidden;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
+            height: 250px;
+            background-color: #e0e0e0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 80%;
+            margin: 0 auto;
         }
         
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 600px;
+        .hero-overlay {
+            position: absolute;
+            top: 50%;
+            left: 30px;
+            transform: translateY(-50%);
+            color: white;
         }
         
         .hero-title {
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 36px;
+            font-weight: bold;
             margin-bottom: 15px;
-            line-height: 1.2;
-        }
-        
-        .hero-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .hero-button {
-            background: white;
-            color: var(--primary-color);
+            background-color: #ff6a00;
+            color: white;
             border: none;
-            border-radius: 6px;
-            padding: 12px 24px;
-            font-weight: 600;
-            font-size: 15px;
+            border-radius: 4px;
+            padding: 12px 20px;
+            font-weight: bold;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
-            transition: var(--transition);
         }
         
-        .hero-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .carousel-dots {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
-        /* ========== FEATURED CATEGORIES ========== */
-        .featured-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-        }
-        
-        .featured-category-card {
-            background: var(--bg-white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
             cursor: pointer;
-            transition: var(--transition);
         }
         
-        .featured-category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        .dot.active {
+            background-color: white;
         }
         
-        .category-image {
+        /* Product Categories */
+        .product-categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .category-card {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 8px;
+            padding: 15px;
             height: 120px;
+            display: flex;
+            align-items: flex-end;
+            position: relative;
+            cursor: pointer;
             overflow: hidden;
+            transition: transform 0.3s ease;
         }
         
-        .category-image img {
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 20px 20px 0;
+            border-color: transparent #ff6a00 transparent transparent;
+        }
+        
+        .category-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            z-index: 1;
         }
         
-        .featured-category-card:hover .category-image img {
-            transform: scale(1.05);
+        .category-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            z-index: 2;
+            position: relative;
         }
         
-        .category-info {
-            padding: 15px;
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         
-        .category-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 5px;
+        .account-area {
+            background-color: white;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
         }
         
-        .category-product-count {
-            font-size: 12px;
-            color: var(--text-lighter);
+        .account-logo {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
         }
         
-        /* ========== TOP PICKS SECTION ========== */
-        .top-picks-section {
-            background: var(--bg-white);
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: var(--shadow);
+        .account-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
         }
         
-        .section-header {
+        .account-buttons {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            gap: 10px;
+        }
+        
+        .login-button {
+            background-color: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .register-button {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        /* Top Picks Section */
+        .top-picks-section {
+            margin-top: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
         }
         
         .section-title {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 20px;
         }
         
-        .section-icon {
+        .orange-dot {
             width: 12px;
             height: 12px;
-            background: var(--primary-color);
+            background-color: #ff6a00;
             border-radius: 50%;
         }
         
         .section-title h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-        
-        .view-all-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #333;
+            font-size: 18px;
         }
         
         .top-picks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
         }
         
-        .top-pick-category {
-            background: var(--bg-white);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            transition: var(--transition);
+        .top-pick-card {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 12px;
         }
         
-        .top-pick-category:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(255, 106, 0, 0.1);
-        }
-        
-        .category-header-mini {
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
         }
         
-        .category-title-mini {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-        
-        .category-products {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        
-        .category-product {
-            aspect-ratio: 1;
-            border-radius: 4px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .category-product img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-        
-        .category-product:hover img {
-            transform: scale(1.1);
-        }
-        
-        /* ========== PRODUCTS GRID ========== */
-        .products-section {
-            display: none;
-        }
-        
-        .products-section.active {
-            display: block;
-        }
-        
-        .products-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        
-        .products-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-        
-        .products-count {
-            color: var(--text-light);
+        .card-title {
+            font-weight: 500;
+            color: #333;
             font-size: 14px;
         }
         
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
+        .view-all-link {
+            color: #888;
+            font-size: 12px;
+            text-decoration: none;
         }
         
-        .product-card {
-            background: var(--bg-white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
+        .view-all-link:hover {
+            color: #ff6a00;
         }
         
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        
-        .product-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #ff0000;
-            color: white;
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 4px;
-            z-index: 2;
+        .product-images {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
         }
         
         .product-image {
-            height: 180px;
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 10px;
+            flex: 1;
             overflow: hidden;
+            cursor: pointer;
+            position: relative;
         }
         
         .product-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: var(--transition);
+            transition: transform 0.3s ease;
         }
         
-        .product-card:hover .product-image img {
+        .product-image:hover img {
             transform: scale(1.05);
         }
         
-        .product-info {
-            padding: 15px;
+        /* Today's Deal Section */
+        .todays-deal-section {
+            margin-top: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            position: relative;
         }
         
-        .product-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-dark);
+        .deal-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .deal-card {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .deal-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .relevance-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: none;
+        }
+        
+        .relevance-indicator.show {
+            display: block;
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff0000;
+            color: white;
+            padding: 3px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1;
+        }
+        
+        .deal-image {
+            width: 100%;
+            height: 120px;
+            background-color: #f8f8f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .deal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .deal-card:hover .deal-image img {
+            transform: scale(1.05);
+        }
+        
+        .deal-img-placeholder {
+            width: 80%;
+            height: 80%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .original-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: #ff6a00;
+            color: white;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-radius: 2px;
+        }
+        
+        .deal-title {
+            font-size: 12px;
+            color: #333;
             margin-bottom: 8px;
             line-height: 1.4;
-            height: 40px;
+            height: 34px;
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
         }
         
-        .product-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 5px;
+        .deal-price {
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
         }
         
-        .product-original-price {
-            font-size: 13px;
-            color: var(--text-lighter);
+        .original-price {
+            color: #888;
+            font-size: 11px;
             text-decoration: line-through;
         }
         
-        .product-meta {
+        .navigation-button {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 50%;
             display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 10px;
-        }
-        
-        /* ========== LOADING STATES ========== */
-        .loading {
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px;
-            color: var(--text-light);
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        /* Filter View */
+        .filter-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .filter-view.active {
+            display: block;
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ff6a00;
+        }
+        
+        .filter-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-to-home {
+            background-color: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .filter-product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .filter-product-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .filter-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-product-card:hover .filter-product-image img {
+            transform: scale(1.05);
+        }
+        
+        .filter-product-info {
+            padding: 15px;
+        }
+        
+        .filter-product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .filter-product-price {
+            color: #ff6a00;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 16px;
+            color: #666;
         }
         
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--primary-color);
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6a00;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            margin-right: 15px;
         }
         
         @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            color: var(--border-color);
-            margin-bottom: 15px;
-        }
-        
-        /* ========== RESPONSIVE DESIGN ========== */
-        @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                position: static;
-                margin-bottom: 20px;
-            }
-            
-            .category-list {
-                max-height: 300px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header-content {
-                flex-wrap: wrap;
-            }
-            
-            .search-container {
-                order: 3;
-                max-width: 100%;
-                margin-top: 10px;
-            }
-            
-            .top-picks-grid,
-            .products-grid,
-            .featured-categories {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-            
-            .hero-section {
-                padding: 30px 20px;
-            }
-            
-            .hero-title {
-                font-size: 24px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .top-picks-grid,
-            .products-grid,
-            .featured-categories {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .category-products {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .header-right {
-                gap: 10px;
-            }
-            
-            .cart-button span {
-                display: none;
-            }
-            
-            .auth-links a span {
-                display: none;
-            }
-        }
-        
-        /* ========== UTILITY CLASSES ========== */
-        .hidden {
-            display: none !important;
-        }
-        
-        .active {
-            display: block !important;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease;
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+        
+        /* Footer Sections */
+        .footer-sections {
+            margin-top: 30px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 4px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .footer-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .footer-column {
+            padding: 10px;
+        }
+        
+        .footer-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .subscription-form {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .email-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .subscribe-button {
+            background-color: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .helper-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .sell-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .join-text {
+            color: #ff6a00;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            text-decoration: none;
+            background-color: #000;
+        }
+        
+        /* Footer Links */
+        .footer-links {
+            margin-top: 30px;
+            background-color: #f2f2f2;
+            padding: 30px;
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        
+        .links-column h3 {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .links-list {
+            list-style: none;
+        }
+        
+        .links-list li {
+            margin-bottom: 8px;
+        }
+        
+        .links-list a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .links-list a:hover {
+            color: #ff6a00;
+        }
+        
+        .contact-info {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -829,24 +1008,18 @@
         <!-- Top Header -->
         <header class="top-header">
             <div class="header-content">
-                <a href="#" class="logo-area" id="logoLink">
+                <div class="logo-area">
                     <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
                     <div class="logo-text">
                         <h1>INGABO</h1>
                         <span>Online shop</span>
                     </div>
-                </a>
+                </div>
                 
-                <div class="search-container">
-                    <div class="search-wrapper">
-                        <input type="text" class="search-bar" id="searchBar" placeholder="Search for products, categories, brands...">
-                        <button class="search-button" id="searchButton">
-                            <i class='bx bx-search'></i>
-                        </button>
-                        <div class="search-suggestions" id="searchSuggestions">
-                            <!-- Search suggestions will be populated here -->
-                        </div>
-                    </div>
+                <div class="search-area">
+                    <input type="text" class="search-bar" placeholder="What are you looking for?" id="searchInput">
+                    <button class="search-button" id="searchButton">Search</button>
+                    <div class="search-results" id="searchResults"></div>
                 </div>
                 
                 <div class="header-right">
@@ -855,106 +1028,166 @@
                         <span>Cart</span>
                     </button>
                     <div class="auth-links">
-                        <a href="#" id="loginLink"><i class='bx bx-user'></i> <span>Login</span></a>
-                        <a href="#" id="registerLink"><i class='bx bx-user-plus'></i> <span>Register</span></a>
+                        <a href="login.html" id="loginLink"><i class='bx bx-user'></i> Login</a>
+                        <a href="login.html?register=true" id="registerLink"><i class='bx bx-user-plus'></i> Register</a>
                     </div>
                 </div>
             </div>
         </header>
         
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb" id="breadcrumb">
-            <div class="breadcrumb-content">
-                <div class="breadcrumb-item" id="homeBreadcrumb">
-                    <i class='bx bx-home'></i>
-                    <span>Home</span>
-                </div>
-                <div class="breadcrumb-separator">/</div>
-                <div class="breadcrumb-item" id="currentBreadcrumb">
-                    <span>All Products</span>
-                </div>
-            </div>
-        </div>
-        
         <!-- Main Layout -->
         <div class="main-layout">
-            <!-- Sidebar - Categories -->
-            <aside class="sidebar">
+            <!-- Left Sidebar -->
+            <aside class="left-sidebar">
                 <div class="category-header">Shop by Category</div>
                 <ul class="category-list" id="categoryList">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <div>Loading categories...</div>
-                    </div>
+                    <!-- Categories will be loaded from Firebase -->
                 </ul>
             </aside>
             
             <!-- Main Content -->
-            <main class="main-content">
-                <!-- Hero Section (Default View) -->
-                <section class="hero-section" id="heroSection">
-                    <div class="hero-content">
-                        <h1 class="hero-title">Wholesale Market</h1>
-                        <p class="hero-subtitle">Discover amazing products at wholesale prices. Quality guaranteed with personalized recommendations just for you.</p>
-                        <button class="hero-button" id="heroButton">
-                            Start Shopping <i class='bx bx-chevron-right'></i>
-                        </button>
-                    </div>
-                </section>
-                
-                <!-- Featured Categories (Default View) -->
-                <section class="featured-categories-section" id="featuredCategoriesSection">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <div class="section-icon"></div>
-                            <h2>Featured Categories</h2>
+            <main class="main-content" id="mainContent">
+                <!-- Normal View -->
+                <div id="normalView">
+                    <!-- Hero Section -->
+                    <section class="hero-section" id="heroSection">
+                        <div class="hero-overlay">
+                            <div class="hero-title" id="heroTitle">Wholesale Market</div>
+                            <button class="hero-button" id="heroButton">
+                                GO SHOPPING <i class='bx bx-chevron-right'></i>
+                            </button>
                         </div>
+                        <div class="carousel-dots" id="carouselDots"></div>
+                    </section>
+                    
+                    <!-- Product Categories -->
+                    <div class="product-categories" id="productCategories">
+                        <!-- Category cards will be loaded from Firebase -->
                     </div>
-                    <div class="featured-categories" id="featuredCategories">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <div>Loading categories...</div>
-                        </div>
-                    </div>
-                </section>
-                
-                <!-- Top Picks Section (Default View) -->
-                <section class="top-picks-section" id="topPicksSection">
-                    <div class="section-header">
+                    
+                    <!-- Top Picks Section -->
+                    <section class="top-picks-section" id="topPicksSection">
                         <div class="section-title">
-                            <div class="section-icon"></div>
+                            <div class="orange-dot"></div>
                             <h2>INGABO TOP PICKS</h2>
                         </div>
-                        <a href="#" class="view-all-link" id="viewAllTopPicks">
-                            View All <i class='bx bx-chevron-right'></i>
-                        </a>
-                    </div>
-                    <div class="top-picks-grid" id="topPicksGrid">
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <div>Loading top picks...</div>
+                        
+                        <div class="top-picks-grid" id="topPicksGrid">
+                            <!-- Top picks will be loaded from Firebase -->
+                        </div>
+                    </section>
+                    
+                    <!-- Today's Deal Section -->
+                    <section class="todays-deal-section" id="todaysDealSection">
+                        <div class="section-title">
+                            <div class="orange-dot"></div>
+                            <h2>Personalized Recommendations</h2>
+                        </div>
+                        
+                        <div class="deal-grid" id="dealGrid">
+                            <!-- Personalized products will be loaded from Firebase -->
+                        </div>
+                        
+                        <div class="navigation-button" id="nextButton"><i class='bx bx-chevron-right'></i></div>
+                    </section>
+                    
+                    <!-- Footer Sections -->
+                    <div class="footer-sections" id="footerSections">
+                        <div class="footer-columns">
+                            <div class="footer-column">
+                                <div class="footer-title">Subscription</div>
+                                <div class="subscription-form">
+                                    <input type="email" class="email-input" placeholder="Please enter your email">
+                                    <button class="subscribe-button">Subscribe</button>
+                                </div>
+                                <div class="helper-text">Register now for updates on promotions and coupons</div>
+                            </div>
+                            
+                            <div class="footer-column">
+                                <div class="footer-title">Sell on INGABO</div>
+                                <div class="sell-text">Join us</div>
+                            </div>
+                            
+                            <div class="footer-column">
+                                <div class="footer-title">Stay Connected</div>
+                                <div class="social-icons">
+                                    <a href="#" class="social-icon"><i class='bx bxl-facebook'></i></a>
+                                    <a href="#" class="social-icon"><i class='bx bxl-twitter'></i></a>
+                                    <a href="#" class="social-icon"><i class='bx bxl-whatsapp'></i></a>
+                                    <a href="#" class="social-icon"><i class='bx bx-message-rounded'></i></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </section>
+                    
+                    <!-- Footer Links -->
+                    <div class="footer-links" id="footerLinks">
+                        <div class="links-column">
+                            <h3>FAQs</h3>
+                            <ul class="links-list">
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> Shipping information</a></li>
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> How to buy</a></li>
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> How to pay</a></li>
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> Return policy</a></li>
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> Terms</a></li>
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> Contact support</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="links-column">
+                            <h3>Browse by Category</h3>
+                            <ul class="links-list" id="categoryLinks">
+                                <!-- Dynamic categories -->
+                            </ul>
+                        </div>
+                        
+                        <div class="links-column">
+                            <h3>About</h3>
+                            <ul class="links-list">
+                                <li><a href="#"><i class='bx bx-chevron-right'></i> Privacy Policy</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="links-column">
+                            <h3>Contact Us</h3>
+                            <div class="contact-info">
+                                <div><i class='bx bx-map'></i> Address: Kigali, Rwanda</div>
+                                <div><i class='bx bx-phone'></i> Phone: +250 788 123 456</div>
+                                <div><i class='bx bx-envelope'></i> Email: info@ingabo.com</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                <!-- Products Grid (Filtered/Search View) -->
-                <section class="products-section" id="productsSection">
-                    <div class="products-header">
-                        <div>
-                            <h2 class="products-title" id="productsTitle">Products</h2>
-                            <div class="products-count" id="productsCount">0 products found</div>
+                <!-- Filter View (hidden by default) -->
+                <div class="filter-view" id="filterView">
+                    <div class="filter-header">
+                        <div class="filter-title">
+                            <i class='bx bx-filter-alt'></i>
+                            <span id="filterTitle">Products</span>
                         </div>
+                        <button class="back-to-home" id="backToHome">
+                            <i class='bx bx-home'></i> Back to Home
+                        </button>
                     </div>
-                    <div class="products-grid" id="productsGrid">
-                        <!-- Products will be populated here -->
+                    
+                    <div class="filter-grid" id="filterGrid">
+                        <!-- Filtered products will be loaded here -->
                     </div>
-                    <div class="empty-state hidden" id="emptyProducts">
-                        <i class='bx bx-package'></i>
-                        <h3>No products found</h3>
-                        <p>Try adjusting your search or filter criteria</p>
-                    </div>
-                </section>
+                </div>
             </main>
+            
+            <!-- Right Sidebar -->
+            <aside class="right-sidebar" id="rightSidebar">
+                <div class="account-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="account-logo">
+                    <div class="account-title" id="userGreeting">Welcome to INGABO</div>
+                    <div class="account-buttons">
+                        <a href="login.html" class="login-button" id="sidebarLogin"><i class='bx bx-user'></i> Login</a>
+                        <a href="login.html?register=true" class="register-button" id="sidebarRegister"><i class='bx bx-user-plus'></i> Register</a>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
 
@@ -970,100 +1203,112 @@
             measurementId: "G-QSXTGP9R1Q"
         };
 
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        // Initialize Firebase with compat
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const analytics = firebase.analytics();
 
         // ==================== GLOBAL VARIABLES ====================
         let currentUser = null;
         let userPersonalCode = '';
-        let userTrackingData = [];
         let allProducts = [];
-        let allCategories = [];
-        let featuredCategories = [];
         let sitePersonalization = null;
-        let currentCategory = null;
-        let currentSearch = '';
-        let searchTimeout = null;
+        let currentDealPage = 0;
+        let searchTimer = null;
+        const dealsPerPage = 10;
 
         // ==================== PERSONALIZATION ALGORITHM ====================
         // Metric mappings for Suggestion Code generation
         const metricMappings = {
             category: {
-                'Shoes': 'A', 'T-shirts': 'B', 'Pants': 'C',
-                'Watches': 'D', 'Necklace': 'E', 'Bracelets': 'F', 'Caps': 'G'
+                'Shoes': 'A',
+                'T-shirts': 'B',
+                'Pants': 'C',
+                'Watches': 'D',
+                'Necklace': 'E',
+                'Bracelets': 'F',
+                'Caps': 'G'
             },
-            department: { 'Men': 'A', 'Women': 'B' },
+            department: {
+                'Men': 'A',
+                'Women': 'B'
+            },
             color: {
-                'White': 'A', 'Black': 'B', 'Blue': 'C', 'Green': 'D',
-                'Red': 'E', 'Yellow': 'F', 'Chocolate': 'G', 'Purple': 'H',
-                'Orange': 'I', 'Sky-blue': 'J', 'Reddish': 'K', 'Pink': 'L'
+                'White': 'A',
+                'Black': 'B',
+                'Blue': 'C',
+                'Green': 'D',
+                'Red': 'E',
+                'Yellow': 'F',
+                'Chocolate': 'G',
+                'Purple': 'H',
+                'Orange': 'I',
+                'Sky-blue': 'J',
+                'Reddish': 'K',
+                'Pink': 'L'
             },
-            size: { 'Small': 'A', 'Medium': 'B', 'Large': 'C' },
-            age: { 'All': 'A', 'Young': 'B', 'Teens': 'C', 'Adult': 'D', 'Old': 'E' },
-            status: { 'New': 'A', 'Used': 'B' },
-            wealth: { 'Poor': 'A', 'Moderate': 'B', 'Rich': 'C' }
+            size: {
+                'Small': 'A',
+                'Medium': 'B',
+                'Large': 'C'
+            },
+            age: {
+                'All': 'A',
+                'Young': 'B',
+                'Teens': 'C',
+                'Adult': 'D',
+                'Old': 'E'
+            },
+            status: {
+                'New': 'A',
+                'Used': 'B'
+            },
+            wealth: {
+                'Poor': 'A',
+                'Moderate': 'B',
+                'Rich': 'C'
+            }
         };
 
         // Generate Suggestion Code for a product
         function generateSuggestionCode(product) {
-            if (!product) return 'X-X-X-X-X-X-X';
-            
             let code = '';
             
             // Category
-            code += (product.category && metricMappings.category[product.category]) || 'X';
+            code += metricMappings.category[product.category] || 'X';
             code += '-';
             
             // Department
-            const department = Array.isArray(product.department) ? product.department[0] : product.department;
-            code += (department && metricMappings.department[department]) || 'X';
+            code += metricMappings.department[product.department] || 'X';
             code += '-';
             
             // Color (can have multiple)
-            const colors = product.color ? (Array.isArray(product.color) ? product.color : [product.color]) : ['X'];
+            const colors = Array.isArray(product.color) ? product.color : [product.color];
             code += colors.map(c => metricMappings.color[c] || 'X').join('+');
             code += '-';
             
-            // Size (can have multiple)
-            const sizes = product.size ? (Array.isArray(product.size) ? product.size : [product.size]) : ['X'];
-            code += sizes.map(s => metricMappings.size[s] || 'X').join('+');
+            // Size
+            code += metricMappings.size[product.size] || 'X';
             code += '-';
             
-            // Age (can have multiple)
-            const ages = product.age ? (Array.isArray(product.age) ? product.age : [product.age]) : ['X'];
-            code += ages.map(a => metricMappings.age[a] || 'X').join('+');
+            // Age
+            code += metricMappings.age[product.age] || 'X';
             code += '-';
             
-            // Status (can have multiple)
-            const statuses = product.status ? (Array.isArray(product.status) ? product.status : [product.status]) : ['X'];
-            code += statuses.map(s => metricMappings.status[s] || 'X').join('+');
+            // Status
+            code += metricMappings.status[product.status] || 'X';
             code += '-';
             
             // Wealth
-            code += (product.wealth && metricMappings.wealth[product.wealth]) || 'X';
+            code += metricMappings.wealth[product.wealth] || 'X';
             
             return code;
         }
 
         // Generate Personal Code for a user
         function generatePersonalCode(userData) {
-            if (!userData) {
-                // Try to get from localStorage
-                const storedData = localStorage.getItem('ingabo_guest_data');
-                if (storedData) {
-                    try {
-                        userData = JSON.parse(storedData);
-                    } catch (e) {
-                        return 'GUEST-CODE';
-                    }
-                } else {
-                    return 'GUEST-CODE';
-                }
-            }
+            if (!userData) return 'GUEST-CODE';
             
             let code = '';
             
@@ -1078,594 +1323,724 @@
             // Use age for age preference
             if (userData.age) {
                 let ageCategory = 'Adult';
-                const age = parseInt(userData.age);
-                if (age < 18) ageCategory = 'Teens';
-                else if (age < 25) ageCategory = 'Young';
-                else if (age > 60) ageCategory = 'Old';
+                if (userData.age < 18) ageCategory = 'Teens';
+                else if (userData.age < 25) ageCategory = 'Young';
+                else if (userData.age > 60) ageCategory = 'Old';
                 code += metricMappings.age[ageCategory] || 'X';
             } else {
                 code += 'X';
             }
             code += '-';
             
-            // Generate preferences based on viewing history
-            const viewingHistory = getViewingHistory();
-            if (viewingHistory.length > 0) {
-                const colorPreferences = viewingHistory.map(item => item.color).flat().filter(Boolean);
-                const uniqueColors = [...new Set(colorPreferences)];
-                if (uniqueColors.length > 0) {
-                    code += uniqueColors.map(c => metricMappings.color[c] || 'X').slice(0, 3).join('+');
-                } else {
-                    code += 'X';
-                }
-            } else {
-                code += 'X';
-            }
+            // Generate random preferences for other metrics (these would be updated based on views)
+            const randomCategories = ['A', 'B', 'C', 'D'];
+            code += randomCategories.join('+');
             
             return code;
         }
 
         // Compare user code with product suggestion code
         function calculateMatchScore(userCode, productCode) {
-            if (userCode === 'GUEST-CODE' || !productCode) return 0;
+            if (userCode === 'GUEST-CODE') return 0;
             
-            try {
-                const userParts = userCode.split('-');
-                const productParts = productCode.split('-');
-                
-                let score = 0;
-                
-                for (let i = 0; i < Math.min(userParts.length, productParts.length); i++) {
-                    const userMetrics = userParts[i].split('+');
-                    const productMetrics = productParts[i].split('+');
-                    
-                    // Check for any matching metric in this category
-                    for (const userMetric of userMetrics) {
-                        if (productMetrics.includes(userMetric)) {
-                            score += 1;
-                            break;
-                        }
-                    }
-                }
-                
-                return score;
-            } catch (error) {
-                console.error('Error calculating match score:', error);
-                return 0;
-            }
-        }
-
-        // Personalized product sorting algorithm
-        function sortProductsPersonalized(products, userCode) {
-            if (!products || products.length === 0) return [];
+            const userParts = userCode.split('-');
+            const productParts = productCode.split('-');
             
-            if (userCode === 'GUEST-CODE' || !userCode) {
-                // Random fallback for guests
-                return [...products].sort(() => Math.random() - 0.5);
-            }
-            
-            try {
-                // Calculate match scores
-                const scoredProducts = products.map(product => {
-                    const matchScore = calculateMatchScore(userCode, product.suggestionCode);
-                    return { ...product, matchScore };
-                });
-                
-                // Sort by match score (descending), then random for same scores
-                scoredProducts.sort((a, b) => {
-                    if (b.matchScore !== a.matchScore) {
-                        return b.matchScore - a.matchScore;
-                    }
-                    return Math.random() - 0.5;
-                });
-                
-                return scoredProducts;
-            } catch (error) {
-                console.error('Error sorting products:', error);
-                return [...products].sort(() => Math.random() - 0.5);
-            }
-        }
-
-        // ==================== USER TRACKING & LOCAL STORAGE ====================
-        function getViewingHistory() {
-            try {
-                const history = localStorage.getItem('ingabo_viewing_history');
-                return history ? JSON.parse(history) : [];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function addToViewingHistory(product) {
-            try {
-                const history = getViewingHistory();
-                const existingIndex = history.findIndex(item => item.productId === product.id);
-                
-                if (existingIndex > -1) {
-                    history.splice(existingIndex, 1);
-                }
-                
-                history.unshift({
-                    productId: product.id,
-                    category: product.category,
-                    color: product.color || [],
-                    timestamp: new Date().toISOString()
-                });
-                
-                // Keep only last 50 items
-                if (history.length > 50) {
-                    history.pop();
-                }
-                               localStorage.setItem('ingabo_viewing_history', JSON.stringify(history));
-                updateUserPersonalization();
-            } catch (e) {
-                console.error('Error adding to viewing history:', e);
-            }
-        }
-
-        function updateUserPersonalization() {
-            // Update user's personal code based on viewing history
-            const viewingHistory = getViewingHistory();
-            
-            if (viewingHistory.length === 0) {
-                userPersonalCode = 'GUEST-CODE';
-                return;
-            }
-            
-            // Extract preferences from viewing history
-            const preferences = {
-                categories: {},
-                colors: {},
-                departments: {},
-                priceRange: { min: Infinity, max: 0 }
-            };
-            
-            viewingHistory.forEach(item => {
-                // Track category preferences
-                if (item.category) {
-                    preferences.categories[item.category] = (preferences.categories[item.category] || 0) + 1;
-                }
-                
-                // Track color preferences
-                if (item.color && Array.isArray(item.color)) {
-                    item.color.forEach(color => {
-                        preferences.colors[color] = (preferences.colors[color] || 0) + 1;
-                    });
-                }
-                
-                // Track department preferences
-                if (item.department) {
-                    preferences.departments[item.department] = (preferences.departments[item.department] || 0) + 1;
-                }
-                
-                // Track price range
-                if (item.price) {
-                    preferences.priceRange.min = Math.min(preferences.priceRange.min, item.price);
-                    preferences.priceRange.max = Math.max(preferences.priceRange.max, item.price);
-                }
-            });
-            
-            // Generate enhanced personal code
-            userPersonalCode = generateEnhancedPersonalCode(preferences);
-            
-            // If user is authenticated, update in Firestore
-            if (currentUser) {
-                updateUserInFirestore(preferences);
-            }
-        }
-
-        function generateEnhancedPersonalCode(preferences) {
-            let code = '';
-            
-            // Department (based on most viewed)
-            const topDepartment = Object.keys(preferences.departments)
-                .sort((a, b) => preferences.departments[b] - preferences.departments[a])[0];
-            code += (topDepartment && metricMappings.department[topDepartment]) || 'X';
-            code += '-';
-            
-            // Color (top 3 most viewed colors)
-            const topColors = Object.keys(preferences.colors)
-                .sort((a, b) => preferences.colors[b] - preferences.colors[a])
-                .slice(0, 3);
-            if (topColors.length > 0) {
-                code += topColors.map(c => metricMappings.color[c] || 'X').join('+');
-            } else {
-                code += 'X';
-            }
-            code += '-';
-            
-            // Age preference (inferred from viewing patterns)
-            // For now, default to Adult
-            code += metricMappings.age['Adult'] || 'X';
-            code += '-';
-            
-            // Status preference (assume New based on viewing)
-            code += metricMappings.status['New'] || 'X';
-            code += '-';
-            
-            // Wealth preference (based on price range)
-            const avgPrice = (preferences.priceRange.min + preferences.priceRange.max) / 2;
-            let wealthCategory = 'Moderate';
-            if (avgPrice <= 20000) wealthCategory = 'Poor';
-            else if (avgPrice > 50000) wealthCategory = 'Rich';
-            code += metricMappings.wealth[wealthCategory] || 'X';
-            
-            return code;
-        }
-
-        async function updateUserInFirestore(preferences) {
-            if (!currentUser) return;
-            
-            try {
-                await db.collection('users').doc(currentUser.uid).update({
-                    preferences: preferences,
-                    personalCode: userPersonalCode,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Error updating user preferences:', error);
-            }
-        }
-
-        // ==================== PRODUCT RECOMMENDATION ALGORITHM ====================
-        function getPersonalizedRecommendations(limit = 12) {
-            if (!allProducts || allProducts.length === 0) return [];
-            
-            // Get viewing history
-            const viewingHistory = getViewingHistory();
-            
-            if (viewingHistory.length === 0 || userPersonalCode === 'GUEST-CODE') {
-                // Random fallback
-                return getRandomProducts(limit);
-            }
-            
-            // Calculate similarity scores for all products
-            const scoredProducts = allProducts.map(product => {
-                // Skip products already viewed
-                if (viewingHistory.some(item => item.productId === product.id)) {
-                    return { ...product, similarityScore: -1 };
-                }
-                
-                const similarityScore = calculateProductSimilarity(product, viewingHistory);
-                return { ...product, similarityScore };
-            });
-            
-            // Sort by similarity score (descending)
-            scoredProducts.sort((a, b) => b.similarityScore - a.similarityScore);
-            
-            // Get top recommendations
-            const recommendations = scoredProducts
-                .filter(p => p.similarityScore > 0)
-                .slice(0, limit);
-            
-            // If not enough recommendations, fill with random products
-            if (recommendations.length < limit) {
-                const remaining = limit - recommendations.length;
-                const randomProducts = getRandomProducts(remaining, recommendations.map(p => p.id));
-                recommendations.push(...randomProducts);
-            }
-            
-            return recommendations;
-        }
-
-        function calculateProductSimilarity(product, viewingHistory) {
             let score = 0;
-            const weights = {
-                category: 3,
-                department: 2,
-                color: 1.5,
-                price: 1,
-                status: 0.5
-            };
             
-            // Calculate average preferences from viewing history
-            const avgPreferences = {
-                category: {},
-                department: {},
-                color: {},
-                priceRange: { min: Infinity, max: 0 },
-                status: {}
-            };
-            
-            viewingHistory.forEach(item => {
-                if (item.category) {
-                    avgPreferences.category[item.category] = (avgPreferences.category[item.category] || 0) + 1;
+            for (let i = 0; i < Math.min(userParts.length, productParts.length); i++) {
+                const userMetrics = userParts[i].split('+');
+                const productMetrics = productParts[i].split('+');
+                
+                // Check for any matching metric in this category
+                for (const userMetric of userMetrics) {
+                    if (productMetrics.includes(userMetric)) {
+                        score += 1;
+                        break;
+                    }
                 }
-                if (item.department) {
-                    avgPreferences.department[item.department] = (avgPreferences.department[item.department] || 0) + 1;
-                }
-                if (item.color) {
-                    const colors = Array.isArray(item.color) ? item.color : [item.color];
-                    colors.forEach(color => {
-                        avgPreferences.color[color] = (avgPreferences.color[color] || 0) + 1;
-                    });
-                }
-                if (item.price) {
-                    avgPreferences.priceRange.min = Math.min(avgPreferences.priceRange.min, item.price);
-                    avgPreferences.priceRange.max = Math.max(avgPreferences.priceRange.max, item.price);
-                }
-                if (item.status) {
-                    avgPreferences.status[item.status] = (avgPreferences.status[item.status] || 0) + 1;
-                }
-            });
-            
-            // Category match
-            if (product.category && avgPreferences.category[product.category]) {
-                score += weights.category * (avgPreferences.category[product.category] / viewingHistory.length);
             }
-            
-            // Department match
-            const productDepartments = Array.isArray(product.department) ? product.department : [product.department];
-            productDepartments.forEach(dept => {
-                if (dept && avgPreferences.department[dept]) {
-                    score += weights.department * (avgPreferences.department[dept] / viewingHistory.length);
-                }
-            });
-            
-            // Color match
-            const productColors = Array.isArray(product.color) ? product.color : [product.color];
-            productColors.forEach(color => {
-                if (color && avgPreferences.color[color]) {
-                    score += weights.color * (avgPreferences.color[color] / viewingHistory.length);
-                }
-            });
-            
-            // Price similarity (within 20% of average range)
-            const avgPrice = (avgPreferences.priceRange.min + avgPreferences.priceRange.max) / 2;
-            const priceDiff = Math.abs(product.price - avgPrice) / avgPrice;
-            if (priceDiff <= 0.2) {
-                score += weights.price * (1 - priceDiff);
-            }
-            
-            // Status match
-            const productStatuses = Array.isArray(product.status) ? product.status : [product.status];
-            productStatuses.forEach(status => {
-                if (status && avgPreferences.status[status]) {
-                    score += weights.status * (avgPreferences.status[status] / viewingHistory.length);
-                }
-            });
-            
-            // Suggestion code match
-            const codeMatchScore = calculateMatchScore(userPersonalCode, product.suggestionCode);
-            score += codeMatchScore * 2;
             
             return score;
         }
 
-        function getRandomProducts(count, excludeIds = []) {
-            const availableProducts = allProducts.filter(p => !excludeIds.includes(p.id));
-            
-            // Fisher-Yates shuffle
-            const shuffled = [...availableProducts];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        // Personalized product sorting algorithm
+        function sortProductsPersonalized(products, userCode) {
+            if (userCode === 'GUEST-CODE') {
+                // Random fallback for guests
+                return [...products].sort(() => Math.random() - 0.5);
             }
             
-            return shuffled.slice(0, count);
+            // Calculate match scores
+            const scoredProducts = products.map(product => {
+                const matchScore = calculateMatchScore(userCode, product.suggestionCode);
+                return { ...product, matchScore };
+            });
+            
+            // Sort by match score (descending)
+            scoredProducts.sort((a, b) => b.matchScore - a.matchScore);
+            
+            return scoredProducts;
         }
 
-        // ==================== REAL-TIME UPDATES ====================
-        function initializeRealtimeUpdates() {
-            // Listen for site personalization changes
-            db.collection('site_personalization').doc('config')
-                .onSnapshot((doc) => {
-                    if (doc.exists) {
-                        sitePersonalization = doc.data();
-                        applySitePersonalization();
-                    }
-                });
+        // ==================== SEARCH FUNCTIONALITY ====================
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
             
-            // Listen for product changes
-            db.collection('products')
-                .where('active', '==', true)
-                .onSnapshot((snapshot) => {
-                    const changes = snapshot.docChanges();
-                    if (changes.length > 0) {
-                        // Update products
-                        allProducts = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-                        
-                        // Re-process categories
-                        processCategories();
-                        
-                        // Update current view if needed
-                        if (currentCategory) {
-                            if (currentCategory === 'all') {
-                                showAllProducts();
-                            } else {
-                                showProductsByCategory(currentCategory);
-                            }
-                        } else if (currentSearch) {
-                            performSearch(currentSearch);
-                        }
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                
+                const query = this.value.trim();
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                searchTimer = setTimeout(() => {
+                    performSearch(query);
+                }, 300);
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                    searchResults.classList.remove('active');
+                }
+            });
+            
+            // Search button click
+            document.getElementById('searchButton').addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    showFilteredProducts(query, 'search');
+                }
+            });
+        }
+
+        async function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!query || query.length < 2) {
+                searchResults.classList.remove('active');
+                return;
+            }
+            
+            try {
+                // Search in products
+                const productsSnapshot = await db.collection('products')
+                    .where('active', '==', true)
+                    .get();
+                
+                const results = [];
+                const queryLower = query.toLowerCase();
+                
+                productsSnapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    
+                    // Check name, description, category
+                    if (product.name.toLowerCase().includes(queryLower) ||
+                        product.description.toLowerCase().includes(queryLower) ||
+                        product.category.toLowerCase().includes(queryLower)) {
+                        results.push(product);
                     }
                 });
+                
+                displaySearchResults(results, query);
+            } catch (error) {
+                console.error('Search error:', error);
+            }
         }
+
+        function displaySearchResults(results, query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="no-results">
+                        <i class='bx bx-search-alt'></i>
+                        <div>No results found for "${query}"</div>
+                    </div>
+                `;
+            } else {
+                searchResults.innerHTML = '';
+                
+                results.slice(0, 8).forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `
+                        ${product.images && product.images[0] ? 
+                            `<img src="${product.images[0]}" class="search-result-img" alt="${product.name}">` : 
+                            `<div class="search-result-img" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image'></i>
+                            </div>`
+                        }
+                        <div class="search-result-info">
+                            <div class="search-result-name">${product.name}</div>
+                            <div style="display: flex; align-items: center;">
+                                <span class="search-result-price">${formatPrice(product.price)} RWF</span>
+                                <span class="search-result-category">${product.category}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        window.location.href = `view.html?id=${product.id}`;
+                        searchResults.classList.remove('active');
+                    });
+                    
+                    searchResults.appendChild(item);
+                });
+            }
+            
+            searchResults.classList.add('active');
+        }
+
+        // ==================== FIREBASE DATA LOADING ====================
+        async function loadSitePersonalization() {
+            try {
+                const doc = await db.collection('site_personalization').doc('settings').get();
+                if (doc.exists) {
+                    sitePersonalization = doc.data();
+                    applySitePersonalization();
+                    
+                    // Listen for real-time updates
+                    db.collection('site_personalization').doc('settings')
+                        .onSnapshot((snapshot) => {
+                            sitePersonalization = snapshot.data();
+                            applySitePersonalization();
+                        });
+                }
+            } catch (error) {
+                console.error('Error loading site personalization:', error);
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const snapshot = await db.collection('categories').orderBy('order').get();
+                const categoryList = document.getElementById('categoryList');
+                const categoryLinks = document.getElementById('categoryLinks');
+                
+                categoryList.innerHTML = '';
+                categoryLinks.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const category = doc.data();
+                    
+                    // Main category list
+                    const li = document.createElement('li');
+                    li.className = 'category-item';
+                    li.innerHTML = `
+                        <i class='bx ${category.icon || 'bx-category'} category-icon'></i>
+                        <span>${category.name}</span>
+                    `;
+                    li.addEventListener('click', () => showFilteredProducts(category.name, 'category'));
+                    categoryList.appendChild(li);
+                    
+                    // Footer category links
+                    const linkLi = document.createElement('li');
+                    linkLi.innerHTML = `
+                        <a href="#" data-category="${category.name}">
+                            <i class='bx bx-chevron-right'></i> ${category.name}
+                        </a>
+                    `;
+                    linkLi.querySelector('a').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showFilteredProducts(category.name, 'category');
+                    });
+                    categoryLinks.appendChild(linkLi);
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        async function loadFeaturedCategories() {
+            try {
+                const snapshot = await db.collection('featured_categories').limit(4).get();
+                const container = document.getElementById('productCategories');
+                container.innerHTML = '';
+                
+                let index = 0;
+                snapshot.forEach(doc => {
+                    const category = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'category-card';
+                    card.style.backgroundImage = `url('${category.imageUrl}')`;
+                    card.innerHTML = `<div class="category-name">${category.name}</div>`;
+                    card.addEventListener('click', () => showFilteredProducts(category.name, 'category'));
+                    container.appendChild(card);
+                    index++;
+                });
+            } catch (error) {
+                console.error('Error loading featured categories:', error);
+            }
+        }
+
+        async function loadTopPicks() {
+            try {
+                const snapshot = await db.collection('products')
+                    .where('active', '==', true)
+                    .limit(20)
+                    .get();
+                
+                const container = document.getElementById('topPicksGrid');
+                container.innerHTML = '';
+                
+                // Group products by category
+                const productsByCategory = {};
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    
+                    if (!productsByCategory[product.category]) {
+                        productsByCategory[product.category] = [];
+                    }
+                    if (productsByCategory[product.category].length < 5) {
+                        productsByCategory[product.category].push(product);
+                    }
+                });
+                
+                // Create top pick cards for each category
+                Object.keys(productsByCategory).forEach(category => {
+                    const products = productsByCategory[category];
+                    
+                    if (products.length === 0) return;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'top-pick-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-title">${category}</div>
+                            <a href="#" class="view-all-link" data-category="${category}">View All</a>
+                        </div>
+                        <div class="product-images">
+                            ${products.map(product => `
+                                <div class="product-image" data-product="${product.id}">
+                                    ${product.images && product.images[0] ? 
+                                        `<img src="${product.images[0]}" alt="${product.name}">` : 
+                                        `<i class='bx bx-image'></i>`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    
+                    // Add click events to product images
+                    card.querySelectorAll('.product-image').forEach(img => {
+                        img.addEventListener('click', function() {
+                            const productId = this.getAttribute('data-product');
+                            window.location.href = `view.html?id=${productId}`;
+                        });
+                    });
+                    
+                    // Add click event to view all link
+                    card.querySelector('.view-all-link').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const category = this.getAttribute('data-category');
+                        showFilteredProducts(category, 'category');
+                    });
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading top picks:', error);
+            }
+        }
+
+        async function loadPersonalizedDeals() {
+            try {
+                // First load all products
+                const snapshot = await db.collection('products').where('active', '==', true).get();
+                allProducts = [];
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    product.suggestionCode = generateSuggestionCode(product);
+                    allProducts.push(product);
+                });
+                
+                // Sort products based on personalization algorithm
+                const sortedProducts = sortProductsPersonalized(allProducts, userPersonalCode);
+                
+                // Display current page of deals
+                displayDealsPage(sortedProducts);
+            } catch (error) {
+                console.error('Error loading personalized deals:', error);
+            }
+        }
+
+        function displayDealsPage(products) {
+            const container = document.getElementById('dealGrid');
+            const startIndex = currentDealPage * dealsPerPage;
+            const endIndex = startIndex + dealsPerPage;
+            const pageProducts = products.slice(startIndex, endIndex);
+            
+            container.innerHTML = '';
+            
+            pageProducts.forEach((product, index) => {
+                const dealCard = document.createElement('div');
+                dealCard.className = 'deal-card';
+                dealCard.innerHTML = `
+                    ${product.discount ? `<div class="discount-badge">-${product.discount}%</div>` : ''}
+                    <div class="relevance-indicator ${index < 3 ? 'show' : ''}"></div>
+                    <div class="deal-image">
+                        ${product.images && product.images[0] ? 
+                            `<img src="${product.images[0]}" alt="${product.name}">` : 
+                            `<div class="deal-img-placeholder"><i class='bx bx-image'></i></div>`
+                        }
+                        ${product.original ? `<div class="original-badge">Original</div>` : ''}
+                    </div>
+                    <div class="deal-title">${product.name}</div>
+                    <div class="deal-price">${formatPrice(product.price)} RWF</div>
+                    ${product.originalPrice ? `<div class="original-price">${formatPrice(product.originalPrice)} RWF</div>` : ''}
+                `;
+                
+                dealCard.addEventListener('click', () => {
+                    // Track product view for personalization
+                    trackProductView(product.id);
+                    window.location.href = `view.html?id=${product.id}`;
+                });
+                
+                container.appendChild(dealCard);
+            });
+            
+            // Update next button state
+            const nextButton = document.getElementById('nextButton');
+            const hasMoreProducts = (currentDealPage + 1) * dealsPerPage < products.length;
+            nextButton.style.display = hasMoreProducts ? 'flex' : 'none';
+        }
+
+        // ==================== FILTER VIEW ====================
+        function showFilteredProducts(filter, type) {
+            const normalView = document.getElementById('normalView');
+            const filterView = document.getElementById('filterView');
+            const filterTitle = document.getElementById('filterTitle');
+            const filterGrid = document.getElementById('filterGrid');
+            
+            // Hide normal view, show filter view
+            normalView.style.display = 'none';
+            filterView.classList.add('active');
+            
+            // Update title based on filter type
+            if (type === 'category') {
+                filterTitle.textContent = `${filter} Products`;
+            } else if (type === 'search') {
+                filterTitle.textContent = `Search Results for "${filter}"`;
+            }
+            
+            // Load filtered products
+            loadFilteredProducts(filter, type, filterGrid);
+        }
+
+        async function loadFilteredProducts(filter, type, container) {
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading products...</div>';
+            
+            try {
+                let query = db.collection('products').where('active', '==', true);
+                
+                if (type === 'category') {
+                    query = query.where('category', '==', filter);
+                }
+                
+                const snapshot = await query.get();
+                const products = [];
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    products.push(product);
+                });
+                
+                // If search type, filter by text
+                if (type === 'search') {
+                    const filtered = products.filter(product => 
+                        product.name.toLowerCase().includes(filter.toLowerCase()) ||
+                        product.description.toLowerCase().includes(filter.toLowerCase()) ||
+                        product.category.toLowerCase().includes(filter.toLowerCase())
+                    );
+                    displayFilteredProducts(filtered, container);
+                } else {
+                    displayFilteredProducts(products, container);
+                }
+            } catch (error) {
+                console.error('Error loading filtered products:', error);
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">Error loading products</div>';
+            }
+        }
+
+        function displayFilteredProducts(products, container) {
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">No products found</div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'filter-product-card';
+                card.innerHTML = `
+                    <div class="filter-product-image">
+                        ${product.images && product.images[0] ? 
+                            `<img src="${product.images[0]}" alt="${product.name}">` : 
+                            `<div style="width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image'></i>
+                            </div>`
+                        }
+                    </div>
+                    <div class="filter-product-info">
+                        <div class="filter-product-name">${product.name}</div>
+                        <div class="filter-product-price">${formatPrice(product.price)} RWF</div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    window.location.href = `view.html?id=${product.id}`;
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        async function trackProductView(productId) {
+            if (!currentUser) return;
+            
+            try {
+                await db.collection('user_activity').add({
+                    userId: currentUser.uid,
+                    productId: productId,
+                    type: 'view',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Update user's personal code based on viewing history
+                updateUserPersonalCode();
+            } catch (error) {
+                console.error('Error tracking product view:', error);
+            }
+        }
+
+        async function updateUserPersonalCode() {
+            if (!currentUser) return;
+            
+            try {
+                // Get user's viewing history
+                const snapshot = await db.collection('user_activity')
+                    .where('userId', '==', currentUser.uid)
+                    .where('type', '==', 'view')
+                    .orderBy('timestamp', 'desc')
+                    .limit(50)
+                    .get();
+                
+                // Analyze viewing patterns to update preferences
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    userPersonalCode = generatePersonalCode(userData);
+                }
+            } catch (error) {
+                console.error('Error updating personal code:', error);
+            }
+        }
+
+        // ==================== SITE PERSONALIZATION ====================
+        function applySitePersonalization() {
+            if (!sitePersonalization) return;
+            
+            // Apply background image
+            if (sitePersonalization.backgroundImage) {
+                document.body.style.backgroundImage = `url('${sitePersonalization.backgroundImage}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+            }
+            
+            // Apply accent color
+            if (sitePersonalization.accentColor) {
+                const accentColor = sitePersonalization.accentColor;
+                
+                // Update all elements with accent color
+                const elementsToUpdate = [
+                    '.category-header',
+                    '.hero-button',
+                    '.search-button',
+                    '.login-button',
+                    '.subscribe-button',
+                    '.original-badge'
+                ];
+                
+                elementsToUpdate.forEach(selector => {
+                    document.querySelectorAll(selector).forEach(el => {
+                        el.style.backgroundColor = accentColor;
+                    });
+                });
+                
+                // Update orange dot
+                document.querySelectorAll('.orange-dot').forEach(el => {
+                    el.style.backgroundColor = accentColor;
+                });
+            }
+            
+            // Apply announcements
+            const announcementBanner = document.getElementById('announcementBanner');
+            const announcementContent = document.getElementById('announcementContent');
+            
+            if (sitePersonalization.announcements && sitePersonalization.announcements.length > 0) {
+                const activeAnnouncement = sitePersonalization.announcements.find(a => a.active);
+                if (activeAnnouncement) {
+                    announcementContent.innerHTML = activeAnnouncement.content;
+                    announcementBanner.classList.add('show');
+                } else {
+                    announcementBanner.classList.remove('show');
+                }
+            } else {
+                announcementBanner.classList.remove('show');
+            }
+            
+            // Apply website status
+            const pausedOverlay = document.getElementById('pausedOverlay');
+            if (sitePersonalization.status === 'PAUSED') {
+                pausedOverlay.classList.add('active');
+                document.body.style.filter = 'grayscale(100%)';
+                
+                // Disable interactive elements
+                document.querySelectorAll('button, a, input').forEach(el => {
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.6';
+                });
+            } else {
+                pausedOverlay.classList.remove('active');
+                document.body.style.filter = 'none';
+                
+                // Re-enable interactive elements
+                document.querySelectorAll('button, a, input').forEach(el => {
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
+                });
+            }
+            
+            // Apply hero section customization
+            if (sitePersonalization.heroImage) {
+                document.getElementById('heroSection').style.backgroundImage = `url('${sitePersonalization.heroImage}')`;
+            }
+            
+            if (sitePersonalization.heroTitle) {
+                document.getElementById('heroTitle').textContent = sitePersonalization.heroTitle;
+            }
+        }
+
+        // ==================== AUTHENTICATION ====================
+        function setupAuth() {
+            // Check current auth state
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                
+                if (user) {
+                    // User is signed in
+                    document.getElementById('userGreeting').textContent = `Welcome, ${user.displayName || user.email}`;
+                    document.getElementById('loginLink').innerHTML = `<i class='bx bx-user'></i> ${user.displayName || 'Account'}`;
+                    document.getElementById('sidebarLogin').innerHTML = `<i class='bx bx-user'></i> Account`;
+                    
+                    // Load user data and generate personal code
+                    try {
+                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            userPersonalCode = generatePersonalCode(userData);
+                        } else {
+                            userPersonalCode = 'GUEST-CODE';
+                        }
+                    } catch (error) {
+                        console.error('Error loading user data:', error);
+                        userPersonalCode = 'GUEST-CODE';
+                    }
+                } else {
+                    // User is signed out
+                    document.getElementById('userGreeting').textContent = 'Welcome to INGABO';
+                    document.getElementById('loginLink').innerHTML = '<i class=\'bx bx-user\'></i> Login';
+                    document.getElementById('sidebarLogin').innerHTML = '<i class=\'bx bx-user\'></i> Login';
+                    userPersonalCode = 'GUEST-CODE';
+                }
+                
+                // Load personalized deals with updated user code
+                loadPersonalizedDeals();
+            });
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('nextButton').addEventListener('click', () => {
+            currentDealPage++;
+            loadPersonalizedDeals();
+        });
+
+        document.getElementById('heroButton').addEventListener('click', () => {
+            window.location.href = 'view.html?category=featured';
+        });
+
+        document.getElementById('backToHome').addEventListener('click', () => {
+            const normalView = document.getElementById('normalView');
+            const filterView = document.getElementById('filterView');
+            
+            normalView.style.display = 'block';
+            filterView.classList.remove('active');
+            document.getElementById('searchInput').value = '';
+        });
+
+        // Search functionality
+        document.querySelector('.search-button').addEventListener('click', () => {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                showFilteredProducts(query, 'search');
+            }
+        });
+
+        document.querySelector('.search-bar').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) {
+                    showFilteredProducts(query, 'search');
+                }
+            }
+        });
 
         // ==================== INITIALIZATION ====================
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('Initializing INGABO Store...');
+        async function initializeApp() {
+            // Setup authentication
+            setupAuth();
             
-            // Initialize Firebase
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
+            // Setup search
+            setupSearch();
             
             // Load site personalization
             await loadSitePersonalization();
             
-            // Initialize authentication
-            initializeAuth();
+            // Load categories and featured content
+            await Promise.all([
+                loadCategories(),
+                loadFeaturedCategories(),
+                loadTopPicks()
+            ]);
             
-            // Load products
-            await loadAllProducts();
-            
-            // Initialize search
-            initializeSearch();
-            
-            // Initialize event listeners
-            initializeEventListeners();
-            
-            // Initialize real-time updates
-            initializeRealtimeUpdates();
-            
-            // Check URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryParam = urlParams.get('category');
-            const searchParam = urlParams.get('search');
-            
-            if (categoryParam) {
-                showProductsByCategory(categoryParam);
-            } else if (searchParam) {
-                document.getElementById('searchBar').value = searchParam;
-                performSearch(searchParam);
-            }
-            
-            // Display personalized recommendations in a dedicated section
-            displayPersonalizedRecommendations();
-            
-            console.log('INGABO Store initialized successfully!');
-        });
-
-        // ==================== PERSONALIZED RECOMMENDATIONS DISPLAY ====================
-        function displayPersonalizedRecommendations() {
-            const recommendations = getPersonalizedRecommendations(8);
-            
-            // Create recommendations section if it doesn't exist
-            let recSection = document.getElementById('personalizedRecommendations');
-            if (!recSection) {
-                recSection = document.createElement('section');
-                recSection.id = 'personalizedRecommendations';
-                recSection.className = 'products-section';
-                recSection.innerHTML = `
-                    <div class="section-header">
-                        <div class="section-title">
-                            <div class="section-icon" style="background: #28a745;"></div>
-                            <h2>Recommended For You</h2>
-                        </div>
-                    </div>
-                    <div class="products-grid" id="recommendationsGrid"></div>
-                    <div class="empty-state hidden" id="emptyRecommendations">
-                        <i class='bx bx-star'></i>
-                        <h3>No recommendations yet</h3>
-                        <p>Start browsing products to get personalized recommendations</p>
-                    </div>
-                `;
-                
-                // Insert after top picks section
-                const topPicksSection = document.getElementById('topPicksSection');
-                if (topPicksSection) {
-                    topPicksSection.parentNode.insertBefore(recSection, topPicksSection.nextSibling);
-                }
-            }
-            
-            const container = document.getElementById('recommendationsGrid');
-            const emptyState = document.getElementById('emptyRecommendations');
-            
-            if (recommendations.length === 0) {
-                if (container) container.innerHTML = '';
-                if (emptyState) emptyState.classList.remove('hidden');
-                return;
-            }
-            
-            if (emptyState) emptyState.classList.add('hidden');
-            
-            if (container) {
-                container.innerHTML = recommendations.map(product => {
-                    const mainImage = product.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image';
-                    const discount = product.discount ? Math.round(product.discount) : 0;
-                    
-                    return `
-                        <div class="product-card" data-product-id="${product.id}">
-                            ${discount > 0 ? `<div class="product-badge">${discount}% OFF</div>` : ''}
-                            <div class="product-image">
-                                <img src="${mainImage}" 
-                                     alt="${product.name}"
-                                     onerror="this.src='https://via.placeholder.com/300x200?text=Product'">
-                            </div>
-                            <div class="product-info">
-                                <div class="product-name">${product.name}</div>
-                                <div class="product-price">${formatPrice(product.price)} RWF</div>
-                                <div class="product-meta">
-                                    <span>${product.category || 'Uncategorized'}</span>
-                                    <span><i class='bx bx-star' style="color: #ffc107;"></i> Recommended</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                // Add click events
-                document.querySelectorAll('#recommendationsGrid .product-card').forEach(card => {
-                    card.addEventListener('click', function() {
-                        const productId = this.dataset.productId;
-                        viewProduct(productId);
-                    });
-                });
-            }
-        }
-
-        // ==================== UTILITY FUNCTIONS ====================
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        function throttle(func, limit) {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-
-        // ==================== OFFLINE SUPPORT ====================
-        function initializeOfflineSupport() {
-            // Check if browser supports service workers
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    }).catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-                });
-            }
-            
-            // Cache critical assets
-            const criticalAssets = [
-                'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css',
-                'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
-                'https://i.ibb.co/1fjd5Ncn/logo.png'
-            ];
-            
-            // Preload critical assets
-            criticalAssets.forEach(asset => {
-                const link = document.createElement('link');
-                link.rel = 'preload';
-                link.as = asset.includes('.css') ? 'style' : 'image';
-                link.href = asset;
-                document.head.appendChild(link);
+            // Initialize analytics
+            analytics.logEvent('page_view', {
+                page_title: 'Homepage',
+                page_location: window.location.href
             });
+            
+            console.log('INGABO Store initialized successfully');
         }
 
-        // Initialize offline support
-        initializeOfflineSupport();
+        // Start the application
+        window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
