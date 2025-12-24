@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Add Product - INGABO</title>
+    <!-- Preload boxicons to avoid slow network warning -->
+    <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/fonts/boxicons.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Firebase v8 for compatibility -->
@@ -917,7 +919,12 @@
             initializeCheckboxGrids();
             setupEventListeners();
             updateSuggestionCode();
-            analytics.logEvent('add_product_page_view');
+            
+            // Add small delay to ensure everything is loaded
+            setTimeout(() => {
+                updateSubmitButton();
+                analytics.logEvent('add_product_page_view');
+            }, 100);
         });
 
         // ==================== CHECKBOX GRIDS INITIALIZATION ====================
@@ -932,6 +939,11 @@
         
         function initializeGrid(gridId, items, selectionKey) {
             const grid = document.getElementById(gridId);
+            if (!grid) {
+                console.error(`Grid element not found: ${gridId}`);
+                return;
+            }
+            
             grid.innerHTML = '';
             
             items.forEach(item => {
@@ -948,24 +960,26 @@
                 
                 // Add event listener
                 const checkbox = document.getElementById(checkboxId);
-                checkbox.addEventListener('change', function() {
-                    if (this.checked) {
-                        selections[selectionKey].push(item.name);
-                    } else {
-                        const index = selections[selectionKey].indexOf(item.name);
-                        if (index > -1) selections[selectionKey].splice(index, 1);
-                    }
-                    validateSelection(selectionKey);
-                    updateSuggestionCode();
-                    updateSubmitButton();
-                });
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            selections[selectionKey].push(item.name);
+                        } else {
+                            const index = selections[selectionKey].indexOf(item.name);
+                            if (index > -1) selections[selectionKey].splice(index, 1);
+                        }
+                        validateSelection(selectionKey);
+                        updateSuggestionCode();
+                        updateSubmitButton();
+                    });
+                }
             });
         }
 
         // ==================== SUGGESTION CODE GENERATION ====================
         function generateSuggestionCode() {
-            const category = document.getElementById('productCategory').value;
-            const price = parseInt(document.getElementById('productPrice').value) || 0;
+            const category = document.getElementById('productCategory')?.value || '';
+            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
             
             // Metric mappings
             const metricMappings = {
@@ -1044,9 +1058,11 @@
             
             // Update wealth display
             const wealthDisplay = document.getElementById('wealthCategory');
-            wealthDisplay.textContent = wealth || '-';
-            wealthDisplay.style.color = wealth ? '#ff6a00' : '#888';
-            wealthDisplay.style.fontWeight = wealth ? '600' : '400';
+            if (wealthDisplay) {
+                wealthDisplay.textContent = wealth || '-';
+                wealthDisplay.style.color = wealth ? '#ff6a00' : '#888';
+                wealthDisplay.style.fontWeight = wealth ? '600' : '400';
+            }
             
             code += (wealth && metricMappings.wealth[wealth]) || 'X';
             
@@ -1055,40 +1071,52 @@
 
         function updateSuggestionCode() {
             const code = generateSuggestionCode();
-            document.getElementById('suggestionCode').textContent = code;
+            const display = document.getElementById('suggestionCode');
+            if (display) {
+                display.textContent = code;
+            }
         }
 
         // ==================== IMAGE UPLOAD ====================
         function setupEventListeners() {
             // Upload button
-            document.getElementById('uploadBtn').addEventListener('click', () => {
-                document.getElementById('fileInput').click();
-            });
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', () => {
+                    const fileInput = document.getElementById('fileInput');
+                    if (fileInput) fileInput.click();
+                });
+            }
 
             // File input change
-            document.getElementById('fileInput').addEventListener('change', handleImageUpload);
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleImageUpload);
+            }
 
             // Drag and drop for images
             const uploadBox = document.getElementById('uploadBox');
-            uploadBox.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadBox.style.borderColor = '#ff6a00';
-                uploadBox.style.background = 'rgba(255, 106, 0, 0.05)';
-            });
+            if (uploadBox) {
+                uploadBox.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadBox.style.borderColor = '#ff6a00';
+                    uploadBox.style.background = 'rgba(255, 106, 0, 0.05)';
+                });
 
-            uploadBox.addEventListener('dragleave', () => {
-                uploadBox.style.borderColor = '#e0e0e0';
-                uploadBox.style.background = '#fafafa';
-            });
+                uploadBox.addEventListener('dragleave', () => {
+                    uploadBox.style.borderColor = '#e0e0e0';
+                    uploadBox.style.background = '#fafafa';
+                });
 
-            uploadBox.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadBox.style.borderColor = '#e0e0e0';
-                uploadBox.style.background = '#fafafa';
-                
-                const files = Array.from(e.dataTransfer.files);
-                handleImageFiles(files);
-            });
+                uploadBox.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadBox.style.borderColor = '#e0e0e0';
+                    uploadBox.style.background = '#fafafa';
+                    
+                    const files = Array.from(e.dataTransfer.files);
+                    handleImageFiles(files);
+                });
+            }
 
             // Input validation
             const inputs = [
@@ -1097,34 +1125,46 @@
             
             inputs.forEach(id => {
                 const element = document.getElementById(id);
-                element.addEventListener('input', () => {
-                    validateField(element);
-                    updateSuggestionCode();
-                    updateSubmitButton();
-                });
-                element.addEventListener('blur', () => validateField(element));
+                if (element) {
+                    element.addEventListener('input', () => {
+                        validateField(element);
+                        updateSuggestionCode();
+                        updateSubmitButton();
+                    });
+                    element.addEventListener('blur', () => validateField(element));
+                }
             });
 
             // Price validation
             const priceInput = document.getElementById('productPrice');
-            priceInput.addEventListener('input', () => {
-                validatePrice();
-                updateSuggestionCode();
-                updateSubmitButton();
-            });
+            if (priceInput) {
+                priceInput.addEventListener('input', () => {
+                    validatePrice();
+                    updateSuggestionCode();
+                    updateSubmitButton();
+                });
+            }
 
             // Original price validation
             const originalPrice = document.getElementById('originalPrice');
-            originalPrice.addEventListener('input', () => {
-                validateOriginalPrice();
-                updateSubmitButton();
-            });
+            if (originalPrice) {
+                originalPrice.addEventListener('input', () => {
+                    validateOriginalPrice();
+                    updateSubmitButton();
+                });
+            }
 
             // Reset button
-            document.getElementById('resetBtn').addEventListener('click', resetForm);
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', resetForm);
+            }
 
             // Submit button
-            document.getElementById('submitBtn').addEventListener('click', submitProduct);
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', submitProduct);
+            }
         }
 
         async function handleImageUpload(e) {
@@ -1157,13 +1197,13 @@
 
             // Upload each file
             for (const file of validFiles) {
-                await uploadImageToImgBB(file, notificationId);
+                await uploadImageToImgBB(file);
             }
             
             notificationSystem.remove(notificationId);
         }
 
-        async function uploadImageToImgBB(file, parentNotificationId) {
+        async function uploadImageToImgBB(file) {
             const uploadId = notificationSystem.show('loading', `Uploading ${file.name}...`, 0);
             
             const formData = new FormData();
@@ -1201,6 +1241,8 @@
 
         function updateImagePreview() {
             const container = document.getElementById('imagePreview');
+            if (!container) return;
+            
             container.innerHTML = '';
             
             uploadedImages.forEach((image, index) => {
@@ -1229,8 +1271,12 @@
 
         // ==================== VALIDATION FUNCTIONS ====================
         function validateField(element) {
+            if (!element) return false;
+            
             const value = element.value.trim();
             const parent = element.parentElement;
+            
+            if (!parent) return false;
             
             if (!value) {
                 parent.classList.add('has-error');
@@ -1243,8 +1289,12 @@
 
         function validatePrice() {
             const priceInput = document.getElementById('productPrice');
+            if (!priceInput) return false;
+            
             const price = parseInt(priceInput.value) || 0;
-            const parent = priceInput.parentElement.parentElement;
+            const parent = priceInput.parentElement?.parentElement;
+            
+            if (!parent) return false;
             
             if (price < 500 || price > 1000000) {
                 parent.classList.add('has-error');
@@ -1256,8 +1306,8 @@
         }
 
         function validateOriginalPrice() {
-            const originalPrice = parseInt(document.getElementById('originalPrice').value) || 0;
-            const price = parseInt(document.getElementById('productPrice').value) || 0;
+            const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || 0;
+            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
             
             if (originalPrice && originalPrice <= price) {
                 notificationSystem.show('error', 'Original price must be higher than sale price', 3000);
@@ -1268,7 +1318,10 @@
 
         function validateSelection(selectionKey) {
             const grid = document.getElementById(`${selectionKey}Grid`);
+            if (!grid) return false;
+            
             const parent = grid.parentElement;
+            if (!parent) return false;
             
             if (selections[selectionKey].length === 0) {
                 parent.classList.add('has-error');
@@ -1281,44 +1334,63 @@
 
         function validateImages() {
             const imageError = document.getElementById('imageError');
-            const imageSection = document.getElementById('uploadBox').parentElement;
+            const imageSection = document.getElementById('uploadBox')?.parentElement;
+            
+            if (!imageSection) return false;
             
             if (uploadedImages.length === 0) {
                 imageSection.classList.add('has-error');
-                imageError.style.display = 'block';
+                if (imageError) imageError.style.display = 'block';
                 return false;
             } else {
                 imageSection.classList.remove('has-error');
-                imageError.style.display = 'none';
+                if (imageError) imageError.style.display = 'none';
                 return true;
             }
         }
 
         function validateAllSelections() {
-            return [
-                validateSelection('colors'),
-                validateSelection('departments'),
-                validateSelection('sizes'),
-                validateSelection('ageGroups'),
-                validateSelection('statuses')
-            ].every(v => v === true);
+            const selectionKeys = ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'];
+            let allValid = true;
+            
+            selectionKeys.forEach(key => {
+                if (!validateSelection(key)) {
+                    allValid = false;
+                }
+            });
+            
+            return allValid;
         }
 
         function validateForm() {
-            const fieldsValid = [
-                validateField(document.getElementById('productName')),
-                validateField(document.getElementById('productCategory')),
-                validateField(document.getElementById('productDescription')),
-                validatePrice(),
-                validateAllSelections(),
-                validateImages()
-            ];
+            // First validate basic fields
+            const nameField = document.getElementById('productName');
+            const categoryField = document.getElementById('productCategory');
+            const descriptionField = document.getElementById('productDescription');
             
-            return fieldsValid.every(v => v === true);
+            const basicFieldsValid = 
+                validateField(nameField) && 
+                validateField(categoryField) && 
+                validateField(descriptionField);
+            
+            if (!basicFieldsValid) return false;
+            
+            // Validate price
+            if (!validatePrice()) return false;
+            
+            // Validate selections
+            if (!validateAllSelections()) return false;
+            
+            // Validate images
+            if (!validateImages()) return false;
+            
+            return true;
         }
 
         function updateSubmitButton() {
             const submitBtn = document.getElementById('submitBtn');
+            if (!submitBtn) return;
+            
             const isValid = validateForm();
             submitBtn.disabled = !isValid;
         }
@@ -1335,8 +1407,8 @@
             try {
                 await loadingSystem.withLoading(async () => {
                     // Get form values
-                    const price = parseInt(document.getElementById('productPrice').value);
-                    const originalPrice = parseInt(document.getElementById('originalPrice').value) || price;
+                    const price = parseInt(document.getElementById('productPrice')?.value) || 0;
+                    const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || price;
                     const discount = originalPrice > price ? 
                         Math.round((1 - price / originalPrice) * 100) : 0;
 
@@ -1348,9 +1420,9 @@
 
                     // Prepare product data
                     const productData = {
-                        name: document.getElementById('productName').value.trim(),
-                        description: document.getElementById('productDescription').value.trim(),
-                        category: document.getElementById('productCategory').value,
+                        name: document.getElementById('productName')?.value.trim() || '',
+                        description: document.getElementById('productDescription')?.value.trim() || '',
+                        category: document.getElementById('productCategory')?.value || '',
                         department: selections.departments,
                         color: selections.colors,
                         size: selections.sizes,
@@ -1397,11 +1469,17 @@
         // ==================== FORM RESET ====================
         function resetForm() {
             // Reset text inputs
-            document.getElementById('productName').value = '';
-            document.getElementById('productCategory').value = '';
-            document.getElementById('productDescription').value = '';
-            document.getElementById('productPrice').value = '';
-            document.getElementById('originalPrice').value = '';
+            const nameInput = document.getElementById('productName');
+            const categoryInput = document.getElementById('productCategory');
+            const descriptionInput = document.getElementById('productDescription');
+            const priceInput = document.getElementById('productPrice');
+            const originalPriceInput = document.getElementById('originalPrice');
+            
+            if (nameInput) nameInput.value = '';
+            if (categoryInput) categoryInput.value = '';
+            if (descriptionInput) descriptionInput.value = '';
+            if (priceInput) priceInput.value = '';
+            if (originalPriceInput) originalPriceInput.value = '';
             
             // Reset all checkbox selections
             Object.keys(selections).forEach(key => {
