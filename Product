@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remove Background - INGABO</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 375px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .container {
+            padding: 0 12px;
+        }
+        
+        /* ========== HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .back-button i {
+            font-size: 18px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .logo-img {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .logo-text h1 {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        /* ========== NOTIFICATION SYSTEM ========== */
+        .notification-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+            pointer-events: auto;
+            border-left: 4px solid;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        .notification.loading {
+            border-left-color: #17a2b8;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .notification.success .notification-icon {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-icon {
+            color: #dc3545;
+        }
+        
+        .notification.loading .notification-icon {
+            color: #17a2b8;
+        }
+        
+        .notification-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ========== FORM CONTAINER ========== */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            margin: 15px 0 70px;
+            padding: 20px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff6a00;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* ========== UPLOAD AREA ========== */
+        .upload-section {
+            margin-bottom: 25px;
+        }
+        
+        .image-upload-box {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            background: #fafafa;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .image-upload-box.drag-over {
+            border-color: #ff6a00;
+            background: rgba(255, 106, 0, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #ff6a00;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .upload-button {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .upload-button:hover {
+            background: #e55a00;
+        }
+        
+        .upload-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* ========== PREVIEW AREA ========== */
+        .preview-section {
+            display: none;
+        }
+        
+        .preview-section.active {
+            display: block;
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .preview-title i {
+            color: #ff6a00;
+        }
+        
+        .preview-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-box {
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #f8f8f8;
+            position: relative;
+            border: 1px solid #eee;
+        }
+        
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .preview-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 11px;
+            padding: 4px;
+            text-align: center;
+        }
+        
+        /* ========== ACTION BUTTONS ========== */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-button {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .process-btn {
+            background: linear-gradient(to right, #ff6a00, #ff8c42);
+            color: white;
+        }
+        
+        .process-btn:hover:not(:disabled) {
+            background: linear-gradient(to right, #e55a00, #e57c32);
+        }
+        
+        .process-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, #28a745, #35c65a);
+            color: white;
+        }
+        
+        .download-btn:hover {
+            background: linear-gradient(to right, #218838, #2db84d);
+        }
+        
+        .reset-btn {
+            background: #f8f8f8;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .reset-btn:hover {
+            background: #eee;
+        }
+        
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6a00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            width: 80%;
+            max-width: 200px;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #ff6a00;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ========== INFO BOX ========== */
+        .info-box {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .info-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .info-list {
+            list-style: none;
+            margin-top: 8px;
+        }
+        
+        .info-list li {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .info-list li i {
+            font-size: 10px;
+            color: #ff6a00;
+        }
+        
+        /* ========== UTILITY ========== */
+        .hidden {
+            display: none;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 350px) {
+            .preview-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Processing...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <a href="index.html" class="back-button">
+                    <i class='bx bx-arrow-back'></i>
+                    <span>Back</span>
+                </a>
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                    </div>
+                </div>
+                <div style="width: 60px;"></div>
+            </div>
+        </header>
+        
+        <!-- Main Container -->
+        <div class="form-container">
+            <h2 class="form-title">Remove Background</h2>
+            
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadSection">
+                <div class="image-upload-box" id="uploadBox">
+                    <div class="upload-icon">
+                        <i class='bx bx-cloud-upload'></i>
+                    </div>
+                    <div class="upload-text">
+                        Tap to upload an image
+                    </div>
+                    <div class="upload-subtext">
+                        JPG, PNG up to 5MB
+                    </div>
+                    <button type="button" class="upload-button" id="uploadBtn">
+                        <i class='bx bx-image-add'></i> Choose Image
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-title">
+                        <i class='bx bx-info-circle'></i>
+                        How it works
+                    </div>
+                    <div class="info-text">
+                        Upload any image to automatically remove the background using AI. Perfect for product photos!
+                    </div>
+                    <ul class="info-list">
+                        <li><i class='bx bx-check'></i> No sign-up required</li>
+                        <li><i class='bx bx-check'></i> Process images up to 50 megapixels[citation:1]</li>
+                        <li><i class='bx bx-check'></i> Download as PNG with transparent background</li>
+                    </ul>
+                </div>
+                
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="preview-section" id="previewSection">
+                <div class="preview-title">
+                    <i class='bx bx-slider-alt'></i>
+                    Result Preview
+                </div>
+                
+                <div class="preview-comparison">
+                    <div class="preview-box">
+                        <img id="originalPreview" src="" alt="Original">
+                        <div class="preview-label">Original</div>
+                    </div>
+                    <div class="preview-box">
+                        <img id="processedPreview" src="" alt="Processed">
+                        <div class="preview-label">Background Removed</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="action-button process-btn" id="processBtn">
+                        <i class='bx bx-magic'></i> Process Again
+                    </button>
+                    <button type="button" class="action-button download-btn" id="downloadBtn">
+                        <i class='bx bx-download'></i> Download
+                    </button>
+                </div>
+                
+                <button type="button" class="action-button reset-btn" id="resetBtn" style="width: 100%; margin-top: 10px;">
+                    <i class='bx bx-reset'></i> Upload New Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== API CONFIGURATION ====================
+        const REMOVEBG_API_KEY = 'rFhiKBRH3jdHqVz8h9njaNZv';
+        const REMOVEBG_API_URL = 'https://api.remove.bg/v1.0/removebg';
+        
+        // ==================== NOTIFICATION SYSTEM ====================
+        class NotificationSystem {
+            constructor() {
+                this.container = document.getElementById('notificationContainer');
+                this.notifications = [];
+            }
+            
+            show(type, message, duration = 3000) {
+                const id = Date.now().toString();
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.id = `notification-${id}`;
+                
+                let icon = '';
+                switch(type) {
+                    case 'success':
+                        icon = '<i class="bx bx-check-circle notification-icon"></i>';
+                        break;
+                    case 'error':
+                        icon = '<i class="bx bx-error-circle notification-icon"></i>';
+                        break;
+                    case 'loading':
+                        icon = '<div class="loading-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+                        break;
+                }
+                
+                notification.innerHTML = `
+                    ${icon}
+                    <div class="notification-text">${message}</div>
+                    <button class="notification-close" onclick="notificationSystem.remove('${id}')">
+                        <i class='bx bx-x'></i>
+                    </button>
+                `;
+                
+                this.container.appendChild(notification);
+                this.notifications.push(id);
+                
+                if (type !== 'loading' && duration > 0) {
+                    setTimeout(() => this.remove(id), duration);
+                }
+                
+                return id;
+            }
+            
+            remove(id) {
+                const notification = document.getElementById(`notification-${id}`);
+                if (notification) {
+                    notification.style.animation = 'slideDown 0.3s ease reverse';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                        const index = this.notifications.indexOf(id);
+                        if (index > -1) this.notifications.splice(index, 1);
+                    }, 300);
+                }
+            }
+        }
+        
+        const notificationSystem = new NotificationSystem();
+        
+        // ==================== LOADING SYSTEM ====================
+        class LoadingSystem {
+            constructor() {
+                this.overlay = document.getElementById('loadingOverlay');
+                this.text = document.getElementById('loadingText');
+                this.progressFill = document.getElementById('progressFill');
+            }
+            
+            show(message = 'Processing...', progress = 0) {
+                this.text.textContent = message;
+                this.progressFill.style.width = `${progress}%`;
+                this.overlay.classList.add('active');
+            }
+            
+            updateProgress(progress, message = null) {
+                this.progressFill.style.width = `${progress}%`;
+                if (message) {
+                    this.text.textContent = message;
+                }
+            }
+            
+            hide() {
+                this.overlay.classList.remove('active');
+                setTimeout(() => {
+                    this.progressFill.style.width = '0%';
+                }, 300);
+            }
+        }
+        
+        const loadingSystem = new LoadingSystem();
+        
+        // ==================== STATE MANAGEMENT ====================
+        let currentFile = null;
+        let processedBlob = null;
+        let originalImageUrl = null;
+        
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+        
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            // Upload button
+            document.getElementById('uploadBtn').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            
+            // File input change
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            
+            // Process button
+            document.getElementById('processBtn').addEventListener('click', processImage);
+            
+            // Download button
+            document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+            
+            // Reset button
+            document.getElementById('resetBtn').addEventListener('click', resetApp);
+            
+            // Drag and drop
+            const uploadBox = document.getElementById('uploadBox');
+            
+            uploadBox.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadBox.classList.add('drag-over');
+            });
+            
+            uploadBox.addEventListener('dragleave', () => {
+                uploadBox.classList.remove('drag-over');
+            });
+            
+            uploadBox.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadBox.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect({ target: { files } });
+                }
+            });
+        }
+        
+        // ==================== FILE HANDLING ====================
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            
+            if (!file) return;
+            
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                notificationSystem.show('error', 'Please select an image file (JPG or PNG)');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                notificationSystem.show('error', 'File size must be less than 5MB');
+                return;
+            }
+            
+            currentFile = file;
+            
+            // Create preview URL
+            if (originalImageUrl) {
+                URL.revokeObjectURL(originalImageUrl);
+            }
+            originalImageUrl = URL.createObjectURL(file);
+            
+            // Show preview
+            document.getElementById('originalPreview').src = originalImageUrl;
+            document.getElementById('processedPreview').src = '';
+            
+            // Switch to preview section
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('previewSection').classList.add('active');
+            
+            // Enable process button
+            document.getElementById('processBtn').disabled = false;
+            
+            // Auto-process after upload
+            setTimeout(() => processImage(), 500);
+        }
+        
+        // ==================== IMAGE PROCESSING ====================
+        async function processImage() {
+            if (!currentFile) return;
+            
+            const notificationId = notificationSystem.show('loading', 'Removing background...', 0);
+            loadingSystem.show('Uploading image...', 10);
+            
+            try {
+                // Prepare form data for remove.bg API[citation:1]
+                const formData = new FormData();
+                formData.append('image_file', currentFile);
+                formData.append('size', 'auto'); // Let API determine optimal size[citation:1]
+                
+                loadingSystem.updateProgress(30, 'Processing with AI...');
+                
+                // Make API request to remove.bg[citation:1]
+                const response = await fetch(REMOVEBG_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': REMOVEBG_API_KEY
+                    },
+                    body: formData
+                });
+                
+                loadingSystem.updateProgress(70, 'Finalizing result...');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                }
+                
+                // Get processed image blob
+                processedBlob = await response.blob();
+                
+                // Create object URL for preview
+                const processedUrl = URL.createObjectURL(processedBlob);
+                document.getElementById('processedPreview').src = processedUrl;
+                
+                // Update UI
+                loadingSystem.updateProgress(100, 'Complete!');
+                
+                notificationSystem.remove(notificationId);
+                notificationSystem.show('success', 'Background removed successfully!', 3000);
+                
+                // Enable download button
+                document.getElementById('downloadBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('Processing error:', error);
+                
+                notificationSystem.remove(notificationId);
+                
+                // Handle specific API errors
+                if (error.message.includes('429')) {
+                    notificationSystem.show('error', 'API rate limit exceeded. Please try again later.', 5000);
+                } else if (error.message.includes('400')) {
+                    notificationSystem.show('error', 'Invalid image format. Please try another image.', 4000);
+                } else if (error.message.includes('402')) {
+                    notificationSystem.show('error', 'API quota exceeded. Please check your API key.', 5000);
+                } else {
+                    notificationSystem.show('error', `Failed to remove background: ${error.message}`, 4000);
+                }
+                
+                // Show fallback option
+                showFallbackOption();
+                
+            } finally {
+                setTimeout(() => loadingSystem.hide(), 1000);
+            }
+        }
+        
+        // ==================== DOWNLOAD FUNCTION ====================
+        function downloadImage() {
+            if (!processedBlob) return;
+            
+            // Create download link
+            const url = URL.createObjectURL(processedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `background-removed-${Date.now()}.png`;
+            
+            // Trigger download
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Clean up
+            URL.revokeObjectURL(url);
+            
+            notificationSystem.show('success', 'Image downloaded successfully!', 3000);
+        }
+        
+        // ==================== RESET FUNCTION ====================
+        function resetApp() {
+            // Clean up URLs
+            if (originalImageUrl) {
+                URL.revokeObjectURL(originalImageUrl);
+                originalImageUrl = null;
+            }
+            
+            // Reset state
+            currentFile = null;
+            processedBlob = null;
+            
+            // Reset file input
+            document.getElementById('fileInput').value = '';
+            
+            // Reset previews
+            document.getElementById('originalPreview').src = '';
+            document.getElementById('processedPreview').src = '';
+            
+            // Switch back to upload section
+            document.getElementById('previewSection').classList.remove('active');
+            document.getElementById('uploadSection').style.display = 'block';
+            
+            // Reset buttons
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            
+            notificationSystem.show('success', 'Ready for new image upload', 2000);
+        }
+        
+        // ==================== FALLBACK OPTION ====================
+        function showFallbackOption() {
+            notificationSystem.show('error', 'Using browser-based fallback...', 3000);
+            
+            // This is where you could implement a browser-based fallback
+            // using a library like @imgly/background-removal[citation:6]
+            // For now, we'll just show a message
+            setTimeout(() => {
+                notificationSystem.show('info', 'For production use, consider implementing a browser-based fallback solution[citation:6]', 5000);
+            }, 2000);
+        }
+        
+        // ==================== ERROR HANDLING ====================
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            notificationSystem.show('error', 'An unexpected error occurred. Please try again.', 4000);
+        });
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (originalImageUrl) {
+                URL.revokeObjectURL(originalImageUrl);
+            }
+        });
+    </script>
+</body>
+</html>
