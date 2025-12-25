@@ -1,1 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - INGABO</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK - COMPAT VERSION -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .chat-header {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-img {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        /* Product Info Bar */
+        .product-info-bar {
+            background: white;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .product-info-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-details {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .product-category {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .product-price {
+            color: #ff6a00;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow: hidden;
+        }
+        
+        /* Messages Area */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.sent {
+            background: #ff6a00;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.received {
+            background: #f0f0f0;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message.system {
+            background: #e3f2fd;
+            color: #1976d2;
+            align-self: center;
+            max-width: 90%;
+            text-align: center;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+        
+        .message-content {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .message.received .message-time {
+            text-align: left;
+        }
+        
+        /* Input Area */
+        .input-area {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        .message-input:focus {
+            border-color: #ff6a00;
+        }
+        
+        .send-button {
+            width: 45px;
+            height: 45px;
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s;
+        }
+        
+        .send-button:hover {
+            background: #ff8c42;
+        }
+        
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Order Actions */
+        .order-actions {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .order-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .order-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .order-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .order-btn.cancel {
+            background: #f8f8f8;
+            color: #666;
+        }
+        
+        .order-btn.cancel:hover {
+            background: #eee;
+        }
+        
+        .order-btn.confirm {
+            background: #28a745;
+            color: white;
+        }
+        
+        .order-btn.confirm:hover {
+            background: #218838;
+        }
+        
+        /* Share Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .share-modal {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .copy-box {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .copy-text {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .share-option:hover {
+            border-color: #ff6a00;
+        }
+        
+        .share-icon {
+            font-size: 24px;
+        }
+        
+        .share-icon.whatsapp {
+            color: #25D366;
+        }
+        
+        .share-icon.instagram {
+            color: #E4405F;
+        }
+        
+        .share-icon.facebook {
+            color: #1877F2;
+        }
+        
+        .share-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .invoice-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .invoice-link a {
+            color: #ff6a00;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .close-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6a00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .message {
+                max-width: 85%;
+            }
+            
+            .product-info-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .share-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="share-modal">
+            <div class="modal-title">Order Ready!</div>
+            <div class="order-details" id="orderDetails">
+                <!-- Order details will be loaded here -->
+            </div>
+            <div class="copy-box">
+                <div class="copy-text" id="copyText"></div>
+                <button class="copy-btn" id="copyBtn">Copy</button>
+            </div>
+            <div class="share-options">
+                <div class="share-option" data-share="whatsapp">
+                    <i class='bx bxl-whatsapp share-icon whatsapp'></i>
+                    <span class="share-label">WhatsApp</span>
+                </div>
+                <div class="share-option" data-share="instagram">
+                    <i class='bx bxl-instagram share-icon instagram'></i>
+                    <span class="share-label">Instagram</span>
+                </div>
+                <div class="share-option" data-share="facebook">
+                    <i class='bx bxl-facebook share-icon facebook'></i>
+                    <span class="share-label">Facebook</span>
+                </div>
+            </div>
+            <div class="invoice-link">
+                <a href="#" id="invoiceLink" target="_blank">View Full Invoice</a>
+            </div>
+            <div class="modal-actions">
+                <button class="close-btn" id="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="chat-header">
+        <div class="header-content">
+            <div class="logo-area">
+                <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                <div class="logo-text">
+                    <h1>INGABO</h1>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <a href="index.html" class="back-button">
+                    <i class='bx bx-arrow-back'></i> Back
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Product Info -->
+    <div class="product-info-bar">
+        <div class="product-info-content" id="productInfo">
+            <!-- Product info will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <!-- Messages Area -->
+        <div class="messages-area" id="messagesArea">
+            <!-- Messages will be loaded here -->
+        </div>
+        
+        <!-- Order Actions (shown only to product managers) -->
+        <div class="order-actions" id="orderActions" style="display: none;">
+            <div class="order-title">User wants to purchase this product</div>
+            <div class="order-buttons">
+                <button class="order-btn cancel" id="cancelOrder">Cancel</button>
+                <button class="order-btn confirm" id="createOrder">Order Now</button>
+            </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="input-area">
+            <input type="text" class="message-input" id="messageInput" placeholder="Type your message...">
+            <button class="send-button" id="sendButton">
+                <i class='bx bx-send'></i>
+            </button>
+        </div>
+    </div>
 
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
+            authDomain: "ingabo-store.firebaseapp.com",
+            projectId: "ingabo-store",
+            storageBucket: "ingabo-store.firebasestorage.app",
+            messagingSenderId: "1059301382626",
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
+            measurementId: "G-QSXTGP9R1Q"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ==================== GLOBAL VARIABLES ====================
+        let currentUser = null;
+        let inquiryId = null;
+        let inquiryData = null;
+        let productData = null;
+        let messagesUnsubscribe = null;
+        let isProductManager = false;
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            inquiryId = urlParams.get('inquiry');
+            
+            if (!inquiryId) {
+                showError('No inquiry specified');
+                return;
+            }
+            
+            // Setup auth
+            setupAuth();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Setup share modal
+            setupShareModal();
+        });
+
+        // ==================== AUTHENTICATION ====================
+        function setupAuth() {
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                
+                if (user) {
+                    // Check if user is product manager
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        isProductManager = userData.role === 'manager';
+                        
+                        // Load inquiry data
+                        loadInquiryData();
+                    }
+                } else {
+                    // Redirect to login
+                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                }
+            });
+        }
+
+        // ==================== INQUIRY LOADING ====================
+        async function loadInquiryData() {
+            try {
+                // Load inquiry
+                const inquiryDoc = await db.collection('inquiries').doc(inquiryId).get();
+                
+                if (!inquiryDoc.exists) {
+                    showError('Inquiry not found');
+                    return;
+                }
+                
+                inquiryData = inquiryDoc.data();
+                inquiryData.id = inquiryId;
+                
+                // Load product data
+                const productDoc = await db.collection('products').doc(inquiryData.productId).get();
+                if (productDoc.exists) {
+                    productData = productDoc.data();
+                    productData.id = inquiryData.productId;
+                    
+                    // Update product info display
+                    updateProductInfo();
+                }
+                
+                // Load messages
+                loadMessages();
+                
+                // Setup real-time updates
+                setupRealtimeMessages();
+                
+                // Show order actions for product managers
+                if (isProductManager && inquiryData.status === 'pending') {
+                    document.getElementById('orderActions').style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Error loading inquiry:', error);
+                showError('Failed to load chat');
+            }
+        }
+
+        function updateProductInfo() {
+            const productInfo = document.getElementById('productInfo');
+            productInfo.innerHTML = '';
+            
+            if (productData) {
+                productInfo.innerHTML = `
+                    <div class="product-image">
+                        ${productData.images && productData.images[0] ? 
+                            `<img src="${productData.images[0]}" alt="${productData.name}">` : 
+                            `<div style="width: 100%; height: 100%; background: #f8f8f8; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image'></i>
+                            </div>`
+                        }
+                    </div>
+                    <div class="product-details">
+                        <div class="product-name">${productData.name}</div>
+                        <div class="product-category">${productData.category}</div>
+                    </div>
+                    <div class="product-price">${formatPrice(productData.price)} RWF</div>
+                `;
+            }
+        }
+
+        function loadMessages() {
+            const messagesArea = document.getElementById('messagesArea');
+            
+            if (inquiryData.messages && inquiryData.messages.length > 0) {
+                messagesArea.innerHTML = '';
+                
+                inquiryData.messages.forEach(message => {
+                    displayMessage(message);
+                });
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                }, 100);
+            } else {
+                messagesArea.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-message-dots'></i>
+                        <div>Start the conversation</div>
+                    </div>
+                `;
+            }
+        }
+
+        function setupRealtimeMessages() {
+            // Unsubscribe from previous listener
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+            }
+            
+            // Listen for real-time updates
+            messagesUnsubscribe = db.collection('inquiries').doc(inquiryId)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const updatedData = doc.data();
+                        inquiryData = updatedData;
+                        
+                        // Clear messages and reload
+                        const messagesArea = document.getElementById('messagesArea');
+                        messagesArea.innerHTML = '';
+                        
+                        if (updatedData.messages && updatedData.messages.length > 0) {
+                            updatedData.messages.forEach(message => {
+                                displayMessage(message);
+                            });
+                            
+                            // Scroll to bottom
+                            setTimeout(() => {
+                                messagesArea.scrollTop = messagesArea.scrollHeight;
+                            }, 100);
+                        }
+                        
+                        // Update order actions visibility
+                        if (isProductManager) {
+                            if (inquiryData.status === 'pending') {
+                                document.getElementById('orderActions').style.display = 'block';
+                            } else {
+                                document.getElementById('orderActions').style.display = 'none';
+                            }
+                        }
+                    }
+                });
+        }
+
+        // ==================== MESSAGES ====================
+        function displayMessage(message) {
+            const messagesArea = document.getElementById('messagesArea');
+            
+            const messageDiv = document.createElement('div');
+            
+            // Determine message class
+            let messageClass = 'message';
+            if (message.senderId === 'system') {
+                messageClass += ' system';
+            } else if (message.senderId === currentUser.uid) {
+                messageClass += ' sent';
+            } else {
+                messageClass += ' received';
+            }
+            
+            // Format time
+            const time = message.timestamp ? formatTime(message.timestamp.toDate()) : 'Just now';
+            
+            messageDiv.className = messageClass;
+            messageDiv.innerHTML = `
+                <div class="message-content">${message.content}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+        }
+
+        async function sendMessage(content) {
+            if (!content.trim()) return;
+            
+            try {
+                const message = {
+                    senderId: currentUser.uid,
+                    senderName: currentUser.displayName || currentUser.email,
+                    content: content.trim(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    type: 'user'
+                };
+                
+                // Add message to inquiry
+                await db.collection('inquiries').doc(inquiryId).update({
+                    messages: firebase.firestore.FieldValue.arrayUnion(message),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Clear input
+                document.getElementById('messageInput').value = '';
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Failed to send message. Please try again.');
+            }
+        }
+
+        // ==================== ORDER MANAGEMENT ====================
+        function setupEventListeners() {
+            // Send message on button click
+            document.getElementById('sendButton').addEventListener('click', function() {
+                const input = document.getElementById('messageInput');
+                sendMessage(input.value);
+            });
+            
+            // Send message on Enter key
+            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage(this.value);
+                }
+            });
+            
+            // Order actions (for product managers)
+            document.getElementById('cancelOrder').addEventListener('click', async function() {
+                if (confirm('Are you sure you want to cancel this inquiry?')) {
+                    try {
+                        await db.collection('inquiries').doc(inquiryId).update({
+                            status: 'cancelled',
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // Hide order actions
+                        document.getElementById('orderActions').style.display = 'none';
+                        
+                    } catch (error) {
+                        console.error('Error cancelling inquiry:', error);
+                        alert('Failed to cancel inquiry');
+                    }
+                }
+            });
+            
+            document.getElementById('createOrder').addEventListener('click', createOrder);
+        }
+
+        async function createOrder() {
+            // Get user details (in a real app, you'd have this in user profile)
+            const userPhone = prompt('Please enter the user\'s phone number:', inquiryData.userPhone || '');
+            const userDistrict = prompt('Please enter the user\'s district:', '');
+            const userSector = prompt('Please enter the user\'s sector:', '');
+            const userCell = prompt('Please enter the user\'s cell:', '');
+            
+            if (!userPhone || !userDistrict || !userSector || !userCell) {
+                alert('All fields are required to create an order');
+                return;
+            }
+            
+            try {
+                // Create invoice
+                const invoiceData = {
+                    inquiryId: inquiryId,
+                    productId: productData.id,
+                    productName: productData.name,
+                    productImages: productData.images || [],
+                    productCategory: productData.category,
+                    userId: inquiryData.userId,
+                    userName: inquiryData.userName,
+                    userEmail: inquiryData.userEmail,
+                    userPhone: userPhone,
+                    userLocation: {
+                        district: userDistrict,
+                        sector: userSector,
+                        cell: userCell
+                    },
+                    managerId: currentUser.uid,
+                    managerName: currentUser.displayName || currentUser.email,
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    orderCode: generateOrderCode()
+                };
+                
+                // Save invoice to Firestore
+                const invoiceRef = await db.collection('invoices').add(invoiceData);
+                
+                // Generate invoice link
+                const invoiceLink = `${window.location.origin}/invoice.html?id=${invoiceRef.id}`;
+                
+                // Update inquiry status
+                await db.collection('inquiries').doc(inquiryId).update({
+                    status: 'ordered',
+                    invoiceId: invoiceRef.id,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Add system message
+                const systemMessage = {
+                    senderId: 'system',
+                    senderName: 'System',
+                    content: `Order created! Invoice: ${invoiceLink}`,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    type: 'system'
+                };
+                
+                await db.collection('inquiries').doc(inquiryId).update({
+                    messages: firebase.firestore.FieldValue.arrayUnion(systemMessage)
+                });
+                
+                // Hide order actions
+                document.getElementById('orderActions').style.display = 'none';
+                
+                // Show share modal
+                showShareModal(invoiceData, invoiceLink);
+                
+            } catch (error) {
+                console.error('Error creating order:', error);
+                alert('Failed to create order. Please try again.');
+            }
+        }
+
+        function showShareModal(invoiceData, invoiceLink) {
+            // Update order details
+            document.getElementById('orderDetails').innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Order Code:</span>
+                    <span class="detail-value">${invoiceData.orderCode}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Customer:</span>
+                    <span class="detail-value">${invoiceData.userName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">${invoiceData.userPhone}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">${invoiceData.userLocation.district}, ${invoiceData.userLocation.sector}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Product:</span>
+                    <span class="detail-value">${invoiceData.productName}</span>
+                </div>
+            `;
+            
+            // Create shareable text
+            const shareText = `Order Details:
+Order Code: ${invoiceData.orderCode}
+Customer: ${invoiceData.userName}
+Phone: ${invoiceData.userPhone}
+Location: ${invoiceData.userLocation.district}, ${invoiceData.userLocation.sector}, ${invoiceData.userLocation.cell}
+Product: ${invoiceData.productName}
+Category: ${invoiceData.productCategory}
+Images: ${invoiceData.productImages.join(', ')}
+Invoice: ${invoiceLink}`;
+            
+            document.getElementById('copyText').textContent = shareText;
+            document.getElementById('invoiceLink').href = invoiceLink;
+            
+            // Show modal
+            document.getElementById('shareModal').classList.add('active');
+        }
+
+        function setupShareModal() {
+            // Copy button
+            document.getElementById('copyBtn').addEventListener('click', function() {
+                const copyText = document.getElementById('copyText').textContent;
+                navigator.clipboard.writeText(copyText).then(() => {
+                    this.textContent = 'Copied!';
+                    this.style.background = '#28a745';
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                        this.style.background = '';
+                    }, 2000);
+                });
+            });
+            
+            // Share options
+            document.querySelectorAll('.share-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const platform = this.getAttribute('data-share');
+                    const shareText = document.getElementById('copyText').textContent;
+                    const invoiceLink = document.getElementById('invoiceLink').href;
+                    
+                    let shareUrl = '';
+                    switch(platform) {
+                        case 'whatsapp':
+                            shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+                            break;
+                        case 'instagram':
+                            // Instagram doesn't have direct sharing API for web
+                            shareUrl = 'https://www.instagram.com/';
+                            break;
+                        case 'facebook':
+                            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(invoiceLink)}`;
+                            break;
+                    }
+                    
+                    if (shareUrl) {
+                        window.open(shareUrl, '_blank');
+                    }
+                });
+            });
+            
+            // Close modal
+            document.getElementById('closeModal').addEventListener('click', function() {
+                document.getElementById('shareModal').classList.remove('active');
+            });
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function generateOrderCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'ING-';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function showError(message) {
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; text-align: center;">
+                    <i class='bx bx-error-circle' style="font-size: 60px; color: #dc3545; margin-bottom: 20px;"></i>
+                    <h2 style="color: #333; margin-bottom: 10px;">${message}</h2>
+                    <p style="color: #666; margin-bottom: 30px;">Please try again or go back to the home page.</p>
+                    <a href="index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #ff6a00; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                        <i class='bx bx-home'></i> Back to Home
+                    </a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
