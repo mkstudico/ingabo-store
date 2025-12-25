@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INGABO Mobile Store</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 0 15px;
+        }
+        
+        /* Desktop Redirect Overlay - Hidden now (auto redirect) */
+        .desktop-redirect-overlay {
+            display: none !important;
+        }
+        
+        /* Paused Mode Overlay */
+        .paused-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .paused-overlay.active {
+            display: flex;
+        }
+        
+        /* Mobile Header */
+        .mobile-header {
+            background-color: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-text h1 {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        .logo-text span {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            background-color: #f8f8f8;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            margin: 15px 0;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 180px;
+            width: 100%;
+            background: linear-gradient(45deg, #4a90e2, #63b3ed);
+        }
+        
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: white;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .hero-subtitle {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .shop-now-btn {
+            background-color: white;
+            color: #4a90e2;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        /* Flash Sale (Now using INGABO TOP PICKS functions) */
+        .flash-sale {
+            background-color: #fff5f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .orange-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ff6a00;
+            border-radius: 50%;
+        }
+        
+        .sale-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .sale-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .timer {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .time-box {
+            background-color: #333;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .time-separator {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .top-picks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .top-pick-card {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 12px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .view-all-link {
+            color: #888;
+            font-size: 12px;
+            text-decoration: none;
+        }
+        
+        .product-images {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+        
+        .product-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 10px;
+            flex: 1;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Today's Deal (Simple product grid) */
+        .todays-deal {
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .deal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .deal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .deal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .deal-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .deal-image {
+            width: 100%;
+            height: 120px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .deal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .deal-card:hover .deal-image img {
+            transform: scale(1.05);
+        }
+        
+        .deal-title-text {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            height: 34px;
+            overflow: hidden;
+        }
+        
+        .deal-price {
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .original-price {
+            color: #888;
+            font-size: 11px;
+            text-decoration: line-through;
+        }
+        
+        /* INGABO Picks (Now using Personalized Recommendations functions) */
+        .ingabo-picks {
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .personalized-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .personalized-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .relevance-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+        }
+        
+        .personalized-image {
+            width: 100%;
+            height: 100px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .personalized-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .personalized-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+        
+        .personalized-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff0000;
+            margin-bottom: 5px;
+        }
+        
+        /* Category View (Hidden by default) */
+        .category-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .category-view.active {
+            display: block;
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ff6a00;
+        }
+        
+        .filter-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-to-home {
+            background-color: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .filter-product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .filter-product-image {
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+        }
+        
+        .filter-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-product-card:hover .filter-product-image img {
+            transform: scale(1.05);
+        }
+        
+        .filter-product-info {
+            padding: 12px;
+        }
+        
+        .filter-product-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            line-height: 1.3;
+            height: 34px;
+            overflow: hidden;
+        }
+        
+        .filter-product-price {
+            color: #ff6a00;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        /* Cart Items Display */
+        .cart-items-dropdown {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            height: 100%;
+            background: white;
+            z-index: 10000;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-items-dropdown.active {
+            right: 0;
+        }
+        
+        .cart-header {
+            padding: 20px;
+            background: #ff6a00;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            font-size: 14px;
+            color: #ff6a00;
+            font-weight: bold;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+        }
+        
+        .cart-overlay.active {
+            display: block;
+        }
+        
+        /* Time Display */
+        .time-display {
+            background-color: #ff6a00;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+            width: 100%;
+        }
+        
+        .time-numbers {
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+        
+        /* Ad Banner */
+        .ad-banner {
+            background-color: #000;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            text-decoration: none;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #666;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #ff6a00;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #ff6a00;
+            font-weight: 500;
+        }
+        
+        /* Content Padding */
+        .content {
+            padding-bottom: 70px;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6a00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Search Results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .search-results.active {
+            display: block;
+        }
+        
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background: #f8f8f8;
+        }
+        
+        .search-result-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+        
+        .search-result-info {
+            flex: 1;
+        }
+        
+        .search-result-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .search-result-price {
+            font-size: 13px;
+            color: #ff6a00;
+            font-weight: 600;
+        }
+        
+        .search-result-category {
+            font-size: 11px;
+            color: #888;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        /* Hidden on mobile */
+        .desktop-only {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Desktop Redirect Overlay - Auto redirect implemented in script -->
+    <div class="desktop-redirect-overlay" id="desktopRedirect">
+        <div class="redirect-content">
+            <h2>Switch to Desktop Version</h2>
+            <p>You are viewing the mobile version of INGABO Store. For the best experience on larger screens, please switch to the desktop version.</p>
+            <button class="redirect-button" onclick="redirectToDesktop()">Go to Desktop Version</button>
+            <button class="redirect-button" onclick="closeRedirectOverlay()" style="background: #666;">Continue Mobile</button>
+        </div>
+    </div>
+    
+    <!-- Paused Mode Overlay -->
+    <div class="paused-overlay" id="pausedOverlay">
+        <div>WEBSITE IS TEMPORARILY PAUSED. PLEASE CHECK BACK SOON.</div>
+    </div>
+    
+    <!-- Cart Items Overlay -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    
+    <!-- Cart Items Dropdown -->
+    <div class="cart-items-dropdown" id="cartDropdown">
+        <div class="cart-header">
+            <div class="cart-title">Your Cart</div>
+            <button class="close-cart" id="closeCart">×</button>
+        </div>
+        <div class="cart-items-container" id="cartItemsContainer">
+            <!-- Cart items will be loaded here -->
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                        <span>ONLINE STORE</span>
+                    </div>
+                </div>
+            </div>
+            <div style="position:relative;">
+                <input type="text" class="search-bar" placeholder="Search products..." id="searchInput">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </header>
+        
+        <div class="content">
+            <!-- Normal View -->
+            <div id="normalView">
+                <!-- Hero Section -->
+                <section class="hero-section" id="heroSection">
+                    <div class="hero-content">
+                        <div class="hero-title" id="heroTitle">Women's shoes</div>
+                        <div class="hero-subtitle" id="heroSubtitle">Men's Shoes & Bag</div>
+                        <button class="shop-now-btn" id="shopNowBtn">
+                            Shop Now <i class='bx bx-chevron-right'></i>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Flash Sale (Now using INGABO TOP PICKS functions) -->
+                <section class="flash-sale" id="flashSaleSection">
+                    <div class="section-title">
+                        <div class="orange-dot"></div>
+                        <h2 style="font-size: 18px; color: #333;">INGABO TOP PICKS</h2>
+                    </div>
+                    <div class="top-picks-grid" id="topPicksGrid">
+                        <div class="loading" id="topPicksLoading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading top picks...</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Time Display -->
+                <div class="time-display">
+                    <div class="time-numbers" id="currentTime">12:00</div>
+                    <div>Today's Special</div>
+                </div>
+                
+                <!-- New Arrival -->
+                <div class="ad-banner" id="newArrivalBanner">
+                    New Arrival
+                </div>
+                
+                <!-- Today's Deal (Simple product grid) -->
+                <section class="todays-deal" id="todaysDealSection">
+                    <div class="deal-header">
+                        <div class="deal-title">Today's Deal</div>
+                    </div>
+                    <div class="deal-grid" id="dealGrid">
+                        <div class="loading" id="dealsLoading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading deals...</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- INGABO Picks (Now using Personalized Recommendations functions) -->
+                <section class="ingabo-picks" id="ingaboPicksSection">
+                    <div class="section-title">
+                        <div class="orange-dot"></div>
+                        <h2 style="font-size: 18px; color: #333;">Personalized For You</h2>
+                    </div>
+                    <div class="personalized-grid" id="personalizedGrid">
+                        <div class="loading" id="personalizedLoading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading recommendations...</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- More Products Button -->
+                <div style="text-align: center; margin: 20px 0;">
+                    <button id="loadMoreBtn" style="background-color: #ff6a00; color: white; border: none; border-radius: 25px; padding: 12px 30px; font-weight: bold; cursor: pointer; display: none;">
+                        Load More Products
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Category View (Hidden by default) -->
+            <div class="category-view" id="categoryView">
+                <div class="filter-header">
+                    <div class="filter-title">
+                        <i class='bx bx-grid-alt'></i>
+                        <span id="filterTitle">Category Products</span>
+                    </div>
+                    <button class="back-to-home" id="backToHome">
+                        <i class='bx bx-home'></i> Back
+                    </button>
+                </div>
+                
+                <div class="filter-grid" id="filterGrid">
+                    <!-- Filtered products will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" id="navHome">
+                <i class='bx bx-home nav-icon'></i>
+                <div class="nav-text">Home</div>
+            </a>
+            <a href="#" class="nav-item" id="navCategory">
+                <i class='bx bx-grid-alt nav-icon'></i>
+                <div class="nav-text">Category</div>
+            </a>
+            <a href="#" class="nav-item" id="navCart">
+                <i class='bx bx-cart nav-icon'></i>
+                <div class="nav-text">Cart</div>
+            </a>
+            <a href="#" class="nav-item" id="navAccount">
+                <i class='bx bx-user nav-icon'></i>
+                <div class="nav-text">Account</div>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
+            authDomain: "ingabo-store.firebaseapp.com",
+            projectId: "ingabo-store",
+            storageBucket: "ingabo-store.firebasestorage.app",
+            messagingSenderId: "1059301382626",
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
+            measurementId: "G-QSXTGP9R1Q"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const analytics = firebase.analytics();
+
+        // ==================== GLOBAL VARIABLES ====================
+        let currentUser = null;
+        let userPersonalCode = '';
+        let allProducts = [];
+        let sitePersonalization = null;
+        let flashSaleTimer = null;
+        let loadedProductsCount = 0;
+        let searchTimer = null;
+        let cartItems = JSON.parse(localStorage.getItem('ingabo_cart') || '[]');
+        const PRODUCTS_PER_LOAD = 8;
+
+        // ==================== AUTO REDIRECT TO DESKTOP ====================
+        function checkScreenSizeAndRedirect() {
+            // Auto redirect to desktop version if screen width > 768px
+            if (window.innerWidth > 768) {
+                window.location.href = 'index.html';
+                return true;
+            }
+            return false;
+        }
+
+        // ==================== PERSONALIZATION ALGORITHM ====================
+        const metricMappings = {
+            category: {
+                'Shoes': 'A',
+                'T-shirts': 'B',
+                'Pants': 'C',
+                'Watches': 'D',
+                'Necklace': 'E',
+                'Bracelets': 'F',
+                'Caps': 'G'
+            },
+            department: {
+                'Men': 'A',
+                'Women': 'B'
+            },
+            color: {
+                'White': 'A',
+                'Black': 'B',
+                'Blue': 'C',
+                'Green': 'D',
+                'Red': 'E',
+                'Yellow': 'F',
+                'Chocolate': 'G',
+                'Purple': 'H',
+                'Orange': 'I',
+                'Sky-blue': 'J',
+                'Reddish': 'K',
+                'Pink': 'L'
+            },
+            size: {
+                'Small': 'A',
+                'Medium': 'B',
+                'Large': 'C'
+            },
+            age: {
+                'All': 'A',
+                'Young': 'B',
+                'Teens': 'C',
+                'Adult': 'D',
+                'Old': 'E'
+            },
+            status: {
+                'New': 'A',
+                'Used': 'B'
+            },
+            wealth: {
+                'Poor': 'A',
+                'Moderate': 'B',
+                'Rich': 'C'
+            }
+        };
+
+        function generateSuggestionCode(product) {
+            let code = '';
+            
+            // Category
+            code += metricMappings.category[product.category] || 'X';
+            code += '-';
+            
+            // Department
+            code += metricMappings.department[product.department] || 'X';
+            code += '-';
+            
+            // Color (can have multiple)
+            const colors = Array.isArray(product.color) ? product.color : [product.color];
+            code += colors.map(c => metricMappings.color[c] || 'X').join('+');
+            code += '-';
+            
+            // Size
+            code += metricMappings.size[product.size] || 'X';
+            code += '-';
+            
+            // Age
+            code += metricMappings.age[product.age] || 'X';
+            code += '-';
+            
+            // Status
+            code += metricMappings.status[product.status] || 'X';
+            code += '-';
+            
+            // Wealth
+            code += metricMappings.wealth[product.wealth] || 'X';
+            
+            return code;
+        }
+
+        function generatePersonalCode(userData) {
+            if (!userData) return 'GUEST-CODE';
+            
+            let code = '';
+            
+            if (userData.gender) {
+                code += metricMappings.department[userData.gender === 'Male' ? 'Men' : 'Women'] || 'X';
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            if (userData.age) {
+                let ageCategory = 'Adult';
+                if (userData.age < 18) ageCategory = 'Teens';
+                else if (userData.age < 25) ageCategory = 'Young';
+                else if (userData.age > 60) ageCategory = 'Old';
+                code += metricMappings.age[ageCategory] || 'X';
+            } else {
+                code += 'X';
+            }
+            code += '-';
+            
+            const randomCategories = ['A', 'B', 'C', 'D'];
+            code += randomCategories.join('+');
+            
+            return code;
+        }
+
+        function calculateMatchScore(userCode, productCode) {
+            if (userCode === 'GUEST-CODE') return 0;
+            
+            const userParts = userCode.split('-');
+            const productParts = productCode.split('-');
+            
+            let score = 0;
+            
+            for (let i = 0; i < Math.min(userParts.length, productParts.length); i++) {
+                const userMetrics = userParts[i].split('+');
+                const productMetrics = productParts[i].split('+');
+                
+                for (const userMetric of userMetrics) {
+                    if (productMetrics.includes(userMetric)) {
+                        score += 1;
+                        break;
+                    }
+                }
+            }
+            
+            return score;
+        }
+
+        function sortProductsPersonalized(products, userCode) {
+            if (userCode === 'GUEST-CODE') {
+                return [...products].sort(() => Math.random() - 0.5);
+            }
+            
+            const scoredProducts = products.map(product => {
+                const matchScore = calculateMatchScore(userCode, product.suggestionCode);
+                return { ...product, matchScore };
+            });
+            
+            scoredProducts.sort((a, b) => b.matchScore - a.matchScore);
+            return scoredProducts;
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function formatPrice(price) {
+            if (!price) return '0';
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // ==================== FLASH SALE TIMER ====================
+        function startFlashSaleTimer() {
+            let minutes = 40;
+            let seconds = 0;
+            
+            function updateTimer() {
+                const minutesElement = document.getElementById('minutes');
+                const secondsElement = document.getElementById('seconds');
+                
+                if (minutesElement && secondsElement) {
+                    minutesElement.textContent = minutes.toString().padStart(2, '0');
+                    secondsElement.textContent = seconds.toString().padStart(2, '0');
+                }
+                
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    if (minutes > 0) {
+                        minutes--;
+                        seconds = 59;
+                    } else {
+                        minutes = 40;
+                        seconds = 0;
+                    }
+                }
+            }
+            
+            if (flashSaleTimer) {
+                clearInterval(flashSaleTimer);
+            }
+            
+            updateTimer();
+            flashSaleTimer = setInterval(updateTimer, 1000);
+        }
+
+        // ==================== CURRENT TIME DISPLAY ====================
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeElement = document.getElementById('currentTime');
+            if (timeElement) {
+                timeElement.textContent = `${hours}:${minutes}`;
+            }
+        }
+
+        // ==================== SEARCH FUNCTIONALITY ====================
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                
+                const query = this.value.trim();
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                searchTimer = setTimeout(() => {
+                    performSearch(query);
+                }, 300);
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                    searchResults.classList.remove('active');
+                }
+            });
+        }
+
+        async function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!query || query.length < 2) {
+                searchResults.classList.remove('active');
+                return;
+            }
+            
+            try {
+                const productsSnapshot = await db.collection('products')
+                    .where('active', '==', true)
+                    .limit(20)
+                    .get();
+                
+                const results = [];
+                const queryLower = query.toLowerCase();
+                
+                productsSnapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    
+                    if (product.name.toLowerCase().includes(queryLower) ||
+                        product.description?.toLowerCase().includes(queryLower) ||
+                        product.category.toLowerCase().includes(queryLower)) {
+                        results.push(product);
+                    }
+                });
+                
+                displaySearchResults(results, query);
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResults.innerHTML = `
+                    <div class="no-results">
+                        <i class='bx bx-error'></i>
+                        <div>Error searching products</div>
+                    </div>
+                `;
+                searchResults.classList.add('active');
+            }
+        }
+
+        function displaySearchResults(results, query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="no-results">
+                        <i class='bx bx-search-alt'></i>
+                        <div>No results found for "${query}"</div>
+                    </div>
+                `;
+            } else {
+                searchResults.innerHTML = '';
+                
+                results.slice(0, 8).forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `
+                        ${product.images && product.images[0] ? 
+                            `<img src="${product.images[0]}" class="search-result-img" alt="${product.name}" onerror="this.style.display='none'">` : 
+                            `<div class="search-result-img" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image'></i>
+                            </div>`
+                        }
+                        <div class="search-result-info">
+                            <div class="search-result-name">${product.name}</div>
+                            <div style="display: flex; align-items: center;">
+                                <span class="search-result-price">${formatPrice(product.price)} RWF</span>
+                                <span class="search-result-category">${product.category}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        window.location.href = `view.html?id=${product.id}`;
+                        searchResults.classList.remove('active');
+                    });
+                    
+                    searchResults.appendChild(item);
+                });
+            }
+            
+            searchResults.classList.add('active');
+        }
+
+        // ==================== FIREBASE DATA LOADING ====================
+        async function loadSitePersonalization() {
+            try {
+                const doc = await db.collection('site_personalization').doc('settings').get();
+                if (doc.exists) {
+                    sitePersonalization = doc.data();
+                    applySitePersonalization();
+                    
+                    db.collection('site_personalization').doc('settings')
+                        .onSnapshot((snapshot) => {
+                            sitePersonalization = snapshot.data();
+                            applySitePersonalization();
+                        });
+                }
+            } catch (error) {
+                console.error('Error loading site personalization:', error);
+            }
+        }
+
+        // Load Top Picks for Flash Sale section (from index.html functions)
+        async function loadTopPicks() {
+            try {
+                const snapshot = await db.collection('products')
+                    .where('active', '==', true)
+                    .limit(20)
+                    .get();
+                
+                const container = document.getElementById('topPicksGrid');
+                const loadingElement = document.getElementById('topPicksLoading');
+                
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+                
+                const productsByCategory = {};
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    
+                    if (!productsByCategory[product.category]) {
+                        productsByCategory[product.category] = [];
+                    }
+                    if (productsByCategory[product.category].length < 5) {
+                        productsByCategory[product.category].push(product);
+                    }
+                });
+                
+                container.innerHTML = '';
+                
+                Object.keys(productsByCategory).forEach(category => {
+                    const products = productsByCategory[category];
+                    
+                    if (products.length === 0) return;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'top-pick-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-title">${category}</div>
+                            <a href="#" class="view-all-link" data-category="${category}">View All</a>
+                        </div>
+                        <div class="product-images">
+                            ${products.slice(0, 4).map(product => `
+                                <div class="product-image" data-product="${product.id}">
+                                    ${product.images && product.images[0] ? 
+                                        `<img src="${product.images[0]}" alt="${product.name}" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<i class=\'bx bx-image\'></i>';">` : 
+                                        `<i class='bx bx-image'></i>`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    
+                    card.querySelectorAll('.product-image').forEach(img => {
+                        img.addEventListener('click', function() {
+                            const productId = this.getAttribute('data-product');
+                            window.location.href = `view.html?id=${productId}`;
+                        });
+                    });
+                    
+                    card.querySelector('.view-all-link').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const category = this.getAttribute('data-category');
+                        showCategoryProducts(category);
+                    });
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading top picks:', error);
+                const container = document.getElementById('topPicksGrid');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-error'></i>
+                        <div>Error loading top picks</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load Today's Deal (simple product grid)
+        async function loadTodaysDeals() {
+            try {
+                const snapshot = await db.collection('products')
+                    .where('active', '==', true)
+                    .where('todaysDeal', '==', true)
+                    .limit(10)
+                    .get();
+                
+                const container = document.getElementById('dealGrid');
+                const loadingElement = document.getElementById('dealsLoading');
+                
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+                
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div style="padding:40px 20px;text-align:center;color:#888;min-width:100%;">
+                            <i class='bx bx-gift' style="font-size:40px;margin-bottom:15px;display:block;"></i>
+                            <div>No deals available today</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'deal-card';
+                    card.innerHTML = `
+                        ${product.discount ? `<div class="discount-badge">-${product.discount}%</div>` : ''}
+                        <div class="deal-image">
+                            ${product.images && product.images[0] ? 
+                                `<img src="${product.images[0]}" alt="${product.name}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGMEYwRjAiLz48cGF0aCBkPSJNNjUgNDBINDVWNjBINjVWNDBaIiBmaWxsPSIjQ0NDQ0NDIi8+PHBhdGggZD0iTTcwIDY1SDMwQzI2IDEwMCAyNiA5NSAzMCA5NUg3MEM3NCA5NSA3NCAxMDAgNzAgNjVaIiBmaWxsPSIjRkZGNkY2Ii8+PC9zdmc+'; this.style.objectFit='cover';">` : 
+                                `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
+                                    <i class='bx bx-image' style="font-size:24px;color:#ccc;"></i>
+                                </div>`
+                            }
+                        </div>
+                        <div class="deal-title-text">${product.name}</div>
+                        <div class="deal-price">${formatPrice(product.price)} RWF</div>
+                        ${product.originalPrice ? `<div class="original-price">${formatPrice(product.originalPrice)} RWF</div>` : ''}
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        window.location.href = `view.html?id=${product.id}`;
+                    });
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading today\'s deals:', error);
+                const container = document.getElementById('dealGrid');
+                container.innerHTML = `
+                    <div style="padding:40px 20px;text-align:center;color:#888;min-width:100%;">
+                        <i class='bx bx-error' style="font-size:40px;margin-bottom:15px;display:block;"></i>
+                        <div>Error loading deals</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load Personalized Recommendations for INGABO Picks section
+        async function loadPersonalizedPicks() {
+            try {
+                const snapshot = await db.collection('products').where('active', '==', true).get();
+                allProducts = [];
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    product.suggestionCode = generateSuggestionCode(product);
+                    allProducts.push(product);
+                });
+                
+                const sortedProducts = sortProductsPersonalized(allProducts, userPersonalCode);
+                const container = document.getElementById('personalizedGrid');
+                const loadingElement = document.getElementById('personalizedLoading');
+                
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+                
+                container.innerHTML = '';
+                
+                sortedProducts.slice(0, 6).forEach((product, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'personalized-card';
+                    card.innerHTML = `
+                        ${index < 3 ? '<div class="relevance-indicator"></div>' : ''}
+                        <div class="personalized-image">
+                            ${product.images && product.images[0] ? 
+                                `<img src="${product.images[0]}" alt="${product.name}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGMEYwRjAiLz48cGF0aCBkPSJNNjUgNDBINDVWNjBINjVWNDBaIiBmaWxsPSIjQ0NDQ0NDIi8+PHBhdGggZD0iTTcwIDY1SDMwQzI2IDEwMCAyNiA5NSAzMCA5NUg3MEM3NCA5NSA3NCAxMDAgNzAgNjVaIiBmaWxsPSIjRkZGNkY2Ii8+PC9zdmc+'; this.style.objectFit='cover';">` : 
+                                `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
+                                    <i class='bx bx-image' style="font-size:32px;color:#ccc;"></i>
+                                </div>`
+                            }
+                        </div>
+                        <div class="personalized-title">${product.name}</div>
+                        <div class="personalized-price">${formatPrice(product.price)} RWF</div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        trackProductView(product.id);
+                        window.location.href = `view.html?id=${product.id}`;
+                    });
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading personalized picks:', error);
+                const container = document.getElementById('personalizedGrid');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-error'></i>
+                        <div>Error loading recommendations</div>
+                    </div>
+                `;
+            }
+        }
+
+        // ==================== CATEGORY VIEW ====================
+        function showCategoryProducts(category) {
+            const normalView = document.getElementById('normalView');
+            const categoryView = document.getElementById('categoryView');
+            const filterTitle = document.getElementById('filterTitle');
+            
+            normalView.style.display = 'none';
+            categoryView.classList.add('active');
+            filterTitle.textContent = `${category} Products`;
+            
+            loadCategoryProducts(category);
+        }
+
+        async function loadCategoryProducts(category) {
+            const container = document.getElementById('filterGrid');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading products...</div>';
+            
+            try {
+                const snapshot = await db.collection('products')
+                    .where('active', '==', true)
+                    .where('category', '==', category)
+                    .get();
+                
+                const products = [];
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    product.id = doc.id;
+                    products.push(product);
+                });
+                
+                displayCategoryProducts(products, container);
+            } catch (error) {
+                console.error('Error loading category products:', error);
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">Error loading products</div>';
+            }
+        }
+
+        function displayCategoryProducts(products, container) {
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">No products found</div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'filter-product-card';
+                card.innerHTML = `
+                    <div class="filter-product-image">
+                        ${product.images && product.images[0] ? 
+                            `<img src="${product.images[0]}" alt="${product.name}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGMEYwRjAiLz48cGF0aCBkPSJNNjUgNDBINDVWNjBINjVWNDBaIiBmaWxsPSIjQ0NDQ0NDIi8+PHBhdGggZD0iTTcwIDY1SDMwQzI2IDEwMCAyNiA5NSAzMCA5NUg3MEM3NCA5NSA3NCAxMDAgNzAgNjVaIiBmaWxsPSIjRkZGNkY2Ii8+PC9zdmc+'; this.style.objectFit='cover';">` : 
+                            `<div style="width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image'></i>
+                            </div>`
+                        }
+                    </div>
+                    <div class="filter-product-info">
+                        <div class="filter-product-name">${product.name}</div>
+                        <div class="filter-product-price">${formatPrice(product.price)} RWF</div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    window.location.href = `view.html?id=${product.id}`;
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        // ==================== CART FUNCTIONALITY ====================
+        function showCartItems() {
+            const cartOverlay = document.getElementById('cartOverlay');
+            const cartDropdown = document.getElementById('cartDropdown');
+            const cartItemsContainer = document.getElementById('cartItemsContainer');
+            
+            cartItemsContainer.innerHTML = '';
+            
+            if (cartItems.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <i class='bx bx-cart' style="font-size: 50px; margin-bottom: 15px; color: #ccc;"></i>
+                        <div>Your cart is empty</div>
+                    </div>
+                `;
+            } else {
+                cartItems.forEach(item => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        ${item.image ? 
+                            `<img src="${item.image}" class="cart-item-image" alt="${item.name}" onerror="this.style.display='none'">` : 
+                            `<div class="cart-item-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image'></i>
+                            </div>`
+                        }
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${formatPrice(item.price)} RWF</div>
+                            <div style="font-size: 12px; color: #666;">Qty: ${item.quantity || 1}</div>
+                        </div>
+                    `;
+                    
+                    cartItem.addEventListener('click', () => {
+                        window.location.href = `view.html?id=${item.id}`;
+                        closeCart();
+                    });
+                    
+                    cartItemsContainer.appendChild(cartItem);
+                });
+            }
+            
+            cartOverlay.classList.add('active');
+            cartDropdown.classList.add('active');
+        }
+
+        function closeCart() {
+            const cartOverlay = document.getElementById('cartOverlay');
+            const cartDropdown = document.getElementById('cartDropdown');
+            
+            cartOverlay.classList.remove('active');
+            cartDropdown.classList.remove('active');
+        }
+
+        // ==================== SITE PERSONALIZATION ====================
+        function applySitePersonalization() {
+            if (!sitePersonalization) return;
+            
+            const pausedOverlay = document.getElementById('pausedOverlay');
+            if (sitePersonalization.status === 'PAUSED') {
+                pausedOverlay.classList.add('active');
+                document.body.style.filter = 'grayscale(100%)';
+                
+                document.querySelectorAll('button, a, input').forEach(el => {
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.6';
+                });
+            } else {
+                pausedOverlay.classList.remove('active');
+                document.body.style.filter = 'none';
+                
+                document.querySelectorAll('button, a, input').forEach(el => {
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
+                });
+            }
+            
+            if (sitePersonalization.heroImage) {
+                document.getElementById('heroSection').style.backgroundImage = `url('${sitePersonalization.heroImage}')`;
+                document.getElementById('heroSection').style.backgroundSize = 'cover';
+                document.getElementById('heroSection').style.backgroundPosition = 'center';
+            }
+            
+            if (sitePersonalization.heroTitle) {
+                document.getElementById('heroTitle').textContent = sitePersonalization.heroTitle;
+            }
+            
+            if (sitePersonalization.newArrivalText) {
+                document.getElementById('newArrivalBanner').textContent = sitePersonalization.newArrivalText;
+            }
+            
+            if (sitePersonalization.accentColor) {
+                const accentColor = sitePersonalization.accentColor;
+                
+                document.querySelectorAll('.shop-now-btn, .time-display, .back-to-home').forEach(el => {
+                    el.style.backgroundColor = accentColor;
+                });
+            }
+        }
+
+        async function trackProductView(productId) {
+            if (!currentUser) return;
+            
+            try {
+                await db.collection('user_activity').add({
+                    userId: currentUser.uid,
+                    productId: productId,
+                    type: 'view',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                updateUserPersonalCode();
+            } catch (error) {
+                console.error('Error tracking product view:', error);
+            }
+        }
+
+        async function updateUserPersonalCode() {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    userPersonalCode = generatePersonalCode(userData);
+                    // Reload personalized picks with new code
+                    loadPersonalizedPicks();
+                }
+            } catch (error) {
+                console.error('Error updating personal code:', error);
+            }
+        }
+
+        // ==================== AUTHENTICATION ====================
+        function setupAuth() {
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                
+                if (user) {
+                    try {
+                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            userPersonalCode = generatePersonalCode(userData);
+                        } else {
+                            userPersonalCode = 'GUEST-CODE';
+                        }
+                    } catch (error) {
+                        console.error('Error loading user data:', error);
+                        userPersonalCode = 'GUEST-CODE';
+                    }
+                } else {
+                    userPersonalCode = 'GUEST-CODE';
+                }
+                
+                loadPersonalizedPicks();
+            });
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            // Auto redirect on resize
+            window.addEventListener('resize', checkScreenSizeAndRedirect);
+            
+            // Shop Now Button
+            document.getElementById('shopNowBtn').addEventListener('click', () => {
+                window.location.href = 'category.html?category=featured';
+            });
+            
+            // Search Functionality
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = document.getElementById('searchInput').value.trim();
+                    if (query) {
+                        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+            
+            // Navigation Buttons
+            document.getElementById('navHome').addEventListener('click', (e) => {
+                e.preventDefault();
+                const normalView = document.getElementById('normalView');
+                const categoryView = document.getElementById('categoryView');
+                
+                normalView.style.display = 'block';
+                categoryView.classList.remove('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            document.getElementById('navCategory').addEventListener('click', (e) => {
+                e.preventDefault();
+                // Show all products or first category
+                showCategoryProducts('All');
+            });
+            
+            document.getElementById('navCart').addEventListener('click', (e) => {
+                e.preventDefault();
+                showCartItems();
+            });
+            
+            document.getElementById('navAccount').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = 'account.html';
+            });
+            
+            // Back to Home button
+            document.getElementById('backToHome').addEventListener('click', () => {
+                const normalView = document.getElementById('normalView');
+                const categoryView = document.getElementById('categoryView');
+                
+                normalView.style.display = 'block';
+                categoryView.classList.remove('active');
+                document.getElementById('searchInput').value = '';
+            });
+            
+            // Close cart buttons
+            document.getElementById('closeCart').addEventListener('click', closeCart);
+            document.getElementById('cartOverlay').addEventListener('click', closeCart);
+        }
+
+        // ==================== INITIALIZATION ====================
+        async function initializeApp() {
+            // Check screen size and auto redirect
+            if (checkScreenSizeAndRedirect()) {
+                return;
+            }
+            
+            // Setup authentication
+            setupAuth();
+            
+            // Setup search
+            setupSearch();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Start timers
+            startFlashSaleTimer();
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000);
+            
+            // Load data from Firebase
+            await Promise.all([
+                loadSitePersonalization(),
+                loadTopPicks(),
+                loadTodaysDeals(),
+                loadPersonalizedPicks()
+            ]);
+            
+            // Initialize analytics
+            analytics.logEvent('mobile_page_view', {
+                page_title: 'Mobile Homepage',
+                page_location: window.location.href,
+                screen_width: window.innerWidth
+            });
+            
+            console.log('INGABO Mobile Store initialized successfully');
+        }
+
+        // Start the application
+        window.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
