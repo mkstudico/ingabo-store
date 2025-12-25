@@ -19,26 +19,26 @@
         }
         
         body {
-            background-color: #000;
-            color: #fff;
+            background-color: #fafafa;
+            color: #262626;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
         
-        /* Instagram-like Header */
+        /* Clean White Header */
         .chat-header {
-            background: #1a1a1a;
-            padding: 12px 16px;
-            border-bottom: 1px solid #262626;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-bottom: 1px solid #dbdbdb;
             position: sticky;
             top: 0;
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
         
         .header-left {
@@ -50,7 +50,7 @@
         .back-button {
             background: none;
             border: none;
-            color: #fff;
+            color: #262626;
             font-size: 20px;
             cursor: pointer;
             padding: 8px;
@@ -59,7 +59,7 @@
         }
         
         .back-button:hover {
-            background: #262626;
+            background: #f2f2f2;
         }
         
         .user-info {
@@ -73,10 +73,12 @@
             height: 40px;
             border-radius: 50%;
             overflow: hidden;
-            background: #262626;
+            background: #0095f6;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 600;
         }
         
         .user-avatar img {
@@ -93,11 +95,12 @@
         .username {
             font-weight: 600;
             font-size: 14px;
+            color: #262626;
         }
         
         .user-status {
             font-size: 12px;
-            color: #a8a8a8;
+            color: #8e8e8e;
         }
         
         .header-right {
@@ -108,7 +111,7 @@
         .header-icon {
             background: none;
             border: none;
-            color: #fff;
+            color: #262626;
             font-size: 20px;
             cursor: pointer;
             padding: 8px;
@@ -117,15 +120,16 @@
         }
         
         .header-icon:hover {
-            background: #262626;
+            background: #f2f2f2;
         }
         
-        /* Product Info Bar - Instagram Style */
+        /* Product Info Bar - Clean White */
         .product-info-bar {
-            background: #1a1a1a;
-            padding: 12px 16px;
-            border-bottom: 1px solid #262626;
+            background: #ffffff;
+            padding: 14px 20px;
+            border-bottom: 1px solid #dbdbdb;
             animation: slideDown 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
         
         @keyframes slideDown {
@@ -151,6 +155,7 @@
             border-radius: 8px;
             overflow: hidden;
             flex-shrink: 0;
+            border: 1px solid #efefef;
         }
         
         .product-image img {
@@ -171,11 +176,12 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #262626;
         }
         
         .product-category {
             font-size: 12px;
-            color: #a8a8a8;
+            color: #8e8e8e;
             margin-bottom: 4px;
         }
         
@@ -185,13 +191,14 @@
             font-size: 14px;
         }
         
-        /* Chat Container - Instagram Style */
+        /* Chat Container - Clean White */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            background: #fafafa;
         }
         
         /* Messages Area */
@@ -199,14 +206,14 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #000;
+            background: #fafafa;
             display: flex;
             flex-direction: column;
             gap: 16px;
             scroll-behavior: smooth;
         }
         
-        /* Instagram-like Date Separator */
+        /* Date Separator */
         .date-separator {
             display: flex;
             align-items: center;
@@ -215,15 +222,15 @@
         }
         
         .date-badge {
-            background: #262626;
-            color: #a8a8a8;
+            background: rgba(0,0,0,0.1);
+            color: #8e8e8e;
             padding: 6px 16px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
         }
         
-        /* Instagram-style Messages */
+        /* Modern Message Styles */
         .message {
             max-width: 70%;
             display: flex;
@@ -255,82 +262,109 @@
             max-width: 85%;
         }
         
-        /* Product Info Message (Auto-sent) */
-        .product-info-message {
-            background: #1a1a1a;
-            border: 1px solid #262626;
+        /* User's Product Inquiry Message (Auto-sent) */
+        .user-inquiry-message {
+            background: #ffffff;
+            border: 1px solid #efefef;
             border-radius: 18px;
             padding: 16px;
             width: 320px;
             margin: 10px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
-        .product-info-header {
+        .inquiry-header {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 12px;
             padding-bottom: 12px;
-            border-bottom: 1px solid #262626;
+            border-bottom: 1px solid #efefef;
         }
         
-        .product-info-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
+        .inquiry-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0095f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
         }
         
-        .product-info-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .product-info-title {
+        .inquiry-title {
             flex: 1;
         }
         
-        .product-info-name {
+        .inquiry-name {
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 4px;
+            color: #262626;
         }
         
-        .product-info-category {
+        .inquiry-subtitle {
             font-size: 12px;
-            color: #a8a8a8;
+            color: #8e8e8e;
         }
         
-        .product-info-details {
-            display: grid;
-            gap: 8px;
-            font-size: 13px;
+        .inquiry-content {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #0095f6;
         }
         
-        .detail-item {
+        .inquiry-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #262626;
+        }
+        
+        .product-info-card {
+            background: white;
+            border: 1px solid #efefef;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        
+        .product-info-row {
             display: flex;
             justify-content: space-between;
             padding: 6px 0;
-            border-bottom: 1px solid #262626;
+            border-bottom: 1px solid #f5f5f5;
         }
         
-        .detail-label {
-            color: #a8a8a8;
+        .product-info-row:last-child {
+            border-bottom: none;
         }
         
-        .detail-value {
+        .product-info-label {
+            color: #8e8e8e;
+            font-size: 12px;
+        }
+        
+        .product-info-value {
+            color: #262626;
+            font-size: 12px;
             font-weight: 500;
             text-align: right;
         }
         
-        .product-info-price {
+        .product-price-badge {
+            background: #fff0e6;
             color: #ff6a00;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-weight: 700;
-            font-size: 16px;
-            text-align: right;
-            margin-top: 8px;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
         }
         
         /* Regular Message Bubbles */
@@ -341,6 +375,7 @@
             line-height: 1.4;
             word-break: break-word;
             position: relative;
+            max-width: 100%;
         }
         
         .message.sent .message-bubble {
@@ -350,17 +385,31 @@
         }
         
         .message.received .message-bubble {
-            background: #262626;
-            color: white;
+            background: #ffffff;
+            color: #262626;
+            border: 1px solid #efefef;
             border-bottom-left-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .message.system .message-bubble {
-            background: #1a1a1a;
-            color: #a8a8a8;
+            background: #f8f9fa;
+            color: #666666;
             text-align: center;
             font-size: 13px;
-            border: 1px solid #262626;
+            border: 1px solid #e5e5e5;
+        }
+        
+        /* Message Time */
+        .message-time {
+            font-size: 11px;
+            color: #8e8e8e;
+            margin-top: 4px;
+            align-self: flex-end;
+        }
+        
+        .message.received .message-time {
+            align-self: flex-start;
         }
         
         /* Message Status Indicators */
@@ -370,19 +419,8 @@
             gap: 4px;
             margin-top: 4px;
             font-size: 11px;
-            color: #a8a8a8;
+            color: #8e8e8e;
             align-self: flex-end;
-        }
-        
-        .message-time {
-            font-size: 11px;
-            color: #a8a8a8;
-            margin-top: 4px;
-            align-self: flex-end;
-        }
-        
-        .message.received .message-time {
-            align-self: flex-start;
         }
         
         /* Seen Indicator */
@@ -396,26 +434,32 @@
             align-self: flex-end;
         }
         
-        /* Input Area - Instagram Style */
+        /* Input Area - Clean Design */
         .input-area {
-            background: #1a1a1a;
-            padding: 16px;
-            border-top: 1px solid #262626;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-top: 1px solid #dbdbdb;
             display: flex;
             align-items: center;
             gap: 12px;
             position: sticky;
             bottom: 0;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.03);
         }
         
         .message-input-container {
             flex: 1;
             display: flex;
             align-items: center;
-            background: #262626;
+            background: #fafafa;
+            border: 1px solid #dbdbdb;
             border-radius: 25px;
             padding: 0 16px;
+            transition: border-color 0.2s;
+        }
+        
+        .message-input-container:focus-within {
+            border-color: #0095f6;
         }
         
         .message-input {
@@ -423,19 +467,19 @@
             padding: 12px 0;
             border: none;
             background: none;
-            color: white;
+            color: #262626;
             font-size: 14px;
             outline: none;
         }
         
         .message-input::placeholder {
-            color: #737373;
+            color: #8e8e8e;
         }
         
         .attachment-button {
             background: none;
             border: none;
-            color: #737373;
+            color: #8e8e8e;
             font-size: 20px;
             cursor: pointer;
             padding: 8px;
@@ -443,36 +487,41 @@
         }
         
         .attachment-button:hover {
-            color: #fff;
+            color: #0095f6;
         }
         
         .send-button {
-            background: none;
+            background: #0095f6;
             border: none;
-            color: #0095f6;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
+            color: white;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
             transition: background 0.2s;
         }
         
         .send-button:hover {
-            background: rgba(0, 149, 246, 0.1);
+            background: #0081d6;
         }
         
         .send-button:disabled {
-            color: #737373;
+            background: #cccccc;
             cursor: not-allowed;
         }
         
-        /* Order Actions - Instagram Style */
+        /* Order Actions - Clean Design */
         .order-actions {
-            background: #1a1a1a;
-            padding: 16px;
-            border-top: 1px solid #262626;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-top: 1px solid #dbdbdb;
             animation: slideUp 0.5s ease;
             display: none;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.03);
         }
         
         @keyframes slideUp {
@@ -491,7 +540,7 @@
             font-weight: 600;
             margin-bottom: 16px;
             text-align: center;
-            color: #fff;
+            color: #262626;
         }
         
         .order-buttons {
@@ -515,21 +564,22 @@
         }
         
         .order-btn.cancel {
-            background: #262626;
-            color: #fff;
+            background: #f5f5f5;
+            color: #666666;
+            border: 1px solid #e5e5e5;
         }
         
         .order-btn.cancel:hover {
-            background: #363636;
+            background: #e9e9e9;
         }
         
         .order-btn.confirm {
-            background: #0095f6;
+            background: #28a745;
             color: white;
         }
         
         .order-btn.confirm:hover {
-            background: #0081d6;
+            background: #218838;
         }
         
         /* Loading State */
@@ -539,16 +589,17 @@
             justify-content: center;
             align-items: center;
             height: 100%;
-            color: #a8a8a8;
+            color: #8e8e8e;
             font-size: 14px;
             gap: 16px;
+            background: #fafafa;
         }
         
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 2px solid transparent;
-            border-top: 2px solid #0095f6;
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #0095f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -567,31 +618,14 @@
             height: 100%;
             padding: 40px;
             text-align: center;
-            color: #a8a8a8;
+            color: #8e8e8e;
+            background: #fafafa;
         }
         
         .empty-state i {
             font-size: 64px;
             margin-bottom: 20px;
-            color: #262626;
-        }
-        
-        /* Scrollbar Styling */
-        .messages-area::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .messages-area::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .messages-area::-webkit-scrollbar-thumb {
-            background: #262626;
-            border-radius: 3px;
-        }
-        
-        .messages-area::-webkit-scrollbar-thumb:hover {
-            background: #363636;
+            color: #dbdbdb;
         }
         
         /* Typing Indicator */
@@ -600,7 +634,8 @@
             align-items: center;
             gap: 4px;
             padding: 12px 16px;
-            background: #262626;
+            background: #ffffff;
+            border: 1px solid #efefef;
             border-radius: 22px;
             border-bottom-left-radius: 6px;
             align-self: flex-start;
@@ -616,7 +651,7 @@
         .typing-dot {
             width: 6px;
             height: 6px;
-            background: #fff;
+            background: #8e8e8e;
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -630,39 +665,51 @@
             30% { transform: translateY(-4px); }
         }
         
+        /* Scrollbar Styling */
+        .messages-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .messages-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .messages-area::-webkit-scrollbar-thumb {
+            background: #c7c7c7;
+            border-radius: 3px;
+        }
+        
+        .messages-area::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .message {
                 max-width: 85%;
             }
             
-            .product-info-message {
+            .user-inquiry-message {
                 width: 280px;
             }
             
-            .header-right {
-                gap: 12px;
+            .chat-header {
+                padding: 12px 16px;
+            }
+            
+            .input-area {
+                padding: 12px 16px;
             }
         }
         
         @media (max-width: 480px) {
-            .chat-header {
-                padding: 12px;
-            }
-            
-            .input-area {
-                padding: 12px;
-            }
-            
             .message {
                 max-width: 90%;
             }
-        }
-        
-        /* Custom Scrollbar for Firefox */
-        .messages-area {
-            scrollbar-width: thin;
-            scrollbar-color: #262626 transparent;
+            
+            .user-inquiry-message {
+                width: 260px;
+            }
         }
     </style>
 </head>
@@ -675,7 +722,7 @@
             </button>
             <div class="user-info">
                 <div class="user-avatar" id="userAvatar">
-                    <i class='bx bx-store' style="font-size: 20px; color: #fff;"></i>
+                    <i class='bx bx-store' style="font-size: 20px;"></i>
                 </div>
                 <div class="user-details">
                     <div class="username" id="chatUsername">Product Manager</div>
@@ -686,9 +733,6 @@
         <div class="header-right">
             <button class="header-icon" id="videoCallBtn">
                 <i class='bx bx-video'></i>
-            </button>
-            <button class="header-icon" id="voiceCallBtn">
-                <i class='bx bx-phone'></i>
             </button>
             <button class="header-icon" id="infoBtn">
                 <i class='bx bx-info-circle'></i>
@@ -715,19 +759,6 @@
             <div class="typing-dot"></div>
             <div class="typing-dot"></div>
             <div class="typing-dot"></div>
-        </div>
-        
-        <!-- Order Actions (shown only to product managers) -->
-        <div class="order-actions" id="orderActions">
-            <div class="order-title">User wants to purchase this product</div>
-            <div class="order-buttons">
-                <button class="order-btn cancel" id="cancelOrder">
-                    <i class='bx bx-x'></i> Cancel
-                </button>
-                <button class="order-btn confirm" id="createOrder">
-                    <i class='bx bx-check'></i> Create Order
-                </button>
-            </div>
         </div>
         
         <!-- Input Area -->
@@ -767,7 +798,6 @@
         let inquiryData = null;
         let productData = null;
         let messagesUnsubscribe = null;
-        let isProductManager = false;
         let autoMessageSent = false;
         let otherUserTyping = false;
         let typingTimeout = null;
@@ -782,6 +812,8 @@
                 return;
             }
             
+            console.log('Chat initialized with inquiry:', inquiryId);
+            
             // Setup auth
             setupAuth();
             
@@ -790,8 +822,6 @@
             
             // Setup typing indicator
             setupTypingIndicator();
-            
-            console.log('Chat initialized with inquiry:', inquiryId);
         });
 
         // ==================== AUTHENTICATION ====================
@@ -801,19 +831,12 @@
                 
                 if (user) {
                     console.log('User authenticated:', user.email);
-                    // Check if user is product manager
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        isProductManager = userData.role === 'manager';
-                        console.log('User role:', isProductManager ? 'Manager' : 'Customer');
-                        
-                        // Update UI based on role
-                        updateUIForRole(isProductManager);
-                        
-                        // Load inquiry data
-                        loadInquiryData();
-                    }
+                    
+                    // Update UI based on user
+                    updateUIForUser(user);
+                    
+                    // Load inquiry data
+                    loadInquiryData();
                 } else {
                     console.log('No user, redirecting to login');
                     // Redirect to login
@@ -822,14 +845,17 @@
             });
         }
 
-        function updateUIForRole(isManager) {
-            if (isManager) {
-                document.getElementById('chatUsername').textContent = 'Customer';
-                document.getElementById('userStatus').textContent = 'Online';
+        function updateUIForUser(user) {
+            const avatar = document.getElementById('userAvatar');
+            if (user.photoURL) {
+                avatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName || user.email}" loading="lazy">`;
             } else {
-                document.getElementById('chatUsername').textContent = 'Product Manager';
-                document.getElementById('userStatus').textContent = 'Active now';
+                const initial = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                avatar.innerHTML = `<span style="font-size: 18px; font-weight: 600;">${initial}</span>`;
             }
+            
+            document.getElementById('chatUsername').textContent = 'Product Manager';
+            document.getElementById('userStatus').textContent = 'Active now';
         }
 
         // ==================== INQUIRY LOADING ====================
@@ -859,9 +885,9 @@
                     // Update product info display
                     updateProductInfo();
                     
-                    // Send auto message with product info
+                    // Send user's inquiry message
                     if (!autoMessageSent) {
-                        sendAutoProductMessage();
+                        sendUserInquiryMessage();
                         autoMessageSent = true;
                     }
                 }
@@ -871,11 +897,6 @@
                 
                 // Setup real-time updates
                 setupRealtimeMessages();
-                
-                // Show order actions for product managers
-                if (isProductManager && inquiryData.status === 'pending') {
-                    document.getElementById('orderActions').style.display = 'block';
-                }
                 
             } catch (error) {
                 console.error('Error loading inquiry:', error);
@@ -892,8 +913,8 @@
                     <div class="product-image">
                         ${productData.images && productData.images[0] ? 
                             `<img src="${productData.images[0]}" alt="${productData.name}" loading="lazy">` : 
-                            `<div style="width: 100%; height: 100%; background: #262626; display: flex; align-items: center; justify-content: center;">
-                                <i class='bx bx-image' style="color: #737373;"></i>
+                            `<div style="width: 100%; height: 100%; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-image' style="color: #cccccc;"></i>
                             </div>`
                         }
                     </div>
@@ -906,45 +927,50 @@
             }
         }
 
-        async function sendAutoProductMessage() {
+        async function sendUserInquiryMessage() {
             try {
-                if (!productData || !inquiryData) return;
+                if (!productData || !inquiryData || !currentUser) return;
                 
-                // Create detailed product info message
-                const productDetails = `
-Product: ${productData.name}
-Category: ${productData.category}
-Price: ${formatPrice(productData.price)} RWF
-${productData.description ? `Description: ${productData.description.substring(0, 100)}...` : ''}
-${productData.size ? `Sizes: ${Array.isArray(productData.size) ? productData.size.join(', ') : productData.size}` : ''}
-${productData.color ? `Colors: ${Array.isArray(productData.color) ? productData.color.join(', ') : productData.color}` : ''}
-${productData.status ? `Condition: ${Array.isArray(productData.status) ? productData.status.join(', ') : productData.status}` : ''}
-                `.trim();
+                // Get user's first name or use email
+                const userName = currentUser.displayName || currentUser.email.split('@')[0];
                 
-                const autoMessage = {
-                    senderId: 'system',
-                    senderName: 'System',
-                    content: `📦 Product Inquiry Details\n\n${productDetails}\n\nFeel free to ask any questions about this product!`,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    type: 'system',
-                    isAutoMessage: true
+                // Create user's inquiry message
+                const userMessage = {
+                    senderId: currentUser.uid,
+                    senderName: userName,
+                    content: `Hi, I'm interested in the "${productData.name}". I need more information about this product.`,
+                    timestamp: new Date().toISOString(),
+                    type: 'user'
                 };
                 
-                // Check if auto message already exists
-                const hasAutoMessage = inquiryData.messages && 
-                    inquiryData.messages.some(msg => msg.isAutoMessage === true);
+                // Create product info message that shows details
+                const inquiryDetails = {
+                    senderId: 'system',
+                    senderName: 'System',
+                    content: 'Product Inquiry Details',
+                    timestamp: new Date().toISOString(),
+                    type: 'system',
+                    isInquiryMessage: true
+                };
                 
-                if (!hasAutoMessage) {
+                // Check if this is a new inquiry (no messages yet)
+                const isNewInquiry = !inquiryData.messages || inquiryData.messages.length === 0;
+                
+                if (isNewInquiry) {
+                    // Add both messages as a batch
                     await db.collection('inquiries').doc(inquiryId).update({
-                        messages: firebase.firestore.FieldValue.arrayUnion(autoMessage),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        messages: [userMessage, inquiryDetails],
+                        updatedAt: new Date().toISOString()
                     });
                     
-                    console.log('Auto product message sent');
+                    console.log('User inquiry message sent with details');
+                } else {
+                    console.log('Messages already exist, not sending auto-message');
                 }
                 
             } catch (error) {
-                console.error('Error sending auto message:', error);
+                console.error('Error sending user inquiry message:', error);
+                // Don't show error to user for auto-message
             }
         }
 
@@ -982,7 +1008,7 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                     <div class="empty-state">
                         <i class='bx bx-message-dots'></i>
                         <div>Start the conversation</div>
-                        <div style="font-size: 12px; color: #737373; margin-top: 8px;">Send a message to begin</div>
+                        <div style="font-size: 12px; color: #8e8e8e; margin-top: 8px;">Send a message to begin</div>
                     </div>
                 `;
             }
@@ -1004,15 +1030,6 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                         // Reload messages
                         loadMessages();
                         
-                        // Update order actions visibility
-                        if (isProductManager) {
-                            if (inquiryData.status === 'pending') {
-                                document.getElementById('orderActions').style.display = 'block';
-                            } else {
-                                document.getElementById('orderActions').style.display = 'none';
-                            }
-                        }
-                        
                         // Show typing indicator if other user is typing
                         if (updatedData.typing && updatedData.typing.userId !== currentUser.uid) {
                             showTypingIndicator();
@@ -1028,9 +1045,9 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
             const messagesArea = document.getElementById('messagesArea');
             if (!messagesArea) return;
             
-            // Skip if this is a system message that we handle specially
-            if (message.isAutoMessage) {
-                displayProductInfoMessage(message);
+            // Handle inquiry message specially
+            if (message.isInquiryMessage) {
+                displayUserInquiryMessage();
                 return;
             }
             
@@ -1049,22 +1066,16 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
             // Format time - FIXED TIMESTAMP ISSUE
             let timeString = 'Just now';
             if (message.timestamp) {
-                // Handle both Firestore timestamp objects and regular dates
-                if (message.timestamp.toDate && typeof message.timestamp.toDate === 'function') {
-                    timeString = formatTime(message.timestamp.toDate());
-                } else if (message.timestamp instanceof Date) {
-                    timeString = formatTime(message.timestamp);
-                } else if (typeof message.timestamp === 'string') {
-                    timeString = formatTime(new Date(message.timestamp));
-                } else if (message.timestamp.seconds) {
-                    // Handle timestamp with seconds property
-                    timeString = formatTime(new Date(message.timestamp.seconds * 1000));
+                // Handle different timestamp formats
+                const date = parseTimestamp(message.timestamp);
+                if (date) {
+                    timeString = formatTime(date);
                 }
             }
             
             messageDiv.className = messageClass;
             messageDiv.innerHTML = `
-                <div class="message-bubble">${message.content}</div>
+                <div class="message-bubble">${message.content || ''}</div>
                 <div class="message-time">${timeString}</div>
                 ${message.senderId === currentUser?.uid ? 
                     `<div class="message-status">
@@ -1077,57 +1088,57 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
             messagesArea.appendChild(messageDiv);
         }
 
-        function displayProductInfoMessage(message) {
+        function displayUserInquiryMessage() {
             const messagesArea = document.getElementById('messagesArea');
-            if (!messagesArea || !productData) return;
+            if (!messagesArea || !productData || !currentUser) return;
+            
+            const userName = currentUser.displayName || currentUser.email.split('@')[0];
+            const userInitial = userName.charAt(0).toUpperCase();
             
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message system';
+            messageDiv.className = 'message received';
             messageDiv.innerHTML = `
-                <div class="product-info-message">
-                    <div class="product-info-header">
-                        <div class="product-info-image">
-                            ${productData.images && productData.images[0] ? 
-                                `<img src="${productData.images[0]}" alt="${productData.name}" loading="lazy">` : 
-                                `<div style="width: 100%; height: 100%; background: #262626; display: flex; align-items: center; justify-content: center;">
-                                    <i class='bx bx-image' style="color: #737373;"></i>
-                                </div>`
-                            }
-                        </div>
-                        <div class="product-info-title">
-                            <div class="product-info-name">${productData.name || 'Product'}</div>
-                            <div class="product-info-category">${productData.category || 'Category'}</div>
+                <div class="user-inquiry-message">
+                    <div class="inquiry-header">
+                        <div class="inquiry-avatar">${userInitial}</div>
+                        <div class="inquiry-title">
+                            <div class="inquiry-name">${userName}</div>
+                            <div class="inquiry-subtitle">Customer Inquiry</div>
                         </div>
                     </div>
-                    <div class="product-info-details">
-                        <div class="detail-item">
-                            <span class="detail-label">Price</span>
-                            <span class="detail-value">${formatPrice(productData.price || 0)} RWF</span>
+                    <div class="inquiry-content">
+                        <div class="inquiry-text">
+                            Hi, I'm interested in the <strong>${productData.name || 'product'}</strong>. 
+                            I need more information about this product and would like to discuss the purchase.
+                        </div>
+                    </div>
+                    <div class="product-info-card">
+                        <div class="product-info-row">
+                            <span class="product-info-label">Product</span>
+                            <span class="product-info-value">${productData.name || 'N/A'}</span>
+                        </div>
+                        <div class="product-info-row">
+                            <span class="product-info-label">Category</span>
+                            <span class="product-info-value">${productData.category || 'N/A'}</span>
                         </div>
                         ${productData.size ? `
-                        <div class="detail-item">
-                            <span class="detail-label">Sizes</span>
-                            <span class="detail-value">${Array.isArray(productData.size) ? productData.size.join(', ') : productData.size}</span>
+                        <div class="product-info-row">
+                            <span class="product-info-label">Size</span>
+                            <span class="product-info-value">${Array.isArray(productData.size) ? productData.size.join(', ') : productData.size}</span>
                         </div>
                         ` : ''}
                         ${productData.color ? `
-                        <div class="detail-item">
-                            <span class="detail-label">Colors</span>
-                            <span class="detail-value">${Array.isArray(productData.color) ? productData.color.join(', ') : productData.color}</span>
+                        <div class="product-info-row">
+                            <span class="product-info-label">Color</span>
+                            <span class="product-info-value">${Array.isArray(productData.color) ? productData.color.join(', ') : productData.color}</span>
                         </div>
                         ` : ''}
-                        ${productData.status ? `
-                        <div class="detail-item">
-                            <span class="detail-label">Condition</span>
-                            <span class="detail-value">${Array.isArray(productData.status) ? productData.status.join(', ') : productData.status}</span>
+                        <div class="product-price-badge">
+                            ${formatPrice(productData.price || 0)} RWF
                         </div>
-                        ` : ''}
-                    </div>
-                    <div class="product-info-price">
-                        ${formatPrice(productData.price || 0)} RWF
                     </div>
                 </div>
-                <div class="message-time" style="margin-top: 8px;">System • Just now</div>
+                <div class="message-time" style="margin-top: 8px;">Just now</div>
             `;
             
             messagesArea.appendChild(messageDiv);
@@ -1152,14 +1163,22 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                     senderId: currentUser.uid,
                     senderName: currentUser.displayName || currentUser.email,
                     content: content.trim(),
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    timestamp: new Date().toISOString(), // FIXED: Using ISO string instead of serverTimestamp
                     type: 'user'
                 };
                 
-                // Add message to inquiry
+                // Get current messages
+                const inquiryDoc = await db.collection('inquiries').doc(inquiryId).get();
+                const currentData = inquiryDoc.data();
+                const currentMessages = currentData.messages || [];
+                
+                // Add new message
+                currentMessages.push(message);
+                
+                // Update inquiry with new messages array
                 await db.collection('inquiries').doc(inquiryId).update({
-                    messages: firebase.firestore.FieldValue.arrayUnion(message),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    messages: currentMessages,
+                    updatedAt: new Date().toISOString(),
                     typing: null // Clear typing indicator when sending
                 });
                 
@@ -1206,7 +1225,7 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                     typing: isTyping ? {
                         userId: currentUser.uid,
                         userName: currentUser.displayName || currentUser.email,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        timestamp: new Date().toISOString()
                     } : null
                 });
             } catch (error) {
@@ -1236,7 +1255,7 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
             }
         }
 
-        // ==================== ORDER MANAGEMENT ====================
+        // ==================== EVENT LISTENERS ====================
         function setupEventListeners() {
             // Send message on button click
             document.getElementById('sendButton').addEventListener('click', function() {
@@ -1252,42 +1271,6 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                 }
             });
             
-            // Order actions (for product managers)
-            document.getElementById('cancelOrder')?.addEventListener('click', async function() {
-                if (confirm('Are you sure you want to cancel this inquiry?')) {
-                    try {
-                        await db.collection('inquiries').doc(inquiryId).update({
-                            status: 'cancelled',
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        
-                        // Add cancellation message
-                        const cancelMessage = {
-                            senderId: 'system',
-                            senderName: 'System',
-                            content: '❌ Inquiry has been cancelled by the product manager.',
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                            type: 'system'
-                        };
-                        
-                        await db.collection('inquiries').doc(inquiryId).update({
-                            messages: firebase.firestore.FieldValue.arrayUnion(cancelMessage)
-                        });
-                        
-                        // Hide order actions
-                        document.getElementById('orderActions').style.display = 'none';
-                        
-                        showNotification('Inquiry cancelled', 'success');
-                        
-                    } catch (error) {
-                        console.error('Error cancelling inquiry:', error);
-                        showNotification('Failed to cancel inquiry', 'error');
-                    }
-                }
-            });
-            
-            document.getElementById('createOrder')?.addEventListener('click', createOrder);
-            
             // Header button events
             document.getElementById('infoBtn')?.addEventListener('click', () => {
                 alert('Chat Information\n\nThis is a secure chat between you and the product manager.\nAll messages are encrypted and stored securely.');
@@ -1297,104 +1280,39 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                 showNotification('Video call feature coming soon!', 'info');
             });
             
-            document.getElementById('voiceCallBtn')?.addEventListener('click', () => {
-                showNotification('Voice call feature coming soon!', 'info');
-            });
-            
             document.getElementById('attachmentButton')?.addEventListener('click', () => {
                 showNotification('Attachment feature coming soon!', 'info');
             });
         }
 
-        async function createOrder() {
-            // Get user details
-            const userPhone = prompt('Please enter the customer\'s phone number:', inquiryData.userPhone || '');
-            if (!userPhone) {
-                showNotification('Phone number is required', 'error');
-                return;
-            }
-            
-            const userDistrict = prompt('Please enter the customer\'s district:', '');
-            const userSector = prompt('Please enter the customer\'s sector:', '');
-            const userCell = prompt('Please enter the customer\'s cell:', '');
-            
-            if (!userDistrict || !userSector || !userCell) {
-                showNotification('All location fields are required', 'error');
-                return;
-            }
+        // ==================== HELPER FUNCTIONS ====================
+        function parseTimestamp(timestamp) {
+            if (!timestamp) return null;
             
             try {
-                // Show loading
-                showNotification('Creating order...', 'info');
-                
-                // Create invoice
-                const invoiceData = {
-                    inquiryId: inquiryId,
-                    productId: productData.id,
-                    productName: productData.name,
-                    productImages: productData.images || [],
-                    productCategory: productData.category,
-                    userId: inquiryData.userId,
-                    userName: inquiryData.userName,
-                    userEmail: inquiryData.userEmail,
-                    userPhone: userPhone,
-                    userLocation: {
-                        district: userDistrict,
-                        sector: userSector,
-                        cell: userCell
-                    },
-                    managerId: currentUser.uid,
-                    managerName: currentUser.displayName || currentUser.email,
-                    status: 'pending',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    orderCode: generateOrderCode()
-                };
-                
-                // Save invoice to Firestore
-                const invoiceRef = await db.collection('invoices').add(invoiceData);
-                
-                // Generate invoice link
-                const invoiceLink = `${window.location.origin}/invoice.html?id=${invoiceRef.id}`;
-                
-                // Update inquiry status
-                await db.collection('inquiries').doc(inquiryId).update({
-                    status: 'ordered',
-                    invoiceId: invoiceRef.id,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Add order confirmation message
-                const orderMessage = {
-                    senderId: 'system',
-                    senderName: 'System',
-                    content: `✅ Order created successfully!\n\nOrder Code: ${invoiceData.orderCode}\nInvoice: ${invoiceLink}\n\nYou can share this invoice with the customer.`,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    type: 'system'
-                };
-                
-                await db.collection('inquiries').doc(inquiryId).update({
-                    messages: firebase.firestore.FieldValue.arrayUnion(orderMessage)
-                });
-                
-                // Hide order actions
-                document.getElementById('orderActions').style.display = 'none';
-                
-                showNotification('Order created successfully!', 'success');
-                
-                // Show invoice link
-                setTimeout(() => {
-                    if (confirm('Order created! Would you like to view the invoice?')) {
-                        window.open(invoiceLink, '_blank');
-                    }
-                }, 1000);
-                
+                // Handle Firestore timestamp
+                if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+                    return timestamp.toDate();
+                }
+                // Handle timestamp with seconds/nanoseconds
+                else if (timestamp.seconds) {
+                    return new Date(timestamp.seconds * 1000 + (timestamp.nanoseconds || 0) / 1000000);
+                }
+                // Handle ISO string
+                else if (typeof timestamp === 'string') {
+                    return new Date(timestamp);
+                }
+                // Handle Date object
+                else if (timestamp instanceof Date) {
+                    return timestamp;
+                }
             } catch (error) {
-                console.error('Error creating order:', error);
-                showNotification('Failed to create order. Please try again.', 'error');
+                console.error('Error parsing timestamp:', error, timestamp);
             }
+            
+            return null;
         }
 
-        // ==================== HELPER FUNCTIONS ====================
         function formatPrice(price) {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
@@ -1429,39 +1347,13 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
         }
 
         function getMessageDate(timestamp) {
-            if (!timestamp) return null;
-            
-            let date;
-            if (timestamp.toDate && typeof timestamp.toDate === 'function') {
-                date = timestamp.toDate();
-            } else if (timestamp instanceof Date) {
-                date = timestamp;
-            } else if (typeof timestamp === 'string') {
-                date = new Date(timestamp);
-            } else if (timestamp.seconds) {
-                date = new Date(timestamp.seconds * 1000);
-            } else {
-                return null;
-            }
-            
-            return date.toDateString();
+            const date = parseTimestamp(timestamp);
+            return date ? date.toDateString() : null;
         }
 
         function formatDateForDisplay(timestamp) {
-            if (!timestamp) return 'Today';
-            
-            let date;
-            if (timestamp.toDate && typeof timestamp.toDate === 'function') {
-                date = timestamp.toDate();
-            } else if (timestamp instanceof Date) {
-                date = timestamp;
-            } else if (typeof timestamp === 'string') {
-                date = new Date(timestamp);
-            } else if (timestamp.seconds) {
-                date = new Date(timestamp.seconds * 1000);
-            } else {
-                return 'Today';
-            }
+            const date = parseTimestamp(timestamp);
+            if (!date) return 'Today';
             
             const now = new Date();
             const messageDate = date;
@@ -1488,15 +1380,6 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
             return messageDate.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
         }
 
-        function generateOrderCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = 'ING-';
-            for (let i = 0; i < 6; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
         function showNotification(message, type = 'info') {
             // Create notification element
             const notification = document.createElement('div');
@@ -1504,11 +1387,11 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${type === 'success' ? '#198754' : type === 'error' ? '#dc3545' : '#0095f6'};
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#0095f6'};
                 color: white;
                 padding: 12px 20px;
                 border-radius: 10px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
                 z-index: 3000;
                 animation: slideIn 0.3s ease;
                 font-size: 14px;
@@ -1537,10 +1420,10 @@ ${productData.status ? `Condition: ${Array.isArray(productData.status) ? product
 
         function showError(message) {
             document.body.innerHTML = `
-                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; text-align: center; background: #000; color: #fff;">
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; text-align: center; background: #fafafa; color: #262626;">
                     <i class='bx bx-error-circle' style="font-size: 60px; color: #dc3545; margin-bottom: 20px;"></i>
-                    <h2 style="color: #fff; margin-bottom: 10px; font-weight: 600;">${message}</h2>
-                    <p style="color: #a8a8a8; margin-bottom: 30px;">Please try again or go back to the home page.</p>
+                    <h2 style="color: #262626; margin-bottom: 10px; font-weight: 600;">${message}</h2>
+                    <p style="color: #8e8e8e; margin-bottom: 30px;">Please try again or go back to the home page.</p>
                     <a href="index.html" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #0095f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: background 0.2s;">
                         <i class='bx bx-home'></i> Back to Home
                     </a>
