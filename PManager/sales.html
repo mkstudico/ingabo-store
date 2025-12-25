@@ -780,6 +780,53 @@
             setupEventListeners();
         });
 
+        // ==================== AUTHENTICATION ====================
+        function setupAuth() {
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                
+                if (user) {
+                    // Check if user is product manager
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        
+                        if (userData.role !== 'manager') {
+                            showError('Access denied. This page is for product managers only.');
+                            return;
+                        }
+                        
+                        // Update user info
+                        updateUserInfo(userData);
+                        
+                        // Load dashboard data
+                        loadDashboardData();
+                        
+                        // Setup real-time updates
+                        setupRealtimeUpdates();
+                        
+                    } else {
+                        showError('User data not found');
+                    }
+                } else {
+                    // Redirect to login
+                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                }
+            });
+        }
+
+        function updateUserInfo(userData) {
+            const userName = userData.displayName || userData.email || 'Manager';
+            document.getElementById('userName').textContent = userName;
+            
+            const avatar = document.getElementById('userAvatar');
+            if (userData.photoURL) {
+                avatar.innerHTML = `<img src="${userData.photoURL}" alt="${userName}" style="width: 100%; height: 100%; border-radius: 50%;">`;
+            } else {
+                avatar.textContent = userName.charAt(0).toUpperCase();
+            }
+        }
+
         // ==================== DASHBOARD DATA ====================
         async function loadDashboardData() {
             try {
