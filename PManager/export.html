@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Export Products - INGABO</title>
+    <!-- Preload boxicons -->
+    <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/fonts/boxicons.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase v8 for compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 100%;
+            margin: 0 auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            padding: 0 12px 70px;
+        }
+        
+        /* ========== HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .back-button i {
+            font-size: 18px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .logo-img {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .logo-text h1 {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+
+        /* ========== PAGE TITLE ========== */
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff6a00;
+            text-align: center;
+            margin: 15px 0 20px;
+        }
+        
+        .page-subtitle {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        /* ========== SEARCH BAR ========== */
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 45px 14px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6a00;
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .search-info {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        /* ========== TABLE CONTAINER ========== */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+        
+        .products-table thead {
+            background: linear-gradient(to right, #ff6a00, #ff8c42);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .products-table th {
+            padding: 15px 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .products-table th:last-child {
+            border-right: none;
+        }
+        
+        .products-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+        
+        .products-table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .products-table tbody tr:hover {
+            background-color: rgba(255, 106, 0, 0.05);
+        }
+        
+        .products-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ========== TABLE COLUMN SPECIFIC ========== */
+        .product-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .product-price {
+            font-weight: 600;
+            color: #28a745;
+            text-align: right;
+        }
+        
+        .product-source {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .source-link {
+            color: #ff6a00;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            background: rgba(255, 106, 0, 0.05);
+        }
+        
+        .source-link:hover {
+            background: rgba(255, 106, 0, 0.1);
+        }
+        
+        .source-link i {
+            font-size: 12px;
+        }
+        
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        /* ========== LOADING ========== */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6a00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ========== STATS BAR ========== */
+        .stats-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff6a00;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        /* ========== EXPORT BUTTON ========== */
+        .export-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 12px;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 50;
+        }
+        
+        .export-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .export-button:active {
+            transform: translateY(0);
+        }
+        
+        /* ========== NOTIFICATION ========== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .notification.success .notification-icon {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-icon {
+            color: #dc3545;
+        }
+        
+        .notification-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .products-table {
+                min-width: 100%;
+            }
+            
+            .products-table th,
+            .products-table td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+            
+            .product-source {
+                max-width: 120px;
+            }
+            
+            .table-container {
+                max-height: 350px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 8px 70px;
+            }
+            
+            .stats-bar {
+                padding: 12px 8px;
+            }
+            
+            .stat-value {
+                font-size: 16px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+            }
+            
+            .search-input {
+                padding: 12px 40px 12px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="header-top">
+            <a href="product.html" class="back-button">
+                <i class='bx bx-arrow-back'></i>
+                <span>Back</span>
+            </a>
+            <div class="logo-area">
+                <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                <div class="logo-text">
+                    <h1>INGABO</h1>
+                </div>
+            </div>
+            <div style="width: 60px;"></div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Page Title -->
+        <h1 class="page-title">Export Products</h1>
+        <p class="page-subtitle">Export all product data to Excel format</p>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput" 
+                       placeholder="Search by product name, category, or source...">
+                <div class="search-icon">
+                    <i class='bx bx-search'></i>
+                </div>
+            </div>
+            <div class="search-info">
+                Real-time search (300ms delay)
+            </div>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalProducts">0</div>
+                <div class="stat-label">Total Products</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalValue">0 RWF</div>
+                <div class="stat-label">Total Value</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="uniqueSources">0</div>
+                <div class="stat-label">Sources</div>
+            </div>
+        </div>
+        
+        <!-- Products Table -->
+        <div class="table-container">
+            <table class="products-table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th width="40%">Product Name</th>
+                        <th width="25%">Price (RWF)</th>
+                        <th width="35%">Source</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Loading state -->
+                    <tr id="loadingRow">
+                        <td colspan="3">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <div class="loading-text">Loading products...</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Empty State (hidden by default) -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">
+                <i class='bx bx-package'></i>
+            </div>
+            <div class="empty-text">No products found</div>
+            <button class="action-button" onclick="window.location.href='product.html'">
+                <i class='bx bx-plus'></i> Add First Product
+            </button>
+        </div>
+    </div>
+    
+    <!-- Export Button -->
+    <div class="export-section">
+        <button class="export-button" id="exportBtn">
+            <i class='bx bx-download'></i> Export to Excel
+        </button>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
+            authDomain: "ingabo-store.firebaseapp.com",
+            projectId: "ingabo-store",
+            storageBucket: "ingabo-store.firebasestorage.app",
+            messagingSenderId: "1059301382626",
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
+            measurementId: "G-QSXTGP9R1Q"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // ==================== GLOBAL VARIABLES ====================
+        let allProducts = [];
+        let filteredProducts = [];
+        let searchTimeout = null;
+        const searchDelay = 300; // 300ms delay for search
+
+        // ==================== NOTIFICATION SYSTEM ====================
+        function showNotification(type, message, duration = 3000) {
+            const container = document.getElementById('notificationContainer');
+            
+            // Remove existing notification
+            const existing = container.querySelector('.notification');
+            if (existing) {
+                existing.remove();
+            }
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            let icon = '';
+            if (type === 'success') {
+                icon = '<i class="bx bx-check-circle notification-icon"></i>';
+            } else if (type === 'error') {
+                icon = '<i class="bx bx-error-circle notification-icon"></i>';
+            }
+            
+            notification.innerHTML = `
+                ${icon}
+                <div class="notification-text">${message}</div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // ==================== DATA LOADING ====================
+        async function loadProducts() {
+            try {
+                const querySnapshot = await db.collection('products')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                allProducts = [];
+                querySnapshot.forEach(doc => {
+                    const product = {
+                        id: doc.id,
+                        ...doc.data(),
+                        // Convert Firestore timestamps
+                        createdAt: doc.data().createdAt?.toDate() || new Date(),
+                        updatedAt: doc.data().updatedAt?.toDate() || new Date()
+                    };
+                    allProducts.push(product);
+                });
+                
+                filteredProducts = [...allProducts];
+                updateStats();
+                renderTable();
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showNotification('error', 'Failed to load products: ' + error.message);
+                
+                // Hide loading row
+                const loadingRow = document.getElementById('loadingRow');
+                if (loadingRow) loadingRow.style.display = 'none';
+            }
+        }
+
+        // ==================== STATISTICS ====================
+        function updateStats() {
+            // Total products
+            document.getElementById('totalProducts').textContent = allProducts.length;
+            
+            // Total value
+            const totalValue = allProducts.reduce((sum, product) => sum + (product.price || 0), 0);
+            document.getElementById('totalValue').textContent = 
+                totalValue.toLocaleString('en-US') + ' RWF';
+            
+            // Unique sources
+            const uniqueSources = new Set(allProducts.map(p => p.sourceName || 'Unknown'));
+            document.getElementById('uniqueSources').textContent = uniqueSources.size;
+        }
+
+        // ==================== SEARCH FUNCTIONALITY ====================
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                filteredProducts = [...allProducts];
+            } else {
+                filteredProducts = allProducts.filter(product => {
+                    return (
+                        (product.name && product.name.toLowerCase().includes(searchTerm)) ||
+                        (product.category && product.category.toLowerCase().includes(searchTerm)) ||
+                        (product.sourceName && product.sourceName.toLowerCase().includes(searchTerm)) ||
+                        (product.description && product.description.toLowerCase().includes(searchTerm))
+                    );
+                });
+            }
+            
+            renderTable();
+        }
+
+        // ==================== TABLE RENDERING ====================
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            const loadingRow = document.getElementById('loadingRow');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Hide loading row
+            if (loadingRow) loadingRow.style.display = 'none';
+            
+            if (filteredProducts.length === 0) {
+                // Show empty state
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // Hide empty state
+            emptyState.style.display = 'none';
+            
+            // Clear table
+            tableBody.innerHTML = '';
+            
+            // Add rows
+            filteredProducts.forEach(product => {
+                const row = document.createElement('tr');
+                
+                // Format price
+                const price = product.price || 0;
+                const formattedPrice = price.toLocaleString('en-US') + ' RWF';
+                
+                // Format source with link if available
+                let sourceHTML = '<div class="product-source">-</div>';
+                if (product.sourceName || product.sourceLink) {
+                    const sourceName = product.sourceName || 'Unknown';
+                    if (product.sourceLink) {
+                        sourceHTML = `
+                            <div class="product-source">
+                                <a href="${product.sourceLink}" 
+                                   target="_blank" 
+                                   class="source-link"
+                                   title="${product.sourceLink}">
+                                    <i class='bx bx-link-external'></i>
+                                    ${sourceName}
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        sourceHTML = `<div class="product-source">${sourceName}</div>`;
+                    }
+                }
+                
+                row.innerHTML = `
+                    <td class="product-name">${product.name || 'Unnamed Product'}</td>
+                    <td class="product-price">${formattedPrice}</td>
+                    <td>${sourceHTML}</td>
+                `;
+                
+                // Add click handler for the entire row to open source link
+                if (product.sourceLink) {
+                    row.style.cursor = 'pointer';
+                    row.addEventListener('click', (e) => {
+                        // Only open link if not clicking on the link itself
+                        if (!e.target.closest('.source-link')) {
+                            window.open(product.sourceLink, '_blank');
+                        }
+                    });
+                }
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // ==================== EXPORT TO EXCEL ====================
+        function exportToExcel() {
+            if (allProducts.length === 0) {
+                showNotification('error', 'No products to export');
+                return;
+            }
+            
+            try {
+                // Prepare data for Excel
+                const excelData = allProducts.map(product => {
+                    return {
+                        'ID': product.id,
+                        'Name': product.name || '',
+                        'Category': product.category || '',
+                        'Description': product.description || '',
+                        'Source Name': product.sourceName || 'MURUKALI',
+                        'Source Link': product.sourceLink || '',
+                        'Department': Array.isArray(product.department) ? product.department.join(', ') : '',
+                        'Color': Array.isArray(product.color) ? product.color.join(', ') : '',
+                        'Size': Array.isArray(product.size) ? product.size.join(', ') : '',
+                        'Age Group': Array.isArray(product.age) ? product.age.join(', ') : '',
+                        'Status': Array.isArray(product.status) ? product.status.join(', ') : '',
+                        'Wealth Category': product.wealth || '',
+                        'Price (RWF)': product.price || 0,
+                        'Original Price (RWF)': product.originalPrice || '',
+                        'Discount (%)': product.discount || '',
+                        'Images': Array.isArray(product.images) ? product.images.join('\n') : '',
+                        'Suggestion Code': product.suggestionCode || '',
+                        'Active': product.active ? 'Yes' : 'No',
+                        'Featured': product.featured ? 'Yes' : 'No',
+                        'Created At': product.createdAt ? product.createdAt.toLocaleString() : '',
+                        'Updated At': product.updatedAt ? product.updatedAt.toLocaleString() : ''
+                    };
+                });
+                
+                // Create worksheet
+                const ws = XLSX.utils.json_to_sheet(excelData);
+                
+                // Set column widths
+                const wscols = [
+                    {wch: 25}, // ID
+                    {wch: 30}, // Name
+                    {wch: 15}, // Category
+                    {wch: 50}, // Description
+                    {wch: 20}, // Source Name
+                    {wch: 40}, // Source Link
+                    {wch: 15}, // Department
+                    {wch: 20}, // Color
+                    {wch: 15}, // Size
+                    {wch: 15}, // Age Group
+                    {wch: 15}, // Status
+                    {wch: 15}, // Wealth Category
+                    {wch: 15}, // Price
+                    {wch: 20}, // Original Price
+                    {wch: 15}, // Discount
+                    {wch: 40}, // Images
+                    {wch: 20}, // Suggestion Code
+                    {wch: 10}, // Active
+                    {wch: 10}, // Featured
+                    {wch: 20}, // Created At
+                    {wch: 20}  // Updated At
+                ];
+                ws['!cols'] = wscols;
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Products');
+                
+                // Generate filename with timestamp
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+                const filename = `INGABO_Products_${timestamp}.xlsx`;
+                
+                // Export to file
+                XLSX.writeFile(wb, filename);
+                
+                showNotification('success', `Exported ${allProducts.length} products to ${filename}`);
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('error', 'Export failed: ' + error.message);
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Export page loaded');
+            
+            // Load products
+            loadProducts();
+            
+            // Search input with 300ms delay
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(performSearch, searchDelay);
+                });
+            }
+            
+            // Export button
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportToExcel);
+            }
+            
+            // Add keyboard shortcut for export (Ctrl+E)
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                    e.preventDefault();
+                    exportToExcel();
+                }
+            });
+        });
+
+        // ==================== REAL-TIME UPDATES ====================
+        // Optional: Listen for real-time updates
+        db.collection('products')
+            .orderBy('createdAt', 'desc')
+            .onSnapshot((snapshot) => {
+                const changes = snapshot.docChanges();
+                if (changes.length > 0) {
+                    // Reload products if there are changes
+                    loadProducts();
+                }
+            }, (error) => {
+                console.error('Real-time update error:', error);
+            });
+    </script>
+</body>
+</html>
