@@ -1591,7 +1591,23 @@
                 `;
                 
                 cartItem.addEventListener('click', () => {
-                    window.location.href = `view.html?id=${item.id}`;
+                    // FIRST: Check if item has id
+                    if (item.id) {
+                        window.location.href = `view.html?id=${item.id}`;
+                        hideCart();
+                        return;
+                    }
+                    
+                    // SECOND: Try to find product by name from allProducts
+                    const foundProduct = allProducts.find(p => p.name === item.name);
+                    if (foundProduct && foundProduct.id) {
+                        window.location.href = `view.html?id=${foundProduct.id}`;
+                        hideCart();
+                        return;
+                    }
+                    
+                    // THIRD: Show error if no product found
+                    showNotification('Cannot open product details');
                     hideCart();
                 });
                 
