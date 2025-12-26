@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - INGABO</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK - COMPAT VERSION -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
@@ -19,230 +17,51 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            background: #f5f5f5;
         }
         
         .admin-container {
-            width: 100%;
-            max-width: 800px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
         .admin-header {
-            background: linear-gradient(135deg, #ff6a00, #ff8c42);
+            background: #333;
             color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .admin-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shine 3s infinite linear;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        
-        .admin-logo {
-            font-size: 40px;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .admin-title {
-            font-family: 'Comfortaa', cursive;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .admin-subtitle {
-            opacity: 0.9;
-            font-size: 14px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .admin-content {
-            padding: 40px;
-        }
-        
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .form-label {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-        
-        .form-input {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #ff6a00;
-            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.1);
-        }
-        
-        .form-input.code-input {
-            font-family: monospace;
-            letter-spacing: 3px;
-            text-align: center;
-            font-size: 18px;
-        }
-        
-        .admin-button {
-            background: linear-gradient(135deg, #ff6a00, #ff8c42);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Comfortaa', cursive;
-            margin-top: 10px;
-        }
-        
-        .admin-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 106, 0, 0.3);
-        }
-        
-        .admin-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .error-message {
-            color: #ff0000;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .dashboard {
-            display: none;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .welcome-message {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-            font-family: 'Comfortaa', cursive;
-        }
-        
-        .logout-button {
-            background: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .dashboard-sections {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .section-card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s;
-        }
-        
-        .section-card:hover {
-            border-color: #ff6a00;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            padding: 20px;
             margin-bottom: 20px;
         }
         
-        .section-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ff6a00, #ff8c42);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
+        .admin-title {
+            font-size: 24px;
+            font-weight: bold;
         }
         
-        .section-title {
+        .dashboard {
+            background: white;
+            padding: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .section h3 {
             font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            font-family: 'Comfortaa', cursive;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 30px;
+            width: 50px;
+            height: 24px;
             margin-left: auto;
         }
         
@@ -260,20 +79,16 @@
             right: 0;
             bottom: 0;
             background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
         }
         
         .slider:before {
             position: absolute;
             content: "";
-            height: 22px;
-            width: 22px;
+            height: 16px;
+            width: 16px;
             left: 4px;
             bottom: 4px;
             background-color: white;
-            transition: .4s;
-            border-radius: 50%;
         }
         
         input:checked + .slider {
@@ -281,31 +96,29 @@
         }
         
         input:checked + .slider:before {
-            transform: translateX(30px);
+            transform: translateX(26px);
         }
         
         .announcement-form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 15px;
         }
         
-        .textarea-input {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+        textarea, input {
+            padding: 10px;
+            border: 1px solid #ddd;
             font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            min-height: 100px;
-            resize: vertical;
         }
         
-        .url-input {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
+        button {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
         }
         
         .announcement-list {
@@ -313,302 +126,124 @@
         }
         
         .announcement-item {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
+            background: #f9f9f9;
+            padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #ddd;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .announcement-content {
-            flex: 1;
-            font-size: 14px;
-        }
-        
-        .announcement-status {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-        
-        .status-active {
-            background: #28a745;
-            color: white;
-        }
-        
-        .status-inactive {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .delete-button {
-            background: #ff4757;
+        .delete-btn {
+            background: #ff0000;
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
+            padding: 5px 10px;
             cursor: pointer;
-            font-size: 12px;
         }
         
         .hero-customization {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 15px;
         }
         
-        .file-input {
-            padding: 12px;
-            border: 2px dashed #e0e0e0;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            background: #f8f9fa;
-            transition: all 0.3s;
-        }
-        
-        .file-input:hover {
-            border-color: #ff6a00;
-            background: #fff5f5;
-        }
-        
-        .image-preview {
-            width: 100%;
-            height: 150px;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .image-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .stats-grid {
+        .stats {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
+            margin-top: 15px;
         }
         
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
+        .stat-box {
+            background: #f9f9f9;
+            padding: 15px;
             text-align: center;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #ddd;
         }
         
         .stat-number {
             font-size: 24px;
-            font-weight: 700;
+            font-weight: bold;
             color: #ff6a00;
             margin-bottom: 5px;
-            font-family: 'Comfortaa', cursive;
         }
         
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
+        .message {
+            background: #4CAF50;
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .notification.error {
-            background: #ff4757;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .admin-content {
-                padding: 20px;
-            }
-            
-            .hero-customization {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            padding: 10px;
+            margin-bottom: 15px;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="admin-container" id="adminContainer">
-        <!-- Login Screen -->
+    <div class="admin-container">
         <div class="admin-header">
-            <div class="admin-logo">
-                <i class='bx bx-shield-quarter'></i>
-            </div>
             <div class="admin-title">INGABO ADMIN PANEL</div>
-            <div class="admin-subtitle">Restricted Access - Authorized Personnel Only</div>
         </div>
         
-        <div class="admin-content">
-            <div class="login-screen" id="loginScreen">
-                <form class="login-form" id="adminLoginForm">
-                    <div class="form-group">
-                        <label class="form-label">Admin Email</label>
-                        <input type="email" class="form-input" id="adminEmail" placeholder="Enter admin email" required>
-                        <div class="error-message" id="emailError">Invalid email format</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Admin Password</label>
-                        <input type="password" class="form-input" id="adminPassword" placeholder="Enter password" required>
-                        <div class="error-message" id="passwordError">Password is required</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Security Code</label>
-                        <input type="text" class="form-input code-input" id="securityCode" 
-                               placeholder="XXXX" maxlength="4" required>
-                        <div class="error-message" id="codeError">Invalid security code</div>
-                    </div>
-                    
-                    <button type="submit" class="admin-button" id="loginButton">
-                        <span id="loginText">Authenticate</span>
-                        <div class="spinner" id="loginSpinner" style="display: none;"></div>
-                    </button>
-                </form>
+        <div class="dashboard">
+            <div class="message" id="message"></div>
+            
+            <div class="section">
+                <h3>
+                    <i class='bx bx-cog'></i>
+                    Site Control
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="siteToggle">
+                        <span class="slider"></span>
+                    </label>
+                </h3>
+                <p>Toggle to pause or activate the website.</p>
             </div>
             
-            <!-- Dashboard (Hidden by default) -->
-            <div class="dashboard" id="dashboard">
-                <div class="dashboard-header">
-                    <div class="welcome-message" id="welcomeMessage">Admin Dashboard</div>
-                    <button class="logout-button" id="logoutButton">
-                        <i class='bx bx-log-out'></i> Logout
-                    </button>
+            <div class="section">
+                <h3><i class='bx bx-megaphone'></i> Announcements</h3>
+                <form class="announcement-form" id="announcementForm">
+                    <textarea placeholder="Announcement text" id="announcementText" required></textarea>
+                    <input type="url" placeholder="Link URL (optional)" id="announcementUrl">
+                    <button type="submit">Add Announcement</button>
+                </form>
+                <div class="announcement-list" id="announcementList">
+                    <!-- Announcements will be loaded here -->
                 </div>
-                
-                <div class="dashboard-sections">
-                    <!-- Site Control Section -->
-                    <div class="section-card">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class='bx bx-cog'></i>
-                            </div>
-                            <div class="section-title">Site Control</div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="siteToggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="section-description">
-                            Toggle to pause or activate the website. When paused, users will see a maintenance message.
-                        </div>
+            </div>
+            
+            <div class="section">
+                <h3><i class='bx bx-image'></i> Hero Customization</h3>
+                <div class="hero-customization">
+                    <div>
+                        <input type="url" id="heroImageUrl" placeholder="Hero image URL">
                     </div>
-                    
-                    <!-- Announcements Section -->
-                    <div class="section-card">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class='bx bx-megaphone'></i>
-                            </div>
-                            <div class="section-title">Announcements</div>
-                        </div>
-                        <form class="announcement-form" id="announcementForm">
-                            <textarea class="textarea-input" id="announcementText" 
-                                      placeholder="Enter announcement text..." required></textarea>
-                            <input type="url" class="url-input" id="announcementUrl" 
-                                   placeholder="Optional link URL (include https://)">
-                            <button type="submit" class="admin-button">Add Announcement</button>
-                        </form>
-                        <div class="announcement-list" id="announcementList">
-                            <!-- Announcements will be loaded here -->
-                        </div>
+                    <div>
+                        <input type="text" id="heroTitle" placeholder="Hero title">
                     </div>
-                    
-                    <!-- Hero Customization -->
-                    <div class="section-card">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class='bx bx-image'></i>
-                            </div>
-                            <div class="section-title">Hero Customization</div>
-                        </div>
-                        <div class="hero-customization">
-                            <div>
-                                <label class="form-label">Hero Image URL</label>
-                                <input type="url" class="form-input" id="heroImageUrl" 
-                                       placeholder="https://example.com/image.jpg">
-                            </div>
-                            <div>
-                                <label class="form-label">Hero Title</label>
-                                <input type="text" class="form-input" id="heroTitle" 
-                                       placeholder="Enter hero title">
-                            </div>
-                        </div>
-                        <div class="image-preview" id="heroImagePreview">
-                            <i class='bx bx-image' style="font-size: 40px; color: #ccc;"></i>
-                        </div>
-                        <button class="admin-button" id="saveHeroButton" style="margin-top: 15px;">
-                            Save Hero Settings
-                        </button>
+                </div>
+                <button id="saveHero" style="margin-top: 15px;">Save Hero Settings</button>
+            </div>
+            
+            <div class="section">
+                <h3><i class='bx bx-stats'></i> Site Statistics</h3>
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div>Total Users</div>
                     </div>
-                    
-                    <!-- Statistics -->
-                    <div class="section-card">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class='bx bx-stats'></i>
-                            </div>
-                            <div class="section-title">Site Statistics</div>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-number" id="totalUsers">0</div>
-                                <div class="stat-label">Total Users</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number" id="totalProducts">0</div>
-                                <div class="stat-label">Total Products</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number" id="totalOrders">0</div>
-                                <div class="stat-label">Total Orders</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number" id="activeAnnouncements">0</div>
-                                <div class="stat-label">Active Announcements</div>
-                            </div>
-                        </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalProducts">0</div>
+                        <div>Total Products</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalOrders">0</div>
+                        <div>Total Orders</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="activeAnnouncements">0</div>
+                        <div>Active Announcements</div>
                     </div>
                 </div>
             </div>
@@ -616,403 +251,185 @@
     </div>
 
     <script>
-        // ==================== SECURITY CONFIGURATION ====================
-        const SECURITY_CODE = "1234"; // Default security code - CHANGE THIS IN PRODUCTION
-        const ADMIN_EMAILS = ["admin@ingabo.com", "owner@ingabo.com"]; // Authorized admin emails
-        
-        // ==================== FIREBASE CONFIGURATION ====================
         const firebaseConfig = {
             apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
             authDomain: "ingabo-store.firebaseapp.com",
             projectId: "ingabo-store",
             storageBucket: "ingabo-store.firebasestorage.app",
             messagingSenderId: "1059301382626",
-            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
-            measurementId: "G-QSXTGP9R1Q"
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ==================== STATE MANAGEMENT ====================
-        let currentAdmin = null;
         let siteSettings = null;
 
-        // ==================== NOTIFICATION SYSTEM ====================
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}'></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideIn 0.3s ease reverse';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // ==================== AUTHENTICATION ====================
         document.addEventListener('DOMContentLoaded', function() {
-            // Check for existing session
-            const adminSession = localStorage.getItem('admin_session');
-            if (adminSession) {
-                try {
-                    const sessionData = JSON.parse(adminSession);
-                    if (sessionData.expires > Date.now()) {
-                        showDashboard();
-                        loadSiteSettings();
-                    } else {
-                        localStorage.removeItem('admin_session');
-                    }
-                } catch (error) {
-                    localStorage.removeItem('admin_session');
-                }
-            }
-
+            loadSiteSettings();
             setupEventListeners();
         });
 
         function setupEventListeners() {
-            // Login form submission
-            document.getElementById('adminLoginForm').addEventListener('submit', handleAdminLogin);
-            
-            // Security code input formatting
-            document.getElementById('securityCode').addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
-            });
-            
-            // Logout button
-            document.getElementById('logoutButton').addEventListener('click', handleLogout);
-            
-            // Site toggle
-            document.getElementById('siteToggle').addEventListener('change', handleSiteToggle);
-            
-            // Announcement form
-            document.getElementById('announcementForm').addEventListener('submit', handleAddAnnouncement);
-            
-            // Hero image URL preview
-            document.getElementById('heroImageUrl').addEventListener('input', updateHeroPreview);
-            
-            // Save hero settings
-            document.getElementById('saveHeroButton').addEventListener('click', saveHeroSettings);
+            document.getElementById('siteToggle').addEventListener('change', toggleSiteStatus);
+            document.getElementById('announcementForm').addEventListener('submit', addAnnouncement);
+            document.getElementById('saveHero').addEventListener('click', saveHeroSettings);
         }
 
-        async function handleAdminLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('adminEmail').value.trim();
-            const password = document.getElementById('adminPassword').value;
-            const securityCode = document.getElementById('securityCode').value;
-            
-            // Validation
-            let isValid = true;
-            
-            if (!validateEmail(email)) {
-                document.getElementById('emailError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('emailError').style.display = 'none';
-            }
-            
-            if (!password) {
-                document.getElementById('passwordError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('passwordError').style.display = 'none';
-            }
-            
-            if (securityCode !== SECURITY_CODE) {
-                document.getElementById('codeError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('codeError').style.display = 'none';
-            }
-            
-            // Check if email is authorized
-            if (!ADMIN_EMAILS.includes(email.toLowerCase())) {
-                showNotification('Unauthorized email address', 'error');
-                return;
-            }
-            
-            if (!isValid) return;
-            
-            // Show loading
-            const loginButton = document.getElementById('loginButton');
-            const loginText = document.getElementById('loginText');
-            loginText.textContent = 'Authenticating...';
-            loginButton.disabled = true;
-            
-            try {
-                // Try to sign in with Firebase
-                await auth.signInWithEmailAndPassword(email, password);
-                
-                // Create admin session
-                const sessionData = {
-                    email: email,
-                    expires: Date.now() + (2 * 60 * 60 * 1000) // 2 hours
-                };
-                localStorage.setItem('admin_session', JSON.stringify(sessionData));
-                
-                showNotification('Login successful!', 'success');
-                showDashboard();
-                loadSiteSettings();
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showNotification('Authentication failed. Check credentials.', 'error');
-            } finally {
-                loginText.textContent = 'Authenticate';
-                loginButton.disabled = false;
-            }
-        }
-
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-
-        function showDashboard() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            
-            // Update welcome message
-            const sessionData = JSON.parse(localStorage.getItem('admin_session'));
-            document.getElementById('welcomeMessage').textContent = 
-                `Welcome, ${sessionData.email.split('@')[0]}`;
-        }
-
-        function handleLogout() {
-            auth.signOut();
-            localStorage.removeItem('admin_session');
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'block';
-            showNotification('Logged out successfully', 'success');
-        }
-
-        // ==================== SITE SETTINGS MANAGEMENT ====================
         async function loadSiteSettings() {
             try {
                 const doc = await db.collection('site_personalization').doc('settings').get();
                 if (doc.exists) {
                     siteSettings = doc.data();
-                    updateSettingsUI();
+                    updateUI();
                     
-                    // Listen for real-time updates
                     db.collection('site_personalization').doc('settings')
                         .onSnapshot((snapshot) => {
                             siteSettings = snapshot.data();
-                            updateSettingsUI();
+                            updateUI();
                         });
-                } else {
-                    // Create default settings
-                    await db.collection('site_personalization').doc('settings').set({
-                        status: 'ACTIVE',
-                        announcements: [],
-                        heroImage: '',
-                        heroTitle: '',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    siteSettings = { status: 'ACTIVE', announcements: [], heroImage: '', heroTitle: '' };
-                    updateSettingsUI();
                 }
-                
-                loadStatistics();
-                loadAnnouncements();
             } catch (error) {
-                console.error('Error loading site settings:', error);
-                showNotification('Failed to load site settings', 'error');
+                console.error('Error:', error);
             }
         }
 
-        function updateSettingsUI() {
+        function updateUI() {
             if (!siteSettings) return;
             
-            // Update site toggle
-            const siteToggle = document.getElementById('siteToggle');
-            siteToggle.checked = siteSettings.status === 'ACTIVE';
-            
-            // Update hero settings
+            document.getElementById('siteToggle').checked = siteSettings.status === 'ACTIVE';
             document.getElementById('heroImageUrl').value = siteSettings.heroImage || '';
             document.getElementById('heroTitle').value = siteSettings.heroTitle || '';
-            updateHeroPreview();
+            
+            loadAnnouncements();
+            loadStatistics();
         }
 
-        async function handleSiteToggle(e) {
-            const isActive = e.target.checked;
-            const status = isActive ? 'ACTIVE' : 'PAUSED';
+        async function toggleSiteStatus(e) {
+            const status = e.target.checked ? 'ACTIVE' : 'PAUSED';
             
             try {
                 await db.collection('site_personalization').doc('settings').update({
-                    status: status,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    status: status
                 });
-                
-                showNotification(`Site ${isActive ? 'activated' : 'paused'} successfully`, 'success');
+                showMessage('Site status updated');
             } catch (error) {
-                console.error('Error updating site status:', error);
-                showNotification('Failed to update site status', 'error');
-                e.target.checked = !isActive; // Revert toggle
+                console.error('Error:', error);
+                showMessage('Error updating status', 'error');
             }
         }
 
-        // ==================== ANNOUNCEMENTS MANAGEMENT ====================
-        async function loadAnnouncements() {
-            try {
-                const container = document.getElementById('announcementList');
-                container.innerHTML = '';
-                
-                if (!siteSettings.announcements || siteSettings.announcements.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No announcements yet</div>';
-                    return;
-                }
-                
-                siteSettings.announcements.forEach((announcement, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'announcement-item';
-                    item.innerHTML = `
-                        <div class="announcement-content">
-                            ${announcement.link ? 
-                                `<a href="${announcement.link}" target="_blank">${announcement.content}</a>` : 
-                                announcement.content
-                            }
-                            <span class="announcement-status ${announcement.active ? 'status-active' : 'status-inactive'}">
-                                ${announcement.active ? 'Active' : 'Inactive'}
-                            </span>
-                        </div>
-                        <button class="delete-button" data-index="${index}">
-                            <i class='bx bx-trash'></i>
-                        </button>
-                    `;
-                    
-                    item.querySelector('.delete-button').addEventListener('click', () => {
-                        deleteAnnouncement(index);
-                    });
-                    
-                    container.appendChild(item);
-                });
-                
-                // Update statistics
-                const activeCount = siteSettings.announcements.filter(a => a.active).length;
-                document.getElementById('activeAnnouncements').textContent = activeCount;
-            } catch (error) {
-                console.error('Error loading announcements:', error);
-            }
-        }
-
-        async function handleAddAnnouncement(e) {
+        async function addAnnouncement(e) {
             e.preventDefault();
             
-            const content = document.getElementById('announcementText').value.trim();
-            const link = document.getElementById('announcementUrl').value.trim();
+            const text = document.getElementById('announcementText').value.trim();
+            const url = document.getElementById('announcementUrl').value.trim();
             
-            if (!content) {
-                showNotification('Please enter announcement content', 'error');
-                return;
-            }
+            if (!text) return;
             
-            if (link && !link.startsWith('http')) {
-                showNotification('Please enter a valid URL starting with http:// or https://', 'error');
-                return;
-            }
+            const newAnnouncement = {
+                content: text,
+                link: url || null,
+                active: true,
+                createdAt: new Date().toISOString()
+            };
             
             try {
-                const newAnnouncement = {
-                    content: content,
-                    link: link || null,
-                    active: true,
-                    createdAt: new Date().toISOString()
-                };
-                
                 const updatedAnnouncements = [...(siteSettings.announcements || []), newAnnouncement];
-                
                 await db.collection('site_personalization').doc('settings').update({
-                    announcements: updatedAnnouncements,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    announcements: updatedAnnouncements
                 });
                 
                 document.getElementById('announcementText').value = '';
                 document.getElementById('announcementUrl').value = '';
-                showNotification('Announcement added successfully', 'success');
-                
+                showMessage('Announcement added');
             } catch (error) {
-                console.error('Error adding announcement:', error);
-                showNotification('Failed to add announcement', 'error');
+                console.error('Error:', error);
+                showMessage('Error adding announcement', 'error');
             }
+        }
+
+        function loadAnnouncements() {
+            const container = document.getElementById('announcementList');
+            container.innerHTML = '';
+            
+            if (!siteSettings.announcements || siteSettings.announcements.length === 0) {
+                container.innerHTML = '<div>No announcements</div>';
+                return;
+            }
+            
+            siteSettings.announcements.forEach((announcement, index) => {
+                const item = document.createElement('div');
+                item.className = 'announcement-item';
+                item.innerHTML = `
+                    <div>${announcement.content}</div>
+                    <button class="delete-btn" data-index="${index}">Delete</button>
+                `;
+                
+                item.querySelector('.delete-btn').addEventListener('click', () => {
+                    deleteAnnouncement(index);
+                });
+                
+                container.appendChild(item);
+            });
         }
 
         async function deleteAnnouncement(index) {
-            if (!confirm('Are you sure you want to delete this announcement?')) return;
+            const updatedAnnouncements = [...siteSettings.announcements];
+            updatedAnnouncements.splice(index, 1);
             
             try {
-                const updatedAnnouncements = [...siteSettings.announcements];
-                updatedAnnouncements.splice(index, 1);
-                
                 await db.collection('site_personalization').doc('settings').update({
-                    announcements: updatedAnnouncements,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    announcements: updatedAnnouncements
                 });
-                
-                showNotification('Announcement deleted successfully', 'success');
+                showMessage('Announcement deleted');
             } catch (error) {
-                console.error('Error deleting announcement:', error);
-                showNotification('Failed to delete announcement', 'error');
-            }
-        }
-
-        // ==================== HERO CUSTOMIZATION ====================
-        function updateHeroPreview() {
-            const imageUrl = document.getElementById('heroImageUrl').value;
-            const preview = document.getElementById('heroImagePreview');
-            
-            if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
-                preview.innerHTML = `<img src="${imageUrl}" alt="Hero Preview" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'bx bx-image\' style=\'font-size: 40px; color: #ccc;\'></i>';">`;
-            } else {
-                preview.innerHTML = '<i class=\'bx bx-image\' style="font-size: 40px; color: #ccc;"></i>';
+                console.error('Error:', error);
+                showMessage('Error deleting announcement', 'error');
             }
         }
 
         async function saveHeroSettings() {
-            const heroImage = document.getElementById('heroImageUrl').value.trim();
-            const heroTitle = document.getElementById('heroTitle').value.trim();
+            const imageUrl = document.getElementById('heroImageUrl').value.trim();
+            const title = document.getElementById('heroTitle').value.trim();
             
             try {
                 await db.collection('site_personalization').doc('settings').update({
-                    heroImage: heroImage,
-                    heroTitle: heroTitle,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    heroImage: imageUrl,
+                    heroTitle: title
                 });
-                
-                showNotification('Hero settings saved successfully', 'success');
+                showMessage('Hero settings saved');
             } catch (error) {
-                console.error('Error saving hero settings:', error);
-                showNotification('Failed to save hero settings', 'error');
+                console.error('Error:', error);
+                showMessage('Error saving hero settings', 'error');
             }
         }
 
-        // ==================== STATISTICS ====================
         async function loadStatistics() {
             try {
-                // Load total users
                 const usersSnapshot = await db.collection('users').get();
                 document.getElementById('totalUsers').textContent = usersSnapshot.size;
                 
-                // Load total products
                 const productsSnapshot = await db.collection('products').get();
                 document.getElementById('totalProducts').textContent = productsSnapshot.size;
                 
-                // Load total orders (you'll need to create an orders collection)
-                const ordersSnapshot = await db.collection('orders').get().catch(() => ({ size: 0 }));
-                document.getElementById('totalOrders').textContent = ordersSnapshot.size || 0;
-                
+                const activeAnnouncements = siteSettings.announcements ? 
+                    siteSettings.announcements.filter(a => a.active).length : 0;
+                document.getElementById('activeAnnouncements').textContent = activeAnnouncements;
             } catch (error) {
-                console.error('Error loading statistics:', error);
+                console.error('Error:', error);
             }
+        }
+
+        function showMessage(text, type = 'success') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.style.display = 'block';
+            message.style.background = type === 'error' ? '#ff0000' : '#4CAF50';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
         }
     </script>
 </body>
