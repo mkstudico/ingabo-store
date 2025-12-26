@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instagram Downloader - INGABO</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 375px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .container {
+            padding: 0 12px;
+        }
+        
+        /* ========== HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .back-button i {
+            font-size: 18px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo-img {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .logo-text h1 {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        .logo-text p {
+            font-size: 11px;
+            color: #666;
+            margin-top: -2px;
+        }
+        
+        /* ========== DASHBOARD CONTENT ========== */
+        .dashboard-screen {
+            display: block;
+        }
+        
+        .welcome-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* ========== HOW TO DOWNLOAD SECTION ========== */
+        .howto-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .howto-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .step-number {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+            padding-top: 3px;
+        }
+        
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* ========== TOOLS LIST ========== */
+        .tools-section {
+            margin-top: 15px;
+        }
+        
+        .tools-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .tool-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tool-item:hover {
+            background: #f9f9f9;
+            transform: translateX(5px);
+        }
+        
+        .tool-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .tool-content {
+            flex: 1;
+        }
+        
+        .tool-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .tool-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .tool-arrow {
+            color: #999;
+            font-size: 18px;
+        }
+        
+        /* ========== COLOR CODED ICONS ========== */
+        .tool-download .tool-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        
+        /* ========== NOTIFICATION SYSTEM ========== */
+        .notification-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+            pointer-events: auto;
+            border-left: 4px solid;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        .notification.info {
+            border-left-color: #17a2b8;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 350px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .welcome-section, .howto-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Screen -->
+    <div class="dashboard-screen" id="dashboardScreen">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <a href="index.html" class="back-button">
+                    <i class='bx bx-arrow-back'></i>
+                    <span>Back</span>
+                </a>
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                        <p>Instagram Downloader</p>
+                    </div>
+                </div>
+                <div style="width: 60px;"></div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-title">Instagram Content Downloader</div>
+                <div class="welcome-subtitle">Download photos, videos, reels, and stories easily</div>
+            </div>
+            
+            <!-- How to Download Section -->
+            <div class="howto-section">
+                <div class="section-title">
+                    <i class='bx bx-download'></i>
+                    How to Download
+                </div>
+                
+                <div class="howto-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Copy Instagram Link</div>
+                            <div class="step-desc">Open Instagram app, find the post, tap three dots (•••) and select "Copy Link"</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Open Downloader</div>
+                            <div class="step-desc">Click the "Open SnapInsta Downloader" button below</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Paste & Download</div>
+                            <div class="step-desc">Paste your Instagram link on SnapInsta and click download</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Save to Device</div>
+                            <div class="step-desc">Save the downloaded content to your phone or computer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tools List -->
+            <div class="tools-section">
+                <div class="section-title" style="margin-left: 5px;">Available Actions</div>
+                
+                <div class="tools-list">
+                    <!-- Download Tool -->
+                    <div class="tool-item tool-download" id="openSnapinstaBtn">
+                        <div class="tool-icon">
+                            <i class='bx bx-link-external'></i>
+                        </div>
+                        <div class="tool-content">
+                            <div class="tool-title">Open SnapInsta Downloader</div>
+                            <div class="tool-desc">Access the Instagram download tool in your browser</div>
+                        </div>
+                        <div class="tool-arrow">
+                            <i class='bx bx-chevron-right'></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Info -->
+            <div class="welcome-section" style="margin-top: 15px; text-align: left; padding: 15px;">
+                <div style="font-size: 13px; color: #666; line-height: 1.5;">
+                    <p style="margin-bottom: 8px;"><strong>Note:</strong> This tool uses SnapInsta.to service. Make sure you have permission to download the content.</p>
+                    <p><strong>Supported content:</strong> Photos, Videos, Reels, Stories, IGTV</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Opening SnapInsta...</div>
+    </div>
+
+    <script>
+        // ==================== NOTIFICATION SYSTEM ====================
+        class NotificationSystem {
+            constructor() {
+                this.container = document.getElementById('notificationContainer');
+            }
+            
+            show(type, message, duration = 3000) {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                
+                let icon = '';
+                switch(type) {
+                    case 'success':
+                        icon = '<i class="bx bx-check-circle" style="color: #28a745; font-size: 20px;"></i>';
+                        break;
+                    case 'error':
+                        icon = '<i class="bx bx-error-circle" style="color: #dc3545; font-size: 20px;"></i>';
+                        break;
+                    case 'info':
+                        icon = '<i class="bx bx-info-circle" style="color: #17a2b8; font-size: 20px;"></i>';
+                        break;
+                }
+                
+                notification.innerHTML = `
+                    ${icon}
+                    <div style="flex: 1; font-size: 13px; font-weight: 500;">${message}</div>
+                `;
+                
+                this.container.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.animation = 'slideDown 0.3s ease reverse';
+                        setTimeout(() => notification.parentNode.removeChild(notification), 300);
+                    }
+                }, duration);
+            }
+        }
+        
+        const notificationSystem = new NotificationSystem();
+        
+        // ==================== LOADING SYSTEM ====================
+        class LoadingSystem {
+            constructor() {
+                this.overlay = document.getElementById('loadingOverlay');
+                this.text = document.getElementById('loadingText');
+            }
+            
+            show(message = 'Loading...') {
+                this.text.textContent = message;
+                this.overlay.classList.add('active');
+            }
+            
+            hide() {
+                this.overlay.classList.remove('active');
+            }
+        }
+        
+        const loadingSystem = new LoadingSystem();
+        
+        // ==================== OPEN SNAPINSTA ====================
+        function openSnapinsta() {
+            loadingSystem.show('Opening SnapInsta Downloader...');
+            
+            setTimeout(() => {
+                // Open SnapInsta in a new tab
+                const snapinstaUrl = 'https://snapinsta.to/en2';
+                window.open(snapinstaUrl, '_blank');
+                
+                // Show success message
+                loadingSystem.hide();
+                notificationSystem.show('success', 'SnapInsta opened in new tab!', 3000);
+                
+                // Show instructions
+                setTimeout(() => {
+                    notificationSystem.show('info', 
+                        '1. Paste your Instagram link on SnapInsta<br>2. Click Download button<br>3. Save to your device', 
+                        5000);
+                }, 1000);
+            }, 800);
+        }
+        
+        // ==================== EVENT LISTENERS ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open SnapInsta button
+            const openBtn = document.getElementById('openSnapinstaBtn');
+            
+            openBtn.addEventListener('click', openSnapinsta);
+            
+            // Add hover effects
+            openBtn.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f9f9f9';
+                this.style.transform = 'translateX(5px)';
+            });
+            
+            openBtn.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.transform = 'translateX(0)';
+            });
+            
+            // Add click animation
+            openBtn.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.98) translateX(5px)';
+            });
+            
+            openBtn.addEventListener('mouseup', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            
+            // Touch events for mobile
+            openBtn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            openBtn.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+            
+            // Keyboard shortcut
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    openSnapinsta();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
