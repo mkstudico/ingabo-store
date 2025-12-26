@@ -1,0 +1,1495 @@
+[file name]: account.html
+[file content begin]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Account - INGABO</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+    
+    <!-- Firebase Messaging (FCM) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-sw.js"></script>
+    
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --accent-color: #ff6a00;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+        
+        /* ========== NOTIFICATION SYSTEM ========== */
+        .notification-box {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 99999;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            max-width: 90%;
+            animation: slideInDown 0.3s ease, fadeOut 0.3s ease 5.7s forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
+            display: none;
+        }
+        
+        .notification-box.show {
+            display: block;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translate(-50%, -20px);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        /* ========== MOBILE HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 5px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-text h1 {
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #000;
+            letter-spacing: 0.5px;
+        }
+        
+        .logo-text span {
+            font-size: 9px;
+            color: #666;
+        }
+        
+        .back-button {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* ========== ACCOUNT HERO SECTION ========== */
+        .account-hero {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff8c42 100%);
+            padding: 25px 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .account-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(255,255,255,0.1) 25%, 
+                transparent 50%,
+                rgba(255,255,255,0.1) 75%,
+                transparent 100%);
+            animation: shimmer 3s infinite linear;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 36px;
+            color: var(--accent-color);
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .user-email {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .account-status {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* ========== TABS CONTAINER ========== */
+        .tabs-container {
+            background: white;
+            border-radius: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* ========== PERSONAL INFORMATION TAB ========== */
+        .info-group {
+            margin-bottom: 20px;
+        }
+        
+        .info-label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            background: #f8f8f8;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .info-value.editable {
+            background: white;
+            border-color: #ddd;
+        }
+        
+        .copy-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .copy-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .edit-btn {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .edit-btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .save-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .edit-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .edit-input:focus {
+            border-color: var(--accent-color);
+        }
+        
+        /* ========== NOTIFICATIONS TAB ========== */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .notification-item {
+            background: #f8f8f8;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .notification-time {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        .notification-message {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .notification-unread {
+            background: white;
+            border-color: #ff6a00;
+            box-shadow: 0 2px 4px rgba(255,106,0,0.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        
+        /* ========== DELIVERY TAB ========== */
+        .delivery-info {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+        
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-indicator.active {
+            background: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+        
+        .status-indicator.inactive {
+            background: #f44336;
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2);
+        }
+        
+        .track-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        
+        .track-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .location-display {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .location-display.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .coordinate {
+            font-family: monospace;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        /* ========== CONTACT TAB ========== */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .contact-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .contact-item:active {
+            background: #f8f8f8;
+            transform: translateY(-2px);
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff8c42 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .contact-details {
+            flex: 1;
+        }
+        
+        .contact-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .contact-value {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* ========== BOTTOM NAVIGATION ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            padding: 8px 0 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            text-decoration: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-text {
+            font-size: 9px;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 106, 0, 0.1);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--accent-color);
+        }
+        
+        .nav-item.active .nav-text {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        /* ========== LOGOUT BUTTON ========== */
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 20px;
+            transition: opacity 0.3s;
+        }
+        
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* ========== LOADING STATES ========== */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            width: 35px;
+            height: 35px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ========== RESPONSIVE ADJUSTMENTS ========== */
+        @media (max-width: 350px) {
+            .user-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+            
+            .user-name {
+                font-size: 18px;
+            }
+            
+            .tab-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Box -->
+    <div class="notification-box" id="notificationBox"></div>
+    
+    <div class="container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <a href="indexp.html" class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                        <span>MY ACCOUNT</span>
+                    </div>
+                </a>
+                <button class="back-button" onclick="window.history.back()">
+                    <i class='bx bx-arrow-back'></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Account Hero Section -->
+        <section class="account-hero" id="accountHero">
+            <div class="user-avatar">
+                <i class='bx bx-user'></i>
+            </div>
+            <div class="user-name" id="userName">Loading...</div>
+            <div class="user-email" id="userEmail">Loading...</div>
+            <div class="account-status">Verified Account</div>
+        </section>
+        
+        <!-- Tabs Container -->
+        <div class="tabs-container">
+            <!-- Personal Information Tab -->
+            <div class="tab-content active" id="personalInfoTab">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-user-circle'></i> Personal Information
+                    </h3>
+                    
+                    <div class="info-group">
+                        <span class="info-label">User ID</span>
+                        <div class="info-value" id="userIdValue">
+                            <span id="userIdText">Loading...</span>
+                            <button class="copy-btn" onclick="copyToClipboard('userIdText')">Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Full Name</span>
+                        <div class="info-value" id="userNameValue">
+                            <span id="userNameText">Loading...</span>
+                            <button class="edit-btn" onclick="enableEdit('userNameEdit', 'userNameText')">Edit</button>
+                        </div>
+                        <div id="userNameEdit" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" class="edit-input" id="firstNameInput" placeholder="First Name">
+                                <input type="text" class="edit-input" id="lastNameInput" placeholder="Last Name">
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                <button class="save-btn" onclick="saveName()">Save</button>
+                                <button class="edit-btn" onclick="cancelEdit('userNameEdit', 'userNameText')">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Email Address</span>
+                        <div class="info-value">
+                            <span id="userEmailText">Loading...</span>
+                            <span style="font-size: 11px; color: #666;">(Verified)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Phone Number</span>
+                        <div class="info-value" id="userPhoneValue">
+                            <span id="userPhoneText">Loading...</span>
+                            <button class="edit-btn" onclick="enableEdit('userPhoneEdit', 'userPhoneText')">Edit</button>
+                        </div>
+                        <div id="userPhoneEdit" style="display: none; margin-top: 10px;">
+                            <input type="tel" class="edit-input" id="phoneInput" placeholder="+250 XXX XXX XXX">
+                            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                <button class="save-btn" onclick="savePhone()">Save</button>
+                                <button class="edit-btn" onclick="cancelEdit('userPhoneEdit', 'userPhoneText')">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Gender</span>
+                        <div class="info-value">
+                            <span id="userGenderText">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Age</span>
+                        <div class="info-value">
+                            <span id="userAgeText">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Account Created</span>
+                        <div class="info-value">
+                            <span id="userCreatedText">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Last Login</span>
+                        <div class="info-value">
+                            <span id="userLastLoginText">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications Tab -->
+            <div class="tab-content" id="notificationsTab">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-bell'></i> Notifications
+                    </h3>
+                    
+                    <div class="notifications-list" id="notificationsList">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading notifications...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delivery Tab -->
+            <div class="tab-content" id="deliveryTab">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-map'></i> Delivery & Location
+                    </h3>
+                    
+                    <div class="delivery-info">
+                        <div class="location-status">
+                            <div class="status-indicator inactive" id="locationStatus"></div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600;">Location Status</div>
+                                <div style="font-size: 12px; color: #666;" id="locationStatusText">Not tracked</div>
+                            </div>
+                        </div>
+                        
+                        <button class="track-btn" id="trackLocationBtn">
+                            <i class='bx bx-current-location'></i> Track My Location for Faster Delivery
+                        </button>
+                        
+                        <div class="location-display" id="locationDisplay">
+                            <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Your Location:</div>
+                            <div class="coordinate" id="latitude">Latitude: --</div>
+                            <div class="coordinate" id="longitude">Longitude: --</div>
+                            <div class="coordinate" id="accuracy">Accuracy: -- meters</div>
+                            <div style="font-size: 11px; color: #666; margin-top: 10px;">
+                                <i class='bx bx-info-circle'></i> This helps us provide faster delivery estimates
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 12px; color: #666; padding: 15px; background: #f8f8f8; border-radius: 8px;">
+                        <i class='bx bx-info-circle'></i> Your location is used only for delivery optimization and is not shared with third parties.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Tab -->
+            <div class="tab-content" id="contactTab">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-phone'></i> Contact Us
+                    </h3>
+                    
+                    <div class="contact-info">
+                        <div class="contact-item" onclick="copyToClipboardText('+250 792 642 955')">
+                            <div class="contact-icon">
+                                <i class='bx bx-phone'></i>
+                            </div>
+                            <div class="contact-details">
+                                <div class="contact-title">Phone Number</div>
+                                <div class="contact-value">+250 792 642 955</div>
+                            </div>
+                            <i class='bx bx-copy' style="color: #666;"></i>
+                        </div>
+                        
+                        <div class="contact-item" onclick="copyToClipboardText('mkbertrand123@gmail.com')">
+                            <div class="contact-icon">
+                                <i class='bx bx-envelope'></i>
+                            </div>
+                            <div class="contact-details">
+                                <div class="contact-title">Email Address</div>
+                                <div class="contact-value">mkbertrand123@gmail.com</div>
+                            </div>
+                            <i class='bx bx-copy' style="color: #666;"></i>
+                        </div>
+                        
+                        <div class="contact-item" onclick="window.open('https://wa.me/250792642955', '_blank')">
+                            <div class="contact-icon" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                                <i class='bx bxl-whatsapp'></i>
+                            </div>
+                            <div class="contact-details">
+                                <div class="contact-title">WhatsApp</div>
+                                <div class="contact-value">Chat with us on WhatsApp</div>
+                            </div>
+                            <i class='bx bx-link-external' style="color: #666;"></i>
+                        </div>
+                        
+                        <div class="contact-item" onclick="window.open('https://maps.google.com/?q=Kigali, Rwanda', '_blank')">
+                            <div class="contact-icon" style="background: linear-gradient(135deg, #4285F4 0%, #0F9D58 100%);">
+                                <i class='bx bx-map'></i>
+                            </div>
+                            <div class="contact-details">
+                                <div class="contact-title">Address</div>
+                                <div class="contact-value">Kigali, Rwanda</div>
+                            </div>
+                            <i class='bx bx-link-external' style="color: #666;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logout Button -->
+        <button class="logout-btn" id="logoutBtn">
+            <i class='bx bx-log-out'></i> Logout
+        </button>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="navPersonal">
+            <i class='bx bx-user nav-icon'></i>
+            <div class="nav-text">Profile</div>
+        </button>
+        <button class="nav-item" id="navNotifications">
+            <i class='bx bx-bell nav-icon'></i>
+            <div class="nav-text">Notifications</div>
+        </button>
+        <button class="nav-item" id="navDelivery">
+            <i class='bx bx-map nav-icon'></i>
+            <div class="nav-text">Delivery</div>
+        </button>
+        <button class="nav-item" id="navContact">
+            <i class='bx bx-phone nav-icon'></i>
+            <div class="nav-text">Contact</div>
+        </button>
+    </nav>
+
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
+            authDomain: "ingabo-store.firebaseapp.com",
+            projectId: "ingabo-store",
+            storageBucket: "ingabo-store.firebasestorage.app",
+            messagingSenderId: "1059301382626",
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
+            measurementId: "G-QSXTGP9R1Q"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // Initialize FCM if available
+        let messaging = null;
+        if (firebase.messaging.isSupported()) {
+            messaging = firebase.messaging();
+        }
+
+        // ==================== GLOBAL VARIABLES ====================
+        let currentUser = null;
+        let userData = null;
+        let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db'];
+        let currentAccentColor = '#ff6a00';
+        let userLocation = null;
+        let fcmToken = null;
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Redirect to mobile homepage if screen is large
+            if (window.innerWidth > 768 && !window.location.href.includes('account.html')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            initializeAccentColor();
+            initializeAuth();
+            setupEventListeners();
+            initializeFCM();
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000);
+        });
+
+        // ==================== ACCENT COLOR ROTATION ====================
+        function initializeAccentColor() {
+            const hour = new Date().getHours();
+            const colorIndex = hour % accentColors.length;
+            currentAccentColor = accentColors[colorIndex];
+            document.documentElement.style.setProperty('--accent-color', currentAccentColor);
+            
+            // Update every 10 minutes
+            setInterval(() => {
+                const currentTime = new Date().getHours();
+                if (currentTime !== hour) {
+                    const newColorIndex = currentTime % accentColors.length;
+                    currentAccentColor = accentColors[newColorIndex];
+                    document.documentElement.style.setProperty('--accent-color', currentAccentColor);
+                    updateAccentColorInUI();
+                }
+            }, 600000);
+        }
+
+        function updateAccentColorInUI() {
+            // Update all elements with accent color
+            const elements = document.querySelectorAll('.account-hero, .copy-btn, .track-btn, .contact-icon');
+            elements.forEach(el => {
+                if (el.classList.contains('account-hero')) {
+                    el.style.background = `linear-gradient(135deg, ${currentAccentColor} 0%, ${lightenColor(currentAccentColor, 20)} 100%)`;
+                } else if (el.classList.contains('contact-icon')) {
+                    const bg = getComputedStyle(el).background;
+                    if (bg.includes('linear-gradient')) {
+                        el.style.background = bg.replace(/#[0-9A-F]{6}/gi, currentAccentColor);
+                    }
+                } else {
+                    el.style.backgroundColor = currentAccentColor;
+                }
+            });
+        }
+
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (
+                0x1000000 +
+                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)
+            ).toString(16).slice(1);
+        }
+
+        // ==================== NOTIFICATION SYSTEM ====================
+        function showNotification(message, type = 'info') {
+            const notificationBox = document.getElementById('notificationBox');
+            if (!notificationBox) return;
+            
+            notificationBox.textContent = message;
+            notificationBox.style.background = type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 
+                                             type === 'error' ? 'rgba(244, 67, 54, 0.9)' : 
+                                             'rgba(0, 0, 0, 0.9)';
+            
+            notificationBox.classList.remove('show');
+            void notificationBox.offsetWidth; // Trigger reflow
+            notificationBox.classList.add('show');
+            
+            setTimeout(() => {
+                notificationBox.classList.remove('show');
+            }, 5000);
+        }
+
+        // ==================== AUTHENTICATION ====================
+        function initializeAuth() {
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                
+                if (!user) {
+                    // Redirect to login if not authenticated
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                await loadUserData(user.uid);
+                await loadNotifications();
+                await loadUserLocation();
+            });
+        }
+
+        // ==================== USER DATA MANAGEMENT ====================
+        async function loadUserData(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                
+                if (!userDoc.exists) {
+                    showNotification('User data not found', 'error');
+                    return;
+                }
+                
+                userData = userDoc.data();
+                updateUserUI(userData);
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
+            }
+        }
+
+        function updateUserUI(data) {
+            // Update hero section
+            document.getElementById('userName').textContent = data.displayName || data.firstName + ' ' + data.lastName;
+            document.getElementById('userEmail').textContent = data.email || 'No email';
+            
+            // Update personal information
+            document.getElementById('userIdText').textContent = currentUser.uid;
+            document.getElementById('userNameText').textContent = data.displayName || data.firstName + ' ' + data.lastName;
+            document.getElementById('userEmailText').textContent = data.email || 'No email';
+            document.getElementById('userPhoneText').textContent = data.phone || 'Not provided';
+            document.getElementById('userGenderText').textContent = data.gender || 'Not specified';
+            document.getElementById('userAgeText').textContent = data.age ? data.age + ' years' : 'Not specified';
+            
+            // Format dates
+            if (data.createdAt) {
+                const createdDate = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                document.getElementById('userCreatedText').textContent = createdDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+            
+            if (data.lastLogin) {
+                const lastLoginDate = data.lastLogin.toDate ? data.lastLogin.toDate() : new Date(data.lastLogin);
+                document.getElementById('userLastLoginText').textContent = lastLoginDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+
+        // ==================== EDIT PROFILE FUNCTIONS ====================
+        function enableEdit(editDivId, textSpanId) {
+            const editDiv = document.getElementById(editDivId);
+            const textSpan = document.getElementById(textSpanId);
+            
+            if (editDivId === 'userNameEdit') {
+                const nameParts = textSpan.textContent.split(' ');
+                document.getElementById('firstNameInput').value = nameParts[0] || '';
+                document.getElementById('lastNameInput').value = nameParts.slice(1).join(' ') || '';
+            } else if (editDivId === 'userPhoneEdit') {
+                document.getElementById('phoneInput').value = textSpan.textContent || '';
+            }
+            
+            editDiv.style.display = 'block';
+            document.getElementById(textSpanId.replace('Text', 'Value')).style.display = 'none';
+        }
+
+        function cancelEdit(editDivId, textSpanId) {
+            document.getElementById(editDivId).style.display = 'none';
+            document.getElementById(textSpanId.replace('Text', 'Value')).style.display = 'flex';
+        }
+
+        async function saveName() {
+            const firstName = document.getElementById('firstNameInput').value.trim();
+            const lastName = document.getElementById('lastNameInput').value.trim();
+            
+            if (!firstName || !lastName) {
+                showNotification('Please enter both first and last name', 'error');
+                return;
+            }
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    firstName: firstName,
+                    lastName: lastName,
+                    displayName: `${firstName} ${lastName}`,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('Name updated successfully', 'success');
+                cancelEdit('userNameEdit', 'userNameText');
+                await loadUserData(currentUser.uid);
+                
+            } catch (error) {
+                console.error('Error updating name:', error);
+                showNotification('Error updating name', 'error');
+            }
+        }
+
+        async function savePhone() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            
+            if (!phone) {
+                showNotification('Please enter a phone number', 'error');
+                return;
+            }
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    phone: phone,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('Phone number updated successfully', 'success');
+                cancelEdit('userPhoneEdit', 'userPhoneText');
+                await loadUserData(currentUser.uid);
+                
+            } catch (error) {
+                console.error('Error updating phone:', error);
+                showNotification('Error updating phone', 'error');
+            }
+        }
+
+        // ==================== NOTIFICATIONS MANAGEMENT ====================
+        async function loadNotifications() {
+            try {
+                const notificationsList = document.getElementById('notificationsList');
+                
+                // Query notifications for this user
+                const snapshot = await db.collection('notifications')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(20)
+                    .get();
+                
+                if (snapshot.empty) {
+                    notificationsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class='bx bx-bell-off' style="font-size: 40px; margin-bottom: 10px; color: #ccc;"></i>
+                            <div>No notifications yet</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                notificationsList.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const notification = doc.data();
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = `notification-item ${notification.read ? '' : 'notification-unread'}`;
+                    
+                    const date = notification.timestamp?.toDate ? notification.timestamp.toDate() : new Date();
+                    const timeAgo = getTimeAgo(date);
+                    
+                    notificationItem.innerHTML = `
+                        <div class="notification-header">
+                            <div class="notification-title">${notification.title || 'Notification'}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        <div class="notification-message">${notification.message}</div>
+                    `;
+                    
+                    notificationItem.addEventListener('click', () => {
+                        markNotificationAsRead(doc.id);
+                    });
+                    
+                    notificationsList.appendChild(notificationItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                const notificationsList = document.getElementById('notificationsList');
+                notificationsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-error' style="font-size: 40px; margin-bottom: 10px; color: #f44336;"></i>
+                        <div>Error loading notifications</div>
+                    </div>
+                `;
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            try {
+                await db.collection('notifications').doc(notificationId).update({
+                    read: true
+                });
+                
+                // Reload notifications
+                await loadNotifications();
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'just now';
+            
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            
+            const days = Math.floor(hours / 24);
+            if (days < 7) return `${days}d ago`;
+            
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // ==================== LOCATION TRACKING ====================
+        async function loadUserLocation() {
+            try {
+                const locationDoc = await db.collection('user_locations').doc(currentUser.uid).get();
+                
+                if (locationDoc.exists) {
+                    userLocation = locationDoc.data();
+                    updateLocationUI(userLocation);
+                }
+            } catch (error) {
+                console.error('Error loading user location:', error);
+            }
+        }
+
+        function updateLocationUI(location) {
+            const statusIndicator = document.getElementById('locationStatus');
+            const statusText = document.getElementById('locationStatusText');
+            const locationDisplay = document.getElementById('locationDisplay');
+            
+            if (location && location.latitude && location.longitude) {
+                statusIndicator.className = 'status-indicator active';
+                statusText.textContent = 'Location saved';
+                locationDisplay.classList.add('show');
+                
+                document.getElementById('latitude').textContent = `Latitude: ${location.latitude.toFixed(6)}`;
+                document.getElementById('longitude').textContent = `Longitude: ${location.longitude.toFixed(6)}`;
+                document.getElementById('accuracy').textContent = location.accuracy ? 
+                    `Accuracy: ${Math.round(location.accuracy)} meters` : 
+                    'Accuracy: Not available';
+            } else {
+                statusIndicator.className = 'status-indicator inactive';
+                statusText.textContent = 'Not tracked';
+                locationDisplay.classList.remove('show');
+            }
+        }
+
+        function getCurrentLocation() {
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error');
+                return;
+            }
+            
+            showNotification('Getting your location...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    userLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    try {
+                        // Save location to Firestore
+                        await db.collection('user_locations').doc(currentUser.uid).set(userLocation, { merge: true });
+                        
+                        showNotification('Location saved successfully!', 'success');
+                        updateLocationUI(userLocation);
+                        
+                    } catch (error) {
+                        console.error('Error saving location:', error);
+                        showNotification('Error saving location', 'error');
+                    }
+                },
+                (error) => {
+                    console.error('Geolocation error:', error);
+                    
+                    let errorMessage = 'Unable to get your location';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access was denied';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out';
+                            break;
+                    }
+                    
+                    showNotification(errorMessage, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // ==================== FCM (FIREBASE CLOUD MESSAGING) ====================
+        async function initializeFCM() {
+            if (!messaging) {
+                console.log('FCM not supported');
+                return;
+            }
+            
+            try {
+                // Request notification permission
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    
+                    // Get FCM token
+                    fcmToken = await messaging.getToken({
+                        vapidKey: 'YOUR_VAPID_KEY_HERE' // Add your VAPID key here
+                    });
+                    
+                    if (fcmToken && currentUser) {
+                        // Save token to user document
+                        await db.collection('users').doc(currentUser.uid).update({
+                            fcmToken: fcmToken,
+                            notificationEnabled: true
+                        });
+                        
+                        console.log('FCM token saved:', fcmToken);
+                    }
+                    
+                    // Listen for messages
+                    messaging.onMessage((payload) => {
+                        console.log('Message received:', payload);
+                        
+                        // Display notification
+                        if (Notification.permission === 'granted') {
+                            navigator.serviceWorker.register('/firebase-messaging-sw.js').then((registration) => {
+                                registration.showNotification(payload.notification.title, {
+                                    body: payload.notification.body,
+                                    icon: 'https://i.ibb.co/1fjd5Ncn/logo.png',
+                                    badge: 'https://i.ibb.co/1fjd5Ncn/logo.png'
+                                });
+                            });
+                        }
+                        
+                        // Reload notifications in UI
+                        loadNotifications();
+                    });
+                    
+                } else {
+                    console.log('Unable to get permission to notify.');
+                }
+                
+            } catch (error) {
+                console.error('Error initializing FCM:', error);
+            }
+        }
+
+        // ==================== NAVIGATION & TABS ====================
+        function setupEventListeners() {
+            // Navigation buttons
+            document.getElementById('navPersonal').addEventListener('click', () => switchTab('personal'));
+            document.getElementById('navNotifications').addEventListener('click', () => switchTab('notifications'));
+            document.getElementById('navDelivery').addEventListener('click', () => switchTab('delivery'));
+            document.getElementById('navContact').addEventListener('click', () => switchTab('contact'));
+            
+            // Track location button
+            document.getElementById('trackLocationBtn').addEventListener('click', getCurrentLocation);
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Handle resize for desktop redirect
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && !window.location.href.includes('account.html')) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.getElementById('nav' + capitalizeFirstLetter(tabName)).classList.add('active');
+            
+            // Load data for specific tabs if needed
+            if (tabName === 'notifications') {
+                loadNotifications();
+            }
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            copyToClipboardText(text);
+        }
+
+        function copyToClipboardText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard: ' + text, 'success');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy', 'error');
+            });
+        }
+
+        function updateCurrentTime() {
+            // Optional: Update time display if needed
+        }
+
+        async function logoutUser() {
+            try {
+                // Clear FCM token on logout
+                if (currentUser && fcmToken) {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        fcmToken: null,
+                        notificationEnabled: false
+                    });
+                }
+                
+                await auth.signOut();
+                window.location.href = 'indexp.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showNotification('Error logging out', 'error');
+            }
+        }
+
+        // ==================== SERVICE WORKER FOR FCM ====================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                }).catch(function(err) {
+                    console.log('Service Worker registration failed:', err);
+                });
+        }
+    </script>
+</body>
+</html>
+[file content end]
