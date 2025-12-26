@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- HOME -->
+  <url>
+    <loc>https://ingabostore.vercel.app/</loc>
+    <lastmod>2025-12-26T11:43:39+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- MAIN INDEX PAGE -->
+  <url>
+    <loc>https://ingabostore.vercel.app/index.html</loc>
+    <lastmod>2025-12-26T11:43:39+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- PRODUCTS INDEX PAGE -->
+  <url>
+    <loc>https://ingabostore.vercel.app/indexp.html</loc>
+    <lastmod>2025-12-26T11:43:39+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- PRODUCT VIEW PAGE -->
+  <url>
+    <loc>https://ingabostore.vercel.app/view.html</loc>
+    <lastmod>2025-12-26T11:43:39+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- PRODUCT PREVIEW / DETAILS PAGE -->
+  <url>
+    <loc>https://ingabostore.vercel.app/viewp.html</loc>
+    <lastmod>2025-12-26T11:43:39+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>
