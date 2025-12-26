@@ -83,6 +83,26 @@
             text-transform: uppercase;
             color: #000;
         }
+
+        /* ========== EXPORT LINK ========== */
+        .export-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #ff6a00;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 5px 10px;
+            border: 1px solid #ff6a00;
+            border-radius: 6px;
+            background: rgba(255, 106, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .export-link:hover {
+            background: rgba(255, 106, 0, 0.1);
+        }
         
         /* ========== NOTIFICATION SYSTEM ========== */
         .notification-container {
@@ -245,6 +265,33 @@
             min-height: 90px;
             resize: vertical;
             font-family: inherit;
+        }
+        
+        /* ========== SOURCE LINK STYLES ========== */
+        .source-link-container {
+            position: relative;
+        }
+        
+        .source-link-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-top: 8px;
+            border: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+        
+        .source-link-preview a {
+            color: #ff6a00;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        
+        .source-link-preview a:hover {
+            text-decoration: underline;
         }
         
         /* ========== CHECKBOX GRID ========== */
@@ -564,7 +611,10 @@
                         <h1>INGABO</h1>
                     </div>
                 </div>
-                <div style="width: 60px;"></div>
+                <a href="export.html" class="export-link">
+                    <i class='bx bx-export'></i>
+                    <span>Export</span>
+                </a>
             </div>
         </header>
         
@@ -604,6 +654,25 @@
                     <label class="form-label">Description<span class="required-star">*</span></label>
                     <textarea class="form-textarea" id="productDescription" placeholder="Describe the product..."></textarea>
                     <div class="error-text">Description is required</div>
+                </div>
+                
+                <!-- Source Information -->
+                <div class="form-group">
+                    <label class="form-label">Source Name</label>
+                    <input type="text" class="form-input" id="sourceName" placeholder="Enter source name" value="MURUKALI">
+                    <div class="helper-text">Default source is MURUKALI</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Source Link</label>
+                    <div class="source-link-container">
+                        <input type="url" class="form-input" id="sourceLink" placeholder="https://example.com/product-link">
+                        <div class="helper-text">Optional link to product source</div>
+                        <div id="sourceLinkPreview" class="source-link-preview" style="display: none;">
+                            <i class='bx bx-link-external'></i>
+                            <a href="#" target="_blank" id="sourceLinkAnchor">Preview</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -1039,6 +1108,24 @@
             updateSuggestionCode();
             updateSubmitButton();
             analytics.logEvent('add_product_page_view');
+            
+            // Set up source link preview
+            const sourceLinkInput = document.getElementById('sourceLink');
+            const sourceLinkPreview = document.getElementById('sourceLinkPreview');
+            const sourceLinkAnchor = document.getElementById('sourceLinkAnchor');
+            
+            if (sourceLinkInput && sourceLinkPreview && sourceLinkAnchor) {
+                sourceLinkInput.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        sourceLinkAnchor.href = this.value;
+                        sourceLinkAnchor.textContent = this.value.length > 30 ? 
+                            this.value.substring(0, 30) + '...' : this.value;
+                        sourceLinkPreview.style.display = 'flex';
+                    } else {
+                        sourceLinkPreview.style.display = 'none';
+                    }
+                });
+            }
         });
 
         // ==================== CHECKBOX GRIDS INITIALIZATION ====================
@@ -1238,7 +1325,7 @@
             }
 
             // Input validation for basic fields
-            const inputs = ['productName', 'productCategory', 'productDescription', 'productPrice', 'originalPrice'];
+            const inputs = ['productName', 'productCategory', 'productDescription', 'productPrice', 'originalPrice', 'sourceName', 'sourceLink'];
             inputs.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
@@ -1410,6 +1497,9 @@
                     // Get form values
                     const price = parseInt(document.getElementById('productPrice')?.value) || 0;
                     const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || price;
+                    const sourceName = document.getElementById('sourceName')?.value.trim() || 'MURUKALI';
+                    const sourceLink = document.getElementById('sourceLink')?.value.trim() || '';
+                    
                     const discount = originalPrice > price ? 
                         Math.round((1 - price / originalPrice) * 100) : 0;
 
@@ -1433,6 +1523,8 @@
                         price: price,
                         originalPrice: originalPrice > price ? originalPrice : null,
                         discount: discount > 0 ? discount : null,
+                        sourceName: sourceName,
+                        sourceLink: sourceLink,
                         images: uploadedImages.map(img => img.url),
                         suggestionCode: generateSuggestionCode(),
                         active: true,
@@ -1450,7 +1542,8 @@
                     analytics.logEvent('product_added', {
                         product_id: docRef.id,
                         category: productData.category,
-                        price: productData.price
+                        price: productData.price,
+                        source: productData.sourceName
                     });
 
                     // Success
@@ -1479,12 +1572,18 @@
             const descriptionInput = document.getElementById('productDescription');
             const priceInput = document.getElementById('productPrice');
             const originalPriceInput = document.getElementById('originalPrice');
+            const sourceNameInput = document.getElementById('sourceName');
+            const sourceLinkInput = document.getElementById('sourceLink');
+            const sourceLinkPreview = document.getElementById('sourceLinkPreview');
             
             if (nameInput) nameInput.value = '';
             if (categoryInput) categoryInput.value = '';
             if (descriptionInput) descriptionInput.value = '';
             if (priceInput) priceInput.value = '';
             if (originalPriceInput) originalPriceInput.value = '';
+            if (sourceNameInput) sourceNameInput.value = 'MURUKALI';
+            if (sourceLinkInput) sourceLinkInput.value = '';
+            if (sourceLinkPreview) sourceLinkPreview.style.display = 'none';
             
             // Reset all checkbox selections
             Object.keys(selections).forEach(key => {
