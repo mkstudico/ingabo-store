@@ -58,7 +58,7 @@
         
         /* Announcement Banner */
         .announcement-banner {
-            background-color: #ff6a00;
+            background-color: var(--accent-color, #ff6a00);
             color: white;
             padding: 10px 0;
             text-align: center;
@@ -167,123 +167,92 @@
             padding: 5px;
         }
         
-        /* Hero Section with Slider */
-        .hero-slider {
+        /* Hero Section - Waitlist */
+        .hero-section {
             margin: 15px 0;
+            position: relative;
             border-radius: 12px;
             overflow: hidden;
             height: 200px;
             width: 100%;
-            position: relative;
-        }
-        
-        .hero-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.8s ease;
+            background: linear-gradient(90deg, #000 0%, rgba(0,0,0,0.8) 30%, transparent 100%), 
+                        url('https://i.ibb.co/DDpVZx8W/Ingabo-store.png');
             background-size: cover;
-            background-position: center;
+            background-position: right center;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
         }
         
-        .hero-slide.active {
-            opacity: 1;
-        }
-        
-        .hero-slide-overlay {
+        .cinematic-fade {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0.8) 0%, 
+                rgba(0,0,0,0.4) 20%, 
+                transparent 40%,
+                transparent 60%,
+                rgba(0,0,0,0.4) 80%,
+                rgba(0,0,0,0.8) 100%);
+            animation: cinematicMove 6s ease-in-out infinite;
+            z-index: 1;
         }
         
-        .hero-content {
-            position: absolute;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
-            color: white;
-            z-index: 2;
+        @keyframes cinematicMove {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        .hero-overlay {
             max-width: 70%;
+            color: white;
+            position: relative;
+            z-index: 2;
         }
         
         .hero-title {
             font-size: 20px;
             font-weight: 800;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             line-height: 1.2;
         }
         
         .hero-subtitle {
             font-size: 13px;
             margin-bottom: 15px;
-            opacity: 0.9;
             line-height: 1.4;
+            opacity: 0.9;
         }
         
-        .shop-now-btn {
-            background-color: var(--accent-color, #ff6a00);
-            color: white;
+        .hero-button {
+            background: white;
+            color: #000;
             border: none;
-            border-radius: 20px;
-            padding: 10px 22px;
-            font-weight: 600;
-            font-size: 13px;
+            padding: 10px 20px;
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-            cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-        }
-        
-        .shop-now-btn:active {
-            transform: scale(0.98);
-            opacity: 0.9;
-        }
-        
-        /* Waitlist Banner */
-        .waitlist-banner {
-            background: linear-gradient(135deg, var(--accent-color, #ff6a00), #ff8c42);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 15px 0;
-            font-weight: 600;
-            font-size: 14px;
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(255, 106, 0, 0.2);
-        }
-        
-        .waitlist-button {
-            background: white;
-            color: var(--accent-color, #ff6a00);
-            border: none;
-            border-radius: 25px;
-            padding: 10px 25px;
-            font-weight: 700;
+            border-radius: 8px;
             font-size: 13px;
-            cursor: pointer;
-            margin-top: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease;
         }
         
-        .waitlist-button:active {
+        .hero-button:active {
             transform: scale(0.98);
-            background: #f8f8f8;
         }
         
-        /* Category Slider */
-        .category-slider-section {
-            margin: 20px 0;
+        /* INGABO TOP PICKS Slider */
+        .top-picks-section {
+            margin: 25px 0;
         }
         
         .section-title {
@@ -306,69 +275,80 @@
             color: #333;
         }
         
-        .category-slider {
+        .top-picks-slider {
             position: relative;
             overflow: hidden;
             width: 100%;
         }
         
-        .category-slider-track {
+        .top-picks-track {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             transition: transform 0.3s ease;
         }
         
-        .category-card {
-            min-width: calc(50% - 6px);
-            height: 120px;
+        .top-pick-card {
+            min-width: 100%;
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #e5e5e5;
             border-radius: 10px;
-            overflow: hidden;
-            position: relative;
             flex-shrink: 0;
         }
         
-        .category-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .view-all-link {
+            color: #888;
+            font-size: 11px;
+            text-decoration: none;
+        }
+        
+        .product-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+        
+        .product-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        
+        .product-image img {
             width: 100%;
             height: 100%;
-            background-size: cover;
-            background-position: center;
+            object-fit: cover;
             transition: transform 0.3s ease;
         }
         
-        .category-card:active .category-bg {
+        .product-image:active img {
             transform: scale(1.05);
-        }
-        
-        .category-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
-        }
-        
-        .category-name {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-            text-align: center;
-            width: 90%;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .slider-controls {
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin-top: 12px;
+            margin-top: 15px;
         }
         
         .slider-dot {
@@ -385,6 +365,30 @@
             transform: scale(1.2);
         }
         
+        /* Time Display */
+        .time-display {
+            background-color: var(--accent-color, #ff6a00);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            width: 100%;
+        }
+        
+        .time-numbers {
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            font-family: monospace;
+        }
+        
+        .time-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
         /* Today's Deal Slider */
         .todays-deal {
             margin: 25px 0;
@@ -399,16 +403,16 @@
         
         .deal-slider-track {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             transition: transform 0.3s ease;
         }
         
         .deal-card {
-            min-width: calc(60% - 6px);
+            min-width: calc(70% - 8px);
             background-color: white;
             border-radius: 12px;
             padding: 12px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
             cursor: pointer;
             position: relative;
             flex-shrink: 0;
@@ -416,7 +420,7 @@
         
         .deal-image {
             width: 100%;
-            height: 100px;
+            height: 120px;
             background-color: #f8f8f8;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -438,64 +442,92 @@
             transform: scale(1.05);
         }
         
+        .discount-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #ff0000;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
         .deal-title-text {
-            font-size: 12px;
+            font-size: 13px;
             color: #333;
             margin-bottom: 8px;
             line-height: 1.4;
-            height: 34px;
+            height: 36px;
             overflow: hidden;
         }
         
         .deal-price {
             color: #ff0000;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             margin-bottom: 3px;
         }
         
         .original-price {
             color: #888;
-            font-size: 11px;
+            font-size: 12px;
             text-decoration: line-through;
         }
         
-        /* Personalized For You List */
+        /* Personalized For You Grid */
         .ingabo-picks {
             margin: 25px 0;
             width: 100%;
         }
         
-        .personalized-list {
-            display: flex;
-            flex-direction: column;
+        .personalized-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             width: 100%;
         }
         
-        .personalized-item {
+        .personalized-card {
             background-color: white;
             border-radius: 10px;
             padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             cursor: pointer;
+            position: relative;
             transition: transform 0.2s ease;
         }
         
-        .personalized-item:active {
+        .personalized-card:active {
             transform: translateY(-2px);
         }
         
+        .relevance-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+        }
+        
         .personalized-image {
-            width: 70px;
-            height: 70px;
+            width: 100%;
+            height: 100px;
             background-color: #f8f8f8;
             border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            flex-shrink: 0;
         }
         
         .personalized-image img {
@@ -504,16 +536,14 @@
             object-fit: cover;
         }
         
-        .personalized-info {
-            flex: 1;
-        }
-        
         .personalized-title {
             font-size: 13px;
             color: #333;
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             line-height: 1.3;
+            height: 34px;
+            overflow: hidden;
         }
         
         .personalized-price {
@@ -521,15 +551,6 @@
             font-weight: 700;
             color: var(--accent-color, #ff6a00);
             margin-bottom: 3px;
-        }
-        
-        .personalized-category {
-            font-size: 11px;
-            color: #888;
-            background: #f0f0f0;
-            padding: 2px 8px;
-            border-radius: 10px;
-            display: inline-block;
         }
         
         /* Category View (Grid for categories, List for products) */
@@ -615,18 +636,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
         }
         
         .category-grid-name {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: white;
             font-size: 15px;
             font-weight: 700;
             text-align: center;
-            padding: 0 10px;
+            width: 90%;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
@@ -1080,34 +1102,42 @@
         <div class="content">
             <!-- Normal View -->
             <div id="normalView">
-                <!-- Hero Slider -->
-                <section class="hero-slider" id="heroSlider">
-                    <!-- Slides will be dynamically added -->
+                <!-- Hero Section - Waitlist -->
+                <section class="hero-section" id="heroSection">
+                    <div class="cinematic-fade"></div>
+                    <div class="hero-overlay">
+                        <div class="hero-title">Start an online store for free.</div>
+                        <div class="hero-subtitle">
+                            INGABO is the all-in-one platform to build, run, and grow your online boutique. 
+                            Start free, then get 3 months for $1/month
+                        </div>
+                        <button class="hero-button" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSdK3c9V1kEBZcWo0tWLVVomlb_vOiVmLjXoHkDFMeN-6Q_fcA/viewform?usp=dialog', '_blank')">
+                            JOIN THE WAITLIST <i class='bx bx-chevron-right'></i>
+                        </button>
+                    </div>
                 </section>
                 
-                <!-- Waitlist Banner -->
-                <div class="waitlist-banner" id="waitlistBanner">
-                    Start an online store for free.
-                    <button class="waitlist-button" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSdK3c9V1kEBZcWo0tWLVVomlb_vOiVmLjXoHkDFMeN-6Q_fcA/viewform?usp=dialog', '_blank')">
-                        JOIN THE WAITLIST <i class='bx bx-chevron-right'></i>
-                    </button>
-                </div>
-                
-                <!-- Category Slider -->
-                <section class="category-slider-section" id="categorySection">
+                <!-- INGABO TOP PICKS Slider -->
+                <section class="top-picks-section" id="topPicksSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
-                        <h2>Shop by Category</h2>
+                        <h2>INGABO TOP PICKS</h2>
                     </div>
-                    <div class="category-slider">
-                        <div class="category-slider-track" id="categorySliderTrack">
-                            <!-- Categories will be loaded here -->
+                    <div class="top-picks-slider">
+                        <div class="top-picks-track" id="topPicksTrack">
+                            <!-- Top picks slides will be loaded here -->
                         </div>
                     </div>
-                    <div class="slider-controls" id="categorySliderControls">
+                    <div class="slider-controls" id="topPicksControls">
                         <!-- Dots will be generated -->
                     </div>
                 </section>
+                
+                <!-- Time Display -->
+                <div class="time-display">
+                    <div class="time-numbers" id="currentTime">12:00</div>
+                    <div class="time-text">Today's Special</div>
+                </div>
                 
                 <!-- Today's Deal Slider -->
                 <section class="todays-deal" id="todaysDealSection">
@@ -1125,13 +1155,13 @@
                     </div>
                 </section>
                 
-                <!-- Personalized For You List -->
+                <!-- Personalized For You Grid -->
                 <section class="ingabo-picks" id="ingaboPicksSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
                         <h2>Personalized For You</h2>
                     </div>
-                    <div class="personalized-list" id="personalizedList">
+                    <div class="personalized-grid" id="personalizedGrid">
                         <div class="loading" id="personalizedLoading">
                             <div class="loading-spinner"></div>
                             <div>Loading recommendations...</div>
@@ -1227,11 +1257,10 @@
         let searchTimer = null;
         let currentAccentColor = '#ff6a00';
         let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db'];
-        let currentHeroSlide = 0;
-        let heroSlides = [];
-        let categorySlideIndex = 0;
+        let topPicksSlideIndex = 0;
         let dealSlideIndex = 0;
         let categoryProducts = {};
+        let allCategories = [];
 
         // ==================== COLOR ROTATION ====================
         function initializeAccentColor() {
@@ -1240,12 +1269,24 @@
             currentAccentColor = accentColors[colorIndex];
             document.documentElement.style.setProperty('--accent-color', currentAccentColor);
             
+            // Update every hour
             setInterval(() => {
                 const currentTime = new Date().getHours();
                 const newColorIndex = currentTime % accentColors.length;
                 currentAccentColor = accentColors[newColorIndex];
                 document.documentElement.style.setProperty('--accent-color', currentAccentColor);
-            }, 3600000); // Check every hour
+            }, 3600000); // 1 hour
+        }
+
+        // ==================== CURRENT TIME DISPLAY ====================
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeElement = document.getElementById('currentTime');
+            if (timeElement) {
+                timeElement.textContent = `${hours}:${minutes}`;
+            }
         }
 
         // ==================== SITE PERSONALIZATION ====================
@@ -1306,132 +1347,91 @@
                 announcementBanner.classList.remove('show');
             }
             
-            // Update hero slides with personalization
-            if (sitePersonalization.heroSlides && sitePersonalization.heroSlides.length > 0) {
-                heroSlides = sitePersonalization.heroSlides;
-                createHeroSlides();
+            // Hero section customization
+            if (sitePersonalization.heroImage) {
+                document.getElementById('heroSection').style.backgroundImage = 
+                    `linear-gradient(90deg, #000 0%, rgba(0,0,0,0.8) 30%, transparent 100%), url('${sitePersonalization.heroImage}')`;
+            }
+            
+            if (sitePersonalization.heroTitle) {
+                document.querySelector('.hero-title').textContent = sitePersonalization.heroTitle;
+            }
+            
+            if (sitePersonalization.heroSubtitle) {
+                document.querySelector('.hero-subtitle').textContent = sitePersonalization.heroSubtitle;
             }
         }
 
-        // ==================== HERO SLIDES ====================
-        const defaultHeroSlides = [
-            {
-                title: "Women's Fashion",
-                subtitle: "Latest collection for women",
-                buttonText: "Shop Now",
-                link: "category.html?category=Women",
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-            },
-            {
-                title: "Men's Collection",
-                subtitle: "Trendy outfits for men",
-                buttonText: "Explore Now",
-                link: "category.html?category=Men",
-                background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-            },
-            {
-                title: "Accessories Sale",
-                subtitle: "Up to 50% off on watches & jewelry",
-                buttonText: "View Deals",
-                link: "category.html?category=Watches",
-                background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
-            }
-        ];
-
-        function createHeroSlides() {
-            const heroSlider = document.getElementById('heroSlider');
-            const slides = heroSlides.length > 0 ? heroSlides : defaultHeroSlides;
-            
-            heroSlider.innerHTML = '';
-            
-            slides.forEach((slide, index) => {
-                const slideDiv = document.createElement('div');
-                slideDiv.className = `hero-slide ${index === 0 ? 'active' : ''}`;
-                slideDiv.style.background = slide.background || "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
-                slideDiv.innerHTML = `
-                    <div class="hero-slide-overlay"></div>
-                    <div class="hero-content">
-                        <div class="hero-title">${slide.title}</div>
-                        <div class="hero-subtitle">${slide.subtitle}</div>
-                        <button class="shop-now-btn" onclick="window.location.href='${slide.link}'">
-                            ${slide.buttonText} <i class='bx bx-chevron-right'></i>
-                        </button>
-                    </div>
-                `;
-                heroSlider.appendChild(slideDiv);
-            });
-            
-            // Start slideshow
-            if (slides.length > 1) {
-                setInterval(nextHeroSlide, 5000);
-            }
-        }
-
-        function nextHeroSlide() {
-            const slides = document.querySelectorAll('.hero-slide');
-            if (slides.length <= 1) return;
-            
-            slides[currentHeroSlide].classList.remove('active');
-            currentHeroSlide = (currentHeroSlide + 1) % slides.length;
-            slides[currentHeroSlide].classList.add('active');
-        }
-
-        // ==================== CATEGORY SLIDER ====================
-        function createCategorySlider(categories) {
-            const track = document.getElementById('categorySliderTrack');
-            const controls = document.getElementById('categorySliderControls');
+        // ==================== INGABO TOP PICKS SLIDER ====================
+        function createTopPicksSlider(categories) {
+            const track = document.getElementById('topPicksTrack');
+            const controls = document.getElementById('topPicksControls');
             
             track.innerHTML = '';
             controls.innerHTML = '';
             
-            // Filter categories with products
+            // Filter categories with at least 3 products
             const validCategories = categories.filter(cat => 
-                categoryProducts[cat] && categoryProducts[cat].length > 0
+                categoryProducts[cat] && categoryProducts[cat].length >= 3
             );
             
-            // Limit to 8 categories for mobile
-            const displayCategories = validCategories.slice(0, 8);
-            
-            if (displayCategories.length === 0) {
-                track.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No categories available</div>';
+            if (validCategories.length === 0) {
+                track.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No categories with products available</div>';
                 return;
             }
             
-            // Calculate number of slides (2 per slide)
-            const slidesCount = Math.ceil(displayCategories.length / 2);
-            
-            // Create slides
-            for (let i = 0; i < displayCategories.length; i += 2) {
+            // Create slides (one category per slide)
+            validCategories.forEach((category, index) => {
                 const slideDiv = document.createElement('div');
-                slideDiv.className = 'category-slider-track';
-                slideDiv.style.display = 'flex';
-                slideDiv.style.gap = '12px';
+                slideDiv.className = 'top-pick-card';
                 
-                // Add first category
-                const cat1 = displayCategories[i];
-                const product1 = categoryProducts[cat1] && categoryProducts[cat1][0];
-                slideDiv.innerHTML += createCategoryCard(cat1, product1);
+                const products = categoryProducts[category].slice(0, 6); // Max 6 products per category
                 
-                // Add second category if exists
-                if (i + 1 < displayCategories.length) {
-                    const cat2 = displayCategories[i + 1];
-                    const product2 = categoryProducts[cat2] && categoryProducts[cat2][0];
-                    slideDiv.innerHTML += createCategoryCard(cat2, product2);
-                }
+                slideDiv.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${category}</div>
+                        <a href="#" class="view-all-link" data-category="${category}">View All</a>
+                    </div>
+                    <div class="product-images">
+                        ${products.slice(0, 6).map(product => `
+                            <div class="product-image" data-product="${product.id}">
+                                ${product.images && product.images[0] ? 
+                                    `<img src="${product.images[0]}" alt="${product.name}">` : 
+                                    `<div style="width:100%;height:100%;background:#f8f8f8;display:flex;align-items:center;justify-content:center;">
+                                        <i class='bx bx-image' style="font-size:20px;color:#ccc;"></i>
+                                    </div>`
+                                }
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Add click events for product images
+                slideDiv.querySelectorAll('.product-image').forEach(img => {
+                    img.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-product');
+                        window.location.href = `view.html?id=${productId}`;
+                    });
+                });
+                
+                // Add click event for view all link
+                slideDiv.querySelector('.view-all-link').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.getAttribute('data-category');
+                    showCategoryProducts(category);
+                });
                 
                 track.appendChild(slideDiv);
-            }
-            
-            // Create dots
-            for (let i = 0; i < slidesCount; i++) {
+                
+                // Create dot for this slide
                 const dot = document.createElement('div');
-                dot.className = `slider-dot ${i === 0 ? 'active' : ''}`;
+                dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
                 dot.addEventListener('click', () => {
-                    categorySlideIndex = i;
-                    updateCategorySlider();
+                    topPicksSlideIndex = index;
+                    updateTopPicksSlider();
                 });
                 controls.appendChild(dot);
-            }
+            });
             
             // Add swipe functionality
             let startX = 0;
@@ -1448,51 +1448,32 @@
             track.addEventListener('touchend', () => {
                 const diff = startX - currentX;
                 if (Math.abs(diff) > 50) {
-                    if (diff > 0 && categorySlideIndex < slidesCount - 1) {
-                        categorySlideIndex++;
-                    } else if (diff < 0 && categorySlideIndex > 0) {
-                        categorySlideIndex--;
+                    if (diff > 0 && topPicksSlideIndex < validCategories.length - 1) {
+                        topPicksSlideIndex++;
+                    } else if (diff < 0 && topPicksSlideIndex > 0) {
+                        topPicksSlideIndex--;
                     }
-                    updateCategorySlider();
+                    updateTopPicksSlider();
                 }
             });
+            
+            // Auto slide every 5 seconds if more than 1 slide
+            if (validCategories.length > 1) {
+                setInterval(() => {
+                    topPicksSlideIndex = (topPicksSlideIndex + 1) % validCategories.length;
+                    updateTopPicksSlider();
+                }, 5000);
+            }
         }
 
-        function createCategoryCard(category, product) {
-            const productImage = product && product.images && product.images[0] 
-                ? product.images[0] 
-                : 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800';
+        function updateTopPicksSlider() {
+            const track = document.getElementById('topPicksTrack');
+            const dots = document.querySelectorAll('#topPicksControls .slider-dot');
             
-            // Different overlay colors for different categories
-            const overlayColors = [
-                'linear-gradient(135deg, rgba(255, 106, 0, 0.7) 0%, rgba(255, 140, 66, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(138, 43, 226, 0.7) 0%, rgba(186, 104, 255, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(46, 204, 113, 0.7) 0%, rgba(120, 224, 143, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(52, 152, 219, 0.7) 0%, rgba(120, 195, 251, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(231, 76, 60, 0.7) 0%, rgba(248, 148, 137, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(241, 196, 15, 0.7) 0%, rgba(251, 219, 113, 0.3) 100%)'
-            ];
-            
-            const colorIndex = category.length % overlayColors.length;
-            
-            return `
-                <div class="category-card" data-category="${category}">
-                    <div class="category-bg" style="background-image: url('${productImage}')"></div>
-                    <div class="category-overlay" style="background: ${overlayColors[colorIndex]}"></div>
-                    <div class="category-name">${category}</div>
-                </div>
-            `;
-        }
-
-        function updateCategorySlider() {
-            const track = document.getElementById('categorySliderTrack');
-            const dots = document.querySelectorAll('#categorySliderControls .slider-dot');
-            const slideWidth = 100 / Math.ceil(Object.keys(categoryProducts).length / 2);
-            
-            track.style.transform = `translateX(-${categorySlideIndex * 100}%)`;
+            track.style.transform = `translateX(-${topPicksSlideIndex * 100}%)`;
             
             dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === categorySlideIndex);
+                dot.classList.toggle('active', index === topPicksSlideIndex);
             });
         }
 
@@ -1509,16 +1490,16 @@
                 return;
             }
             
-            // Limit to 10 products
+            // Take top 10 products
             const displayProducts = products.slice(0, 10);
-            const slidesCount = Math.ceil(displayProducts.length / 2);
+            const slidesCount = Math.ceil(displayProducts.length / 2); // 2 products per slide
             
             // Create slides
             for (let i = 0; i < displayProducts.length; i += 2) {
                 const slideDiv = document.createElement('div');
                 slideDiv.className = 'deal-slider-track';
                 slideDiv.style.display = 'flex';
-                slideDiv.style.gap = '12px';
+                slideDiv.style.gap = '15px';
                 
                 // Add first product
                 const product1 = displayProducts[i];
@@ -1575,7 +1556,7 @@
             
             return `
                 <div class="deal-card" data-product="${product.id}">
-                    ${discount > 0 ? `<div style="position: absolute; top: 8px; right: 8px; background: #ff0000; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold;">-${discount}%</div>` : ''}
+                    ${discount > 0 ? `<div class="discount-badge">-${discount}%</div>` : ''}
                     <div class="deal-image">
                         ${product.images && product.images[0] ? 
                             `<img src="${product.images[0]}" alt="${product.name}">` : 
@@ -1602,7 +1583,7 @@
             });
         }
 
-        // ==================== PERSONALIZED RECOMMENDATIONS ====================
+        // ==================== PERSONALIZED FOR YOU GRID ====================
         const metricMappings = {
             category: {
                 'Shoes': 'A', 'T-shirts': 'B', 'Pants': 'C',
@@ -1665,47 +1646,63 @@
             return score;
         }
 
-        function loadPersonalizedPicks() {
-            const container = document.getElementById('personalizedList');
+        function sortProductsPersonalized(products, userCode) {
+            if (userCode === 'GUEST-CODE') {
+                return [...products].sort(() => Math.random() - 0.5);
+            }
+            
+            const scoredProducts = products.map(product => {
+                const matchScore = calculateMatchScore(userCode, product.suggestionCode);
+                return { ...product, matchScore };
+            });
+            
+            scoredProducts.sort((a, b) => b.matchScore - a.matchScore);
+            return scoredProducts;
+        }
+
+        function loadPersonalizedGrid() {
+            const container = document.getElementById('personalizedGrid');
             const loading = document.getElementById('personalizedLoading');
             
             if (loading) loading.remove();
             
-            // For mobile: show all products in list format
-            const displayProducts = allProducts.slice(0, 15); // Limit to 15 for mobile
+            // Sort products by personalization algorithm
+            const sortedProducts = sortProductsPersonalized(allProducts, userPersonalCode);
+            
+            // Take first 12 products for grid (2 columns x 6 rows visible)
+            const displayProducts = sortedProducts.slice(0, 12);
             
             if (displayProducts.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 30px; color: #888;">No products available</div>';
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #888;">No products available</div>';
                 return;
             }
             
             container.innerHTML = '';
             
-            displayProducts.forEach(product => {
-                const item = document.createElement('div');
-                item.className = 'personalized-item';
-                item.dataset.productId = product.id;
-                item.innerHTML = `
+            displayProducts.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'personalized-card';
+                card.dataset.productId = product.id;
+                card.innerHTML = `
+                    ${index < 3 ? '<div class="relevance-indicator"></div>' : ''}
                     <div class="personalized-image">
                         ${product.images && product.images[0] ? 
                             `<img src="${product.images[0]}" alt="${product.name}">` : 
                             `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
-                                <i class='bx bx-image' style="font-size:24px;color:#ccc;"></i>
+                                <i class='bx bx-image' style="font-size:32px;color:#ccc;"></i>
                             </div>`
                         }
                     </div>
-                    <div class="personalized-info">
-                        <div class="personalized-title">${product.name}</div>
-                        <div class="personalized-price">${formatPrice(product.price)} RWF</div>
-                        <div class="personalized-category">${product.category}</div>
-                    </div>
+                    <div class="personalized-title">${product.name}</div>
+                    <div class="personalized-price">${formatPrice(product.price)} RWF</div>
                 `;
                 
-                item.addEventListener('click', () => {
+                card.addEventListener('click', () => {
+                    trackProductView(product.id);
                     window.location.href = `view.html?id=${product.id}`;
                 });
                 
-                container.appendChild(item);
+                container.appendChild(card);
             });
         }
 
@@ -1714,7 +1711,7 @@
             const grid = document.getElementById('categoryGrid');
             
             // Get unique categories with products
-            const categories = Object.keys(categoryProducts).filter(cat => 
+            const categories = allCategories.filter(cat => 
                 categoryProducts[cat] && categoryProducts[cat].length > 0
             );
             
@@ -1725,22 +1722,23 @@
             
             grid.innerHTML = '';
             
-            const overlayColors = [
-                'linear-gradient(135deg, rgba(255, 106, 0, 0.7) 0%, rgba(255, 140, 66, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(138, 43, 226, 0.7) 0%, rgba(186, 104, 255, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(46, 204, 113, 0.7) 0%, rgba(120, 224, 143, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(52, 152, 219, 0.7) 0%, rgba(120, 195, 251, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(231, 76, 60, 0.7) 0%, rgba(248, 148, 137, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(241, 196, 15, 0.7) 0%, rgba(251, 219, 113, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(155, 89, 182, 0.7) 0%, rgba(195, 155, 211, 0.3) 100%)',
-                'linear-gradient(135deg, rgba(52, 73, 94, 0.7) 0%, rgba(113, 125, 139, 0.3) 100%)'
-            ];
-            
             categories.forEach((category, index) => {
                 const product = categoryProducts[category][0];
                 const productImage = product && product.images && product.images[0] 
                     ? product.images[0] 
                     : 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800';
+                
+                // Different overlay colors for different categories
+                const overlayColors = [
+                    'linear-gradient(135deg, rgba(255, 106, 0, 0.7) 0%, rgba(255, 140, 66, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(138, 43, 226, 0.7) 0%, rgba(186, 104, 255, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(46, 204, 113, 0.7) 0%, rgba(120, 224, 143, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(52, 152, 219, 0.7) 0%, rgba(120, 195, 251, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(231, 76, 60, 0.7) 0%, rgba(248, 148, 137, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(241, 196, 15, 0.7) 0%, rgba(251, 219, 113, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(155, 89, 182, 0.7) 0%, rgba(195, 155, 211, 0.3) 100%)',
+                    'linear-gradient(135deg, rgba(52, 73, 94, 0.7) 0%, rgba(113, 125, 139, 0.3) 100%)'
+                ];
                 
                 const colorIndex = index % overlayColors.length;
                 
@@ -1809,6 +1807,7 @@
                     `;
                     
                     item.addEventListener('click', () => {
+                        trackProductView(product.id);
                         window.location.href = `view.html?id=${product.id}`;
                     });
                     
@@ -1908,6 +1907,7 @@
                     `;
                     
                     item.addEventListener('click', () => {
+                        trackProductView(product.id);
                         window.location.href = `view.html?id=${product.id}`;
                         searchResults.classList.remove('active');
                         searchInput.value = '';
@@ -1970,6 +1970,7 @@
                 `;
                 
                 item.addEventListener('click', () => {
+                    trackProductView(product.id);
                     window.location.href = `view.html?id=${product.id}`;
                 });
                 
@@ -2089,6 +2090,7 @@
                 
                 allProducts = [];
                 categoryProducts = {};
+                allCategories = [];
                 
                 snapshot.forEach(doc => {
                     const product = doc.data();
@@ -2099,6 +2101,7 @@
                     // Organize by category
                     if (!categoryProducts[product.category]) {
                         categoryProducts[product.category] = [];
+                        allCategories.push(product.category);
                     }
                     categoryProducts[product.category].push(product);
                 });
@@ -2106,14 +2109,11 @@
                 // Load Today's Deal (top 10 products by algorithm)
                 await loadTodaysDeals();
                 
-                // Load Personalized picks
-                loadPersonalizedPicks();
+                // Load Personalized grid
+                loadPersonalizedGrid();
                 
-                // Create category slider
-                const categories = Object.keys(categoryProducts).filter(cat => 
-                    categoryProducts[cat] && categoryProducts[cat].length > 0
-                );
-                createCategorySlider(categories);
+                // Create Top Picks slider
+                createTopPicksSlider(allCategories);
                 
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -2176,7 +2176,7 @@
                     userPersonalCode = 'GUEST-CODE';
                 }
                 
-                loadPersonalizedPicks();
+                loadPersonalizedGrid();
             });
         }
 
@@ -2208,6 +2208,21 @@
             setTimeout(() => {
                 notification.remove();
             }, 3000);
+        }
+
+        async function trackProductView(productId) {
+            if (!currentUser) return;
+            
+            try {
+                await db.collection('user_activity').add({
+                    userId: currentUser.uid,
+                    productId: productId,
+                    type: 'view',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error tracking product view:', error);
+            }
         }
 
         // ==================== EVENT LISTENERS ====================
@@ -2244,24 +2259,13 @@
             document.getElementById('clearCart').addEventListener('click', clearCart);
             document.getElementById('cartOverlay').addEventListener('click', closeCart);
             
-            // Category slider clicks
+            // Deal card clicks
             document.addEventListener('click', (e) => {
-                const categoryCard = e.target.closest('.category-card');
-                if (categoryCard) {
-                    const category = categoryCard.dataset.category;
-                    showCategoryProducts(category);
-                }
-                
                 const dealCard = e.target.closest('.deal-card');
                 if (dealCard) {
                     const productId = dealCard.dataset.product;
+                    trackProductView(productId);
                     window.location.href = `view.html?id=${productId}`;
-                }
-                
-                const categoryGridCard = e.target.closest('.category-grid-card');
-                if (categoryGridCard) {
-                    const category = categoryGridCard.dataset.category;
-                    showCategoryProducts(category);
                 }
             });
         }
@@ -2274,7 +2278,7 @@
                 return;
             }
             
-            // Setup color rotation
+            // Setup color rotation (simple color change every hour)
             initializeAccentColor();
             
             // Setup authentication
@@ -2286,8 +2290,9 @@
             // Setup event listeners
             setupEventListeners();
             
-            // Create hero slides
-            createHeroSlides();
+            // Update current time and start timer
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000); // Update every minute
             
             // Load data
             await Promise.all([
