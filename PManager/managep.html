@@ -1,1 +1,2339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manage Products - INGABO</title>
+    <!-- Preload boxicons to avoid slow network warning -->
+    <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/fonts/boxicons.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase v8 for compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <style>
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 375px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .container {
+            padding: 0 12px;
+        }
+        
+        /* ========== HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .back-button i {
+            font-size: 18px;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .logo-img {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .logo-text h1 {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        /* ========== SEARCH SECTION ========== */
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            margin: 15px 0;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 45px 14px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6a00;
+            background: white;
+        }
+        
+        .search-input::placeholder {
+            color: #888;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 18px;
+        }
+        
+        .search-hint {
+            font-size: 11px;
+            color: #888;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        /* ========== TABS NAVIGATION ========== */
+        .tabs-navigation {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-button.active {
+            background: #ff6a00;
+            color: white;
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: #f9f9f9;
+        }
+        
+        /* ========== PRODUCTS LIST ========== */
+        .products-section {
+            display: none;
+        }
+        
+        .products-section.active {
+            display: block;
+        }
+        
+        .products-list {
+            margin-bottom: 80px;
+        }
+        
+        .product-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .product-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f8f8f8;
+            border: 1px solid #eee;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ff6a00;
+            margin-bottom: 4px;
+        }
+        
+        .product-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .product-category {
+            font-size: 11px;
+            color: #666;
+            background: #f8f8f8;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .product-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            background: white;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        
+        .no-products-icon {
+            font-size: 48px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+        
+        .no-products-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .no-products-text {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        /* ========== SLIDE UP PANEL ========== */
+        .slide-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 2000;
+        }
+        
+        .slide-panel-overlay.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .slide-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: 2001;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .slide-panel.active {
+            transform: translateY(0);
+        }
+        
+        .panel-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 20px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .panel-header-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .panel-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .panel-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .panel-content {
+            padding: 20px 15px;
+            padding-bottom: 80px;
+        }
+        
+        /* ========== STATUS PANEL CONTENT ========== */
+        .info-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .section-title i {
+            font-size: 16px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+        
+        .info-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .copy-id-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .copy-id-button {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .copy-id-button:hover {
+            background: #e55a00;
+        }
+        
+        .toggle-status-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #17a2b8, #35c6d9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-status-button:hover {
+            background: linear-gradient(to right, #138496, #2db4c9);
+            transform: translateY(-1px);
+        }
+        
+        .price-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .price-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .current-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff6a00;
+        }
+        
+        .original-price {
+            font-size: 14px;
+            color: #666;
+            text-decoration: line-through;
+        }
+        
+        /* ========== EDIT PANEL CONTENT ========== */
+        .edit-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .edit-form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        
+        .edit-form-input, .edit-form-textarea, .edit-form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-form-input:focus, .edit-form-textarea:focus, .edit-form-select:focus {
+            outline: none;
+            border-color: #ff6a00;
+            background: white;
+        }
+        
+        .edit-form-textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .checkbox-option {
+            display: none;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 8px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+        
+        .checkbox-label:hover {
+            border-color: #ff6a00;
+        }
+        
+        .checkbox-option:checked + .checkbox-label {
+            border-color: #ff6a00;
+            background: rgba(255, 106, 0, 0.05);
+            font-weight: 500;
+        }
+        
+        .checkbox-icon {
+            color: #666;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .checkbox-option:checked + .checkbox-label .checkbox-icon {
+            color: #ff6a00;
+        }
+        
+        .image-upload-box {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            margin-top: 10px;
+        }
+        
+        .upload-icon {
+            font-size: 32px;
+            color: #ff6a00;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .upload-button {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ========== CONFIRMATION POPUP ========== */
+        .confirmation-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .confirmation-popup-overlay.active {
+            display: flex;
+        }
+        
+        .confirmation-popup {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 320px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease;
+        }
+        
+        .popup-header {
+            background: #ff6a00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .popup-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .popup-message {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .popup-content {
+            padding: 25px 20px;
+            text-align: center;
+        }
+        
+        .popup-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .popup-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .popup-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .popup-cancel {
+            background: #f8f8f8;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .popup-cancel:hover {
+            background: #eee;
+        }
+        
+        .popup-confirm {
+            background: #28a745;
+            color: white;
+        }
+        
+        .popup-confirm:hover {
+            background: #218838;
+        }
+        
+        .popup-confirm.warning {
+            background: #dc3545;
+        }
+        
+        .popup-confirm.warning:hover {
+            background: #c82333;
+        }
+        
+        .popup-confirm.info {
+            background: #17a2b8;
+        }
+        
+        .popup-confirm.info:hover {
+            background: #138496;
+        }
+        
+        /* ========== FLOATING APPLY BUTTON ========== */
+        .floating-apply-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+            z-index: 100;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+        
+        .floating-apply-button.active {
+            display: flex;
+            animation: slideUpButton 0.3s ease;
+        }
+        
+        .floating-apply-button:hover {
+            background: #e55a00;
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+        }
+        
+        /* ========== NOTIFICATION BOXES ========== */
+        .notification-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+            pointer-events: auto;
+            border-left: 4px solid;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        .notification.info {
+            border-left-color: #17a2b8;
+        }
+        
+        .notification.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .notification.success .notification-icon {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-icon {
+            color: #dc3545;
+        }
+        
+        .notification.info .notification-icon {
+            color: #17a2b8;
+        }
+        
+        .notification.warning .notification-icon {
+            color: #ffc107;
+        }
+        
+        .notification-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6a00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* ========== ANIMATIONS ========== */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUpButton {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* ========== UTILITY ========== */
+        .hidden {
+            display: none;
+        }
+        
+        .mt-10 { margin-top: 10px; }
+        .mt-15 { margin-top: 15px; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-15 { margin-bottom: 15px; }
+        
+        /* ========== SCROLLBAR ========== */
+        .slide-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .slide-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .slide-panel::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .slide-panel::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Loading...</div>
+    </div>
+    
+    <!-- Confirmation Popup -->
+    <div class="confirmation-popup-overlay" id="confirmationPopup">
+        <div class="confirmation-popup">
+            <div class="popup-header">
+                <div class="popup-title" id="popupTitle">Confirm Action</div>
+                <div class="popup-message" id="popupMessage">Please confirm your action</div>
+            </div>
+            <div class="popup-content">
+                <div class="popup-text" id="popupText">Are you sure you want to perform this action?</div>
+                <div class="popup-actions">
+                    <button class="popup-button popup-cancel" id="popupCancelBtn">Cancel</button>
+                    <button class="popup-button popup-confirm" id="popupConfirmBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide Panel Overlay -->
+    <div class="slide-panel-overlay" id="panelOverlay"></div>
+    
+    <!-- Status Panel -->
+    <div class="slide-panel" id="statusPanel">
+        <div class="panel-header" id="statusPanelHeader">
+            <div class="panel-header-content">
+                <div class="panel-title" id="statusPanelTitle">Product Name</div>
+                <div class="panel-status" id="statusPanelStatus">Active</div>
+            </div>
+            <button class="panel-close" id="closeStatusPanel">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="panel-content" id="statusPanelContent">
+            <!-- Filled by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Edit Panel -->
+    <div class="slide-panel" id="editPanel">
+        <div class="panel-header" id="editPanelHeader">
+            <div class="panel-header-content">
+                <div class="panel-title" id="editPanelTitle">Edit Product</div>
+                <div class="panel-status" id="editPanelStatus">Active</div>
+            </div>
+            <button class="panel-close" id="closeEditPanel">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="panel-content" id="editPanelContent">
+            <!-- Filled by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Floating Apply Button -->
+    <button class="floating-apply-button" id="floatingApplyBtn">
+        <i class='bx bx-check'></i> Apply Changes
+    </button>
+    
+    <div class="container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <a href="index.html" class="back-button">
+                    <i class='bx bx-arrow-back'></i>
+                    <span>Back</span>
+                </a>
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                    </div>
+                </div>
+                <div style="width: 60px;"></div>
+            </div>
+        </header>
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput"
+                       placeholder="Search by name, ID, or keyword..."
+                       spellcheck="false">
+                <div class="search-icon">
+                    <i class='bx bx-search'></i>
+                </div>
+            </div>
+            <div class="search-hint">
+                Search products by name, Product ID, or any keyword. Results update in 300ms.
+            </div>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <div class="tabs-navigation">
+            <button class="tab-button active" data-tab="status">
+                <i class='bx bx-toggle-right'></i>
+                STATUS
+            </button>
+            <button class="tab-button" data-tab="edit">
+                <i class='bx bx-edit'></i>
+                EDIT
+            </button>
+        </div>
+        
+        <!-- Status Tab Content -->
+        <div class="products-section active" id="statusTab">
+            <div class="products-list" id="statusProductsList">
+                <!-- Filled by JavaScript -->
+            </div>
+            <div class="no-products hidden" id="statusNoProducts">
+                <div class="no-products-icon">
+                    <i class='bx bx-package'></i>
+                </div>
+                <div class="no-products-title">No Products Found</div>
+                <div class="no-products-text">
+                    No products match your search criteria. Try a different search term.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Tab Content -->
+        <div class="products-section" id="editTab">
+            <div class="products-list" id="editProductsList">
+                <!-- Filled by JavaScript -->
+            </div>
+            <div class="no-products hidden" id="editNoProducts">
+                <div class="no-products-icon">
+                    <i class='bx bx-package'></i>
+                </div>
+                <div class="no-products-title">No Products Found</div>
+                <div class="no-products-text">
+                    No products match your search criteria. Try a different search term.
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
+            authDomain: "ingabo-store.firebaseapp.com",
+            projectId: "ingabo-store",
+            storageBucket: "ingabo-store.firebasestorage.app",
+            messagingSenderId: "1059301382626",
+            appId: "1:1059301382626:web:98f0a8cebbeccbc21f41bb",
+            measurementId: "G-QSXTGP9R1Q"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const analytics = firebase.analytics();
+
+        // ==================== GLOBAL VARIABLES ====================
+        const IMGBB_API_KEY = 'f4542dd1b6382bcc91cc4dea44bfc3c1';
+        let allProducts = [];
+        let currentProductId = null;
+        let currentProductData = null;
+        let searchTimeout = null;
+        let uploadedImages = [];
+        let isEditing = false;
+        let hasChanges = false;
+        let confirmationCallback = null;
+        
+        // Data configurations
+        const formData = {
+            colors: [
+                { name: 'White', hex: '#FFFFFF', icon: 'bx bx-circle' },
+                { name: 'Black', hex: '#000000', icon: 'bx bx-circle' },
+                { name: 'Blue', hex: '#0000FF', icon: 'bx bx-circle' },
+                { name: 'Green', hex: '#008000', icon: 'bx bx-circle' },
+                { name: 'Red', hex: '#FF0000', icon: 'bx bx-circle' },
+                { name: 'Yellow', hex: '#FFFF00', icon: 'bx bx-circle' },
+                { name: 'Chocolate', hex: '#D2691E', icon: 'bx bx-circle' },
+                { name: 'Purple', hex: '#800080', icon: 'bx bx-circle' },
+                { name: 'Orange', hex: '#FFA500', icon: 'bx bx-circle' },
+                { name: 'Sky-blue', hex: '#87CEEB', icon: 'bx bx-circle' },
+                { name: 'Reddish', hex: '#FF6347', icon: 'bx bx-circle' },
+                { name: 'Pink', hex: '#FFC0CB', icon: 'bx bx-circle' }
+            ],
+            departments: [
+                { name: 'Men', icon: 'bx bx-male' },
+                { name: 'Women', icon: 'bx bx-female' }
+            ],
+            sizes: [
+                { name: 'Small', icon: 'bx bx-s' },
+                { name: 'Medium', icon: 'bx bx-m' },
+                { name: 'Large', icon: 'bx bx-l' }
+            ],
+            ageGroups: [
+                { name: 'All', icon: 'bx bx-group' },
+                { name: 'Young', icon: 'bx bx-child' },
+                { name: 'Teens', icon: 'bx bx-user' },
+                { name: 'Adult', icon: 'bx bx-user-circle' },
+                { name: 'Old', icon: 'bx bx-user-voice' }
+            ],
+            statuses: [
+                { name: 'New', icon: 'bx bx-package' },
+                { name: 'Used', icon: 'bx bx-recycle' }
+            ],
+            categories: [
+                'Shoes', 'T-shirts', 'Pants', 'Watches', 'Necklace', 'Bracelets', 'Caps'
+            ]
+        };
+
+        // ==================== NOTIFICATION SYSTEM ====================
+        class NotificationSystem {
+            constructor() {
+                this.container = document.getElementById('notificationContainer');
+                this.notifications = [];
+            }
+            
+            show(type, message, duration = 3000) {
+                const id = Date.now().toString();
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.id = `notification-${id}`;
+                
+                let icon = '';
+                switch(type) {
+                    case 'success':
+                        icon = '<i class="bx bx-check-circle notification-icon"></i>';
+                        break;
+                    case 'error':
+                        icon = '<i class="bx bx-error-circle notification-icon"></i>';
+                        break;
+                    case 'info':
+                        icon = '<i class="bx bx-info-circle notification-icon"></i>';
+                        break;
+                    case 'warning':
+                        icon = '<i class="bx bx-error notification-icon"></i>';
+                        break;
+                }
+                
+                notification.innerHTML = `
+                    ${icon}
+                    <div class="notification-text">${message}</div>
+                    <button class="notification-close" onclick="notificationSystem.remove('${id}')">
+                        <i class='bx bx-x'></i>
+                    </button>
+                `;
+                
+                this.container.appendChild(notification);
+                this.notifications.push(id);
+                
+                if (duration > 0) {
+                    setTimeout(() => this.remove(id), duration);
+                }
+                
+                return id;
+            }
+            
+            remove(id) {
+                const notification = document.getElementById(`notification-${id}`);
+                if (notification) {
+                    notification.style.animation = 'slideDown 0.3s ease reverse';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                        const index = this.notifications.indexOf(id);
+                        if (index > -1) this.notifications.splice(index, 1);
+                    }, 300);
+                }
+            }
+            
+            clearAll() {
+                this.notifications.forEach(id => this.remove(id));
+                this.notifications = [];
+            }
+        }
+        
+        const notificationSystem = new NotificationSystem();
+        
+        // ==================== CONFIRMATION POPUP SYSTEM ====================
+        class ConfirmationPopup {
+            constructor() {
+                this.popup = document.getElementById('confirmationPopup');
+                this.title = document.getElementById('popupTitle');
+                this.message = document.getElementById('popupMessage');
+                this.text = document.getElementById('popupText');
+                this.confirmBtn = document.getElementById('popupConfirmBtn');
+                this.cancelBtn = document.getElementById('popupCancelBtn');
+                this.callback = null;
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                this.cancelBtn.addEventListener('click', () => this.hide());
+                this.confirmBtn.addEventListener('click', () => {
+                    if (this.callback) {
+                        this.callback(true);
+                    }
+                    this.hide();
+                });
+                
+                // Close when clicking outside
+                this.popup.addEventListener('click', (e) => {
+                    if (e.target === this.popup) {
+                        this.hide();
+                    }
+                });
+            }
+            
+            show(title, message, text, confirmText = 'Confirm', confirmType = 'info', callback = null) {
+                this.title.textContent = title;
+                this.message.textContent = message;
+                this.text.textContent = text;
+                this.confirmBtn.textContent = confirmText;
+                
+                // Set button style
+                this.confirmBtn.className = 'popup-button popup-confirm';
+                if (confirmType === 'warning') {
+                    this.confirmBtn.classList.add('warning');
+                } else if (confirmType === 'info') {
+                    this.confirmBtn.classList.add('info');
+                }
+                
+                this.callback = callback;
+                this.popup.classList.add('active');
+            }
+            
+            hide() {
+                this.popup.classList.remove('active');
+                if (this.callback) {
+                    this.callback(false);
+                }
+                this.callback = null;
+            }
+        }
+        
+        const confirmationPopup = new ConfirmationPopup();
+        
+        // ==================== LOADING SYSTEM ====================
+        class LoadingSystem {
+            constructor() {
+                this.overlay = document.getElementById('loadingOverlay');
+                this.text = document.getElementById('loadingText');
+            }
+            
+            show(message = 'Loading...') {
+                this.text.textContent = message;
+                this.overlay.classList.add('active');
+            }
+            
+            hide() {
+                this.overlay.classList.remove('active');
+            }
+            
+            async withLoading(action, message = 'Processing...') {
+                this.show(message);
+                try {
+                    const result = await action();
+                    return result;
+                } finally {
+                    this.hide();
+                }
+            }
+        }
+        
+        const loadingSystem = new LoadingSystem();
+        
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Manage Products page loaded');
+            setupEventListeners();
+            loadAllProducts();
+            analytics.logEvent('manage_products_page_view');
+        });
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            // Tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        filterProducts(this.value);
+                    }, 300);
+                });
+            }
+            
+            // Panel close buttons
+            document.getElementById('closeStatusPanel').addEventListener('click', closeStatusPanel);
+            document.getElementById('closeEditPanel').addEventListener('click', () => {
+                if (hasChanges) {
+                    showUnsavedChangesPopup();
+                } else {
+                    closeEditPanel();
+                }
+            });
+            
+            // Panel overlay click
+            document.getElementById('panelOverlay').addEventListener('click', function() {
+                if (document.getElementById('editPanel').classList.contains('active') && hasChanges) {
+                    showUnsavedChangesPopup();
+                } else {
+                    closeStatusPanel();
+                    closeEditPanel();
+                }
+            });
+            
+            // Panel header drag to close
+            setupPanelDragClose('statusPanelHeader', closeStatusPanel);
+            setupPanelDragClose('editPanelHeader', () => {
+                if (hasChanges) {
+                    showUnsavedChangesPopup();
+                } else {
+                    closeEditPanel();
+                }
+            });
+            
+            // Floating apply button
+            document.getElementById('floatingApplyBtn').addEventListener('click', saveProductChanges);
+        }
+        
+        function setupPanelDragClose(headerId, closeFunction) {
+            const header = document.getElementById(headerId);
+            let startY = 0;
+            let currentY = 0;
+            
+            header.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            });
+            
+            header.addEventListener('touchmove', function(e) {
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                if (diff > 50) {
+                    closeFunction();
+                }
+            });
+            
+            header.addEventListener('mousedown', function(e) {
+                startY = e.clientY;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+            
+            function onMouseMove(e) {
+                currentY = e.clientY;
+                const diff = currentY - startY;
+                if (diff > 50) {
+                    closeFunction();
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+            }
+            
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        }
+        
+        function showUnsavedChangesPopup() {
+            confirmationPopup.show(
+                'Unsaved Changes',
+                'Warning',
+                'You have unsaved changes. Are you sure you want to close without saving?',
+                'Discard',
+                'warning',
+                (confirmed) => {
+                    if (confirmed) {
+                        closeEditPanel();
+                    }
+                }
+            );
+        }
+        
+        // ==================== TAB MANAGEMENT ====================
+        function switchTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.toggle('active', button.getAttribute('data-tab') === tabId);
+            });
+            
+            // Update tab content
+            document.querySelectorAll('.products-section').forEach(section => {
+                section.classList.toggle('active', section.id === tabId + 'Tab');
+            });
+            
+            // Refresh the current tab's products
+            filterProducts(document.getElementById('searchInput').value);
+        }
+        
+        // ==================== LOAD PRODUCTS ====================
+        async function loadAllProducts() {
+            try {
+                await loadingSystem.withLoading(async () => {
+                    const querySnapshot = await db.collection('products')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    
+                    allProducts = [];
+                    querySnapshot.forEach(doc => {
+                        allProducts.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    console.log(`Loaded ${allProducts.length} products`);
+                    displayProducts(allProducts);
+                }, 'Loading products...');
+            } catch (error) {
+                console.error('Error loading products:', error);
+                notificationSystem.show('error', `Failed to load products: ${error.message}`, 4000);
+            }
+        }
+        
+        // ==================== SEARCH & FILTER ====================
+        function filterProducts(searchTerm) {
+            if (!searchTerm.trim()) {
+                displayProducts(allProducts);
+                return;
+            }
+            
+            const term = searchTerm.toLowerCase().trim();
+            const filtered = allProducts.filter(product => {
+                // Search in name
+                if (product.name && product.name.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                // Search in ID
+                if (product.id && product.id.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                // Search in description
+                if (product.description && product.description.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                // Search in category
+                if (product.category && product.category.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                return false;
+            });
+            
+            displayProducts(filtered);
+        }
+        
+        // ==================== DISPLAY PRODUCTS ====================
+        function displayProducts(products) {
+            const activeTab = document.querySelector('.tab-button.active').getAttribute('data-tab');
+            const listId = activeTab + 'ProductsList';
+            const noProductsId = activeTab + 'NoProducts';
+            
+            const listContainer = document.getElementById(listId);
+            const noProductsContainer = document.getElementById(noProductsId);
+            
+            if (!listContainer || !noProductsContainer) return;
+            
+            // Clear existing content
+            listContainer.innerHTML = '';
+            
+            if (products.length === 0) {
+                listContainer.classList.add('hidden');
+                noProductsContainer.classList.remove('hidden');
+                return;
+            }
+            
+            listContainer.classList.remove('hidden');
+            noProductsContainer.classList.add('hidden');
+            
+            // Create product items
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.dataset.productId = product.id;
+                
+                // Get first image or placeholder
+                let imageUrl = 'https://via.placeholder.com/60x60/FFFFFF/DDDDDD?text=No+Image';
+                if (product.images && product.images.length > 0) {
+                    imageUrl = product.images[0];
+                }
+                
+                // Format price
+                const price = product.price ? parseInt(product.price).toLocaleString() : '0';
+                
+                item.innerHTML = `
+                    <div class="product-image">
+                        <img src="${imageUrl}" alt="${product.name || 'Product'}" loading="lazy">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name || 'Unnamed Product'}</div>
+                        <div class="product-price">${price} RWF</div>
+                        <div class="product-meta">
+                            <div class="product-category">${product.category || 'No Category'}</div>
+                            <div class="product-status ${product.active ? 'status-active' : 'status-inactive'}">
+                                ${product.active ? 'Active' : 'Inactive'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event
+                item.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    openProductPanel(productId, activeTab);
+                });
+                
+                listContainer.appendChild(item);
+            });
+        }
+        
+        // ==================== OPEN PRODUCT PANEL ====================
+        async function openProductPanel(productId, panelType) {
+            try {
+                await loadingSystem.withLoading(async () => {
+                    // Get product data
+                    const docRef = db.collection('products').doc(productId);
+                    const docSnap = await docRef.get();
+                    
+                    if (!docSnap.exists) {
+                        notificationSystem.show('error', 'Product not found', 3000);
+                        return;
+                    }
+                    
+                    currentProductId = productId;
+                    currentProductData = docSnap.data();
+                    
+                    if (panelType === 'status') {
+                        openStatusPanel();
+                    } else if (panelType === 'edit') {
+                        openEditPanel();
+                    }
+                }, 'Loading product...');
+            } catch (error) {
+                console.error('Error opening product:', error);
+                notificationSystem.show('error', `Failed to load product: ${error.message}`, 4000);
+            }
+        }
+        
+        // ==================== STATUS PANEL ====================
+        function openStatusPanel() {
+            const panel = document.getElementById('statusPanel');
+            const overlay = document.getElementById('panelOverlay');
+            const title = document.getElementById('statusPanelTitle');
+            const status = document.getElementById('statusPanelStatus');
+            const content = document.getElementById('statusPanelContent');
+            
+            // Update header
+            title.textContent = currentProductData.name || 'Unnamed Product';
+            status.textContent = currentProductData.active ? 'Active' : 'Inactive';
+            status.className = `panel-status ${currentProductData.active ? 'status-active' : 'status-inactive'}`;
+            
+            // Format price
+            const price = currentProductData.price ? parseInt(currentProductData.price).toLocaleString() : '0';
+            const originalPrice = currentProductData.originalPrice ? parseInt(currentProductData.originalPrice).toLocaleString() : price;
+            const discount = currentProductData.discount || 0;
+            
+            // Create content
+            content.innerHTML = `
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class='bx bx-info-circle'></i>
+                        Product Information
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Product ID</div>
+                            <div class="info-value copy-id-container">
+                                <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">${currentProductId}</span>
+                                <button class="copy-id-button" onclick="copyProductId('${currentProductId}')">
+                                    <i class='bx bx-copy'></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Category</div>
+                            <div class="info-value">${currentProductData.category || '-'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Featured</div>
+                            <div class="info-value">${currentProductData.featured ? 'Yes' : 'No'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Wealth Category</div>
+                            <div class="info-value">${currentProductData.wealth || '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10">
+                        <div class="info-label">Description</div>
+                        <div class="info-value" style="background: #f8f9fa; padding: 10px; border-radius: 6px; line-height: 1.5;">${currentProductData.description || '-'}</div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class='bx bx-dollar-circle'></i>
+                        Pricing
+                    </div>
+                    
+                    <div class="price-container">
+                        <div class="price-row">
+                            <div>
+                                <div style="font-size: 11px; color: #666;">Current Price</div>
+                                <div class="current-price">${price} RWF</div>
+                            </div>
+                            ${discount > 0 ? `
+                                <div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 11px; color: #666;">Original Price</div>
+                                        <div class="original-price">${originalPrice} RWF</div>
+                                    </div>
+                                    <div class="discount-badge" style="margin-top: 5px; display: inline-block;">${discount}% OFF</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class='bx bx-toggle-right'></i>
+                        Product Status
+                    </div>
+                    
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                            Current status: <strong>${currentProductData.active ? 'ACTIVE' : 'INACTIVE'}</strong>
+                        </div>
+                        <button class="toggle-status-button" onclick="showToggleStatusConfirmation()">
+                            <i class='bx bx-toggle-${currentProductData.active ? 'left' : 'right'}'></i>
+                            ${currentProductData.active ? 'Deactivate Product' : 'Activate Product'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Show panel
+            overlay.classList.add('active');
+            panel.classList.add('active');
+        }
+        
+        function closeStatusPanel() {
+            document.getElementById('statusPanel').classList.remove('active');
+            document.getElementById('panelOverlay').classList.remove('active');
+            currentProductId = null;
+            currentProductData = null;
+        }
+        
+        // ==================== EDIT PANEL ====================
+        function openEditPanel() {
+            const panel = document.getElementById('editPanel');
+            const overlay = document.getElementById('panelOverlay');
+            const title = document.getElementById('editPanelTitle');
+            const status = document.getElementById('editPanelStatus');
+            const content = document.getElementById('editPanelContent');
+            
+            // Update header
+            title.textContent = currentProductData.name || 'Edit Product';
+            status.textContent = currentProductData.active ? 'Active' : 'Inactive';
+            status.className = `panel-status ${currentProductData.active ? 'status-active' : 'status-inactive'}`;
+            
+            // Reset uploaded images
+            uploadedImages = currentProductData.images ? [...currentProductData.images] : [];
+            hasChanges = false;
+            
+            // Create edit form content
+            content.innerHTML = createEditForm();
+            
+            // Initialize checkboxes and event listeners
+            initializeEditCheckboxes();
+            
+            // Hide apply button initially
+            document.getElementById('floatingApplyBtn').classList.remove('active');
+            
+            // Show panel
+            overlay.classList.add('active');
+            panel.classList.add('active');
+        }
+        
+        function closeEditPanel() {
+            document.getElementById('editPanel').classList.remove('active');
+            document.getElementById('panelOverlay').classList.remove('active');
+            document.getElementById('floatingApplyBtn').classList.remove('active');
+            currentProductId = null;
+            currentProductData = null;
+            uploadedImages = [];
+            hasChanges = false;
+        }
+        
+        function createEditForm() {
+            return `
+                <form id="editProductForm">
+                    <!-- Basic Information -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Product Name</label>
+                        <input type="text" 
+                               class="edit-form-input" 
+                               id="editName"
+                               value="${currentProductData.name || ''}"
+                               required
+                               oninput="checkForChanges()">
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Category</label>
+                        <select class="edit-form-select" id="editCategory" onchange="checkForChanges()">
+                            <option value="">Select category</option>
+                            ${formData.categories.map(cat => 
+                                `<option value="${cat}" ${currentProductData.category === cat ? 'selected' : ''}>${cat}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Description</label>
+                        <textarea class="edit-form-textarea" id="editDescription" rows="3" oninput="checkForChanges()">${currentProductData.description || ''}</textarea>
+                    </div>
+                    
+                    <!-- Department -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Department</label>
+                        <div class="checkbox-grid" id="editDepartmentGrid">
+                            ${formData.departments.map(dept => {
+                                const isSelected = currentProductData.department && 
+                                                  currentProductData.department.includes(dept.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-dept-${dept.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${dept.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-dept-${dept.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${dept.icon} checkbox-icon"></i>
+                                        <span>${dept.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Colors -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Colors</label>
+                        <div class="checkbox-grid" id="editColorGrid">
+                            ${formData.colors.map(color => {
+                                const isSelected = currentProductData.color && 
+                                                  currentProductData.color.includes(color.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" 
+                                           class="checkbox-option" 
+                                           value="${color.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" class="checkbox-label">
+                                        <span class="color-preview" style="background-color: ${color.hex}; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
+                                        <span>${color.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Size -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Size</label>
+                        <div class="checkbox-grid" id="editSizeGrid">
+                            ${formData.sizes.map(size => {
+                                const isSelected = currentProductData.size && 
+                                                  currentProductData.size.includes(size.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-size-${size.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${size.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-size-${size.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${size.icon} checkbox-icon"></i>
+                                        <span>${size.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Age Group -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Age Group</label>
+                        <div class="checkbox-grid" id="editAgeGrid">
+                            ${formData.ageGroups.map(age => {
+                                const isSelected = currentProductData.age && 
+                                                  currentProductData.age.includes(age.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-age-${age.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${age.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-age-${age.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${age.icon} checkbox-icon"></i>
+                                        <span>${age.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Condition</label>
+                        <div class="checkbox-grid" id="editStatusGrid">
+                            ${formData.statuses.map(status => {
+                                const isSelected = currentProductData.status && 
+                                                  currentProductData.status.includes(status.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-status-${status.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${status.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-status-${status.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${status.icon} checkbox-icon"></i>
+                                        <span>${status.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Price (RWF)</label>
+                        <input type="number" 
+                               class="edit-form-input" 
+                               id="editPrice"
+                               value="${currentProductData.price || ''}"
+                               min="500" 
+                               max="1000000"
+                               oninput="checkForChanges()">
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Original Price (RWF)</label>
+                        <input type="number" 
+                               class="edit-form-input" 
+                               id="editOriginalPrice"
+                               value="${currentProductData.originalPrice || ''}"
+                               min="0"
+                               oninput="checkForChanges()">
+                    </div>
+                    
+                    <!-- Featured -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">
+                            <input type="checkbox" 
+                                   id="editFeatured" 
+                                   ${currentProductData.featured ? 'checked' : ''}
+                                   onchange="checkForChanges()"
+                                   style="margin-right: 8px;">
+                            Featured Product
+                        </label>
+                    </div>
+                    
+                    <!-- Active Status -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">
+                            <input type="checkbox" 
+                                   id="editActive" 
+                                   ${currentProductData.active ? 'checked' : ''}
+                                   onchange="checkForChanges()"
+                                   style="margin-right: 8px;">
+                            Active Product
+                        </label>
+                    </div>
+                    
+                    <!-- Images -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Product Images</label>
+                        <div class="image-upload-box" id="editUploadBox">
+                            <div class="upload-icon">
+                                <i class='bx bx-cloud-upload'></i>
+                            </div>
+                            <div class="upload-text">
+                                Tap to upload new images
+                            </div>
+                            <button type="button" class="upload-button" onclick="document.getElementById('editFileInput').click()">
+                                <i class='bx bx-camera'></i> Choose Images
+                            </button>
+                            <div style="font-size: 11px; color: #888; margin-top: 10px;">
+                                Max 5 images, 2MB each
+                            </div>
+                        </div>
+                        
+                        <div class="image-preview" id="editImagePreview">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                        
+                        <input type="file" id="editFileInput" accept="image/*" multiple style="display: none;">
+                    </div>
+                </form>
+            `;
+        }
+        
+        function initializeEditCheckboxes() {
+            // Add event listeners for file input
+            const fileInput = document.getElementById('editFileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleEditImageUpload);
+            }
+            
+            // Initialize image preview
+            updateEditImagePreview();
+        }
+        
+        function checkForChanges() {
+            if (!currentProductId) return;
+            
+            // Collect form data for comparison
+            const newData = {
+                name: document.getElementById('editName').value.trim(),
+                category: document.getElementById('editCategory').value,
+                description: document.getElementById('editDescription').value.trim(),
+                price: parseInt(document.getElementById('editPrice').value) || 0,
+                originalPrice: parseInt(document.getElementById('editOriginalPrice').value) || null,
+                featured: document.getElementById('editFeatured').checked,
+                active: document.getElementById('editActive').checked
+            };
+            
+            // Collect checkbox values
+            const checkboxes = {
+                department: 'editDepartmentGrid',
+                color: 'editColorGrid',
+                size: 'editSizeGrid',
+                age: 'editAgeGrid',
+                status: 'editStatusGrid'
+            };
+            
+            Object.entries(checkboxes).forEach(([key, gridId]) => {
+                const grid = document.getElementById(gridId);
+                const checkedBoxes = grid.querySelectorAll('.checkbox-option:checked');
+                newData[key] = Array.from(checkedBoxes).map(cb => cb.value);
+            });
+            
+            // Compare with original data
+            const hasFormChanges = 
+                newData.name !== currentProductData.name ||
+                newData.category !== currentProductData.category ||
+                newData.description !== currentProductData.description ||
+                newData.price !== currentProductData.price ||
+                newData.originalPrice !== currentProductData.originalPrice ||
+                newData.featured !== currentProductData.featured ||
+                newData.active !== currentProductData.active ||
+                JSON.stringify(newData.department) !== JSON.stringify(currentProductData.department) ||
+                JSON.stringify(newData.color) !== JSON.stringify(currentProductData.color) ||
+                JSON.stringify(newData.size) !== JSON.stringify(currentProductData.size) ||
+                JSON.stringify(newData.age) !== JSON.stringify(currentProductData.age) ||
+                JSON.stringify(newData.status) !== JSON.stringify(currentProductData.status) ||
+                JSON.stringify(uploadedImages) !== JSON.stringify(currentProductData.images);
+            
+            hasChanges = hasFormChanges;
+            
+            // Show/hide apply button
+            const applyBtn = document.getElementById('floatingApplyBtn');
+            if (hasChanges) {
+                applyBtn.classList.add('active');
+            } else {
+                applyBtn.classList.remove('active');
+            }
+        }
+        
+        function updateEditImagePreview() {
+            const container = document.getElementById('editImagePreview');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            uploadedImages.forEach((imageUrl, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <img src="${imageUrl}" alt="Image ${index + 1}">
+                    <button type="button" class="remove-btn" onclick="removeEditImage(${index})">
+                        <i class='bx bx-x'></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+            
+            checkForChanges();
+        }
+        
+        async function handleEditImageUpload(e) {
+            const files = Array.from(e.target.files);
+            
+            // Validate files
+            const validFiles = files.filter(file => {
+                if (file.size > 2 * 1024 * 1024) {
+                    notificationSystem.show('error', `${file.name} is too large (max 2MB)`, 3000);
+                    return false;
+                }
+                if (!file.type.startsWith('image/')) {
+                    notificationSystem.show('error', `${file.name} is not an image`, 3000);
+                    return false;
+                }
+                return true;
+            });
+
+            // Check limit
+            if (uploadedImages.length + validFiles.length > 5) {
+                notificationSystem.show('error', 'Maximum 5 images allowed', 3000);
+                return;
+            }
+
+            // Upload each file
+            for (const file of validFiles) {
+                await uploadEditImage(file);
+            }
+            
+            updateEditImagePreview();
+        }
+        
+        async function uploadEditImage(file) {
+            const notificationId = notificationSystem.show('info', `Uploading ${file.name}...`, 0);
+            
+            const formData = new FormData();
+            formData.append('key', IMGBB_API_KEY);
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    uploadedImages.push(data.data.url);
+                    notificationSystem.remove(notificationId);
+                    notificationSystem.show('success', `Uploaded ${file.name}`, 2000);
+                } else {
+                    throw new Error(data.error?.message || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                notificationSystem.remove(notificationId);
+                notificationSystem.show('error', `Failed: ${file.name}`, 3000);
+            }
+        }
+        
+        function removeEditImage(index) {
+            uploadedImages.splice(index, 1);
+            updateEditImagePreview();
+        }
+        
+        // ==================== PRODUCT ACTIONS ====================
+        function copyProductId(productId) {
+            navigator.clipboard.writeText(productId)
+                .then(() => {
+                    notificationSystem.show('success', 'Product ID copied to clipboard!', 2000);
+                })
+                .catch(err => {
+                    console.error('Copy failed:', err);
+                    notificationSystem.show('error', 'Failed to copy Product ID', 2000);
+                });
+        }
+        
+        function showToggleStatusConfirmation() {
+            const newStatus = !currentProductData.active;
+            const action = newStatus ? 'activate' : 'deactivate';
+            const productName = currentProductData.name || 'this product';
+            
+            confirmationPopup.show(
+                `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+                'Product Status',
+                `Are you sure you want to ${action} "${productName}"?`,
+                newStatus ? 'Activate' : 'Deactivate',
+                newStatus ? 'info' : 'warning',
+                (confirmed) => {
+                    if (confirmed) {
+                        toggleProductStatus();
+                    }
+                }
+            );
+        }
+        
+        async function toggleProductStatus() {
+            if (!currentProductId) return;
+            
+            const newStatus = !currentProductData.active;
+            
+            try {
+                await loadingSystem.withLoading(async () => {
+                    const docRef = db.collection('products').doc(currentProductId);
+                    await docRef.update({
+                        active: newStatus,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // Update local data
+                    currentProductData.active = newStatus;
+                    
+                    // Update UI
+                    document.getElementById('statusPanelStatus').textContent = newStatus ? 'Active' : 'Inactive';
+                    document.getElementById('statusPanelStatus').className = `panel-status ${newStatus ? 'status-active' : 'status-inactive'}`;
+                    
+                    // Refresh products list
+                    await loadAllProducts();
+                    
+                    notificationSystem.show('success', 
+                        `Product ${newStatus ? 'activated' : 'deactivated'} successfully!`, 
+                        3000);
+                }, 'Updating status...');
+            } catch (error) {
+                console.error('Toggle status error:', error);
+                notificationSystem.show('error', `Failed to update status: ${error.message}`, 4000);
+            }
+        }
+        
+        async function saveProductChanges() {
+            if (!currentProductId) return;
+            
+            try {
+                await loadingSystem.withLoading(async () => {
+                    // Collect form data
+                    const updatedData = {
+                        name: document.getElementById('editName').value.trim(),
+                        category: document.getElementById('editCategory').value,
+                        description: document.getElementById('editDescription').value.trim(),
+                        price: parseInt(document.getElementById('editPrice').value) || 0,
+                        originalPrice: parseInt(document.getElementById('editOriginalPrice').value) || null,
+                        featured: document.getElementById('editFeatured').checked,
+                        active: document.getElementById('editActive').checked,
+                        images: uploadedImages.length > 0 ? uploadedImages : currentProductData.images,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    // Calculate discount if original price exists
+                    if (updatedData.originalPrice && updatedData.originalPrice > updatedData.price) {
+                        updatedData.discount = Math.round((1 - updatedData.price / updatedData.originalPrice) * 100);
+                    } else {
+                        updatedData.discount = null;
+                        updatedData.originalPrice = null;
+                    }
+                    
+                    // Collect checkbox values
+                    const checkboxes = {
+                        department: 'editDepartmentGrid',
+                        color: 'editColorGrid',
+                        size: 'editSizeGrid',
+                        age: 'editAgeGrid',
+                        status: 'editStatusGrid'
+                    };
+                    
+                    Object.entries(checkboxes).forEach(([key, gridId]) => {
+                        const grid = document.getElementById(gridId);
+                        const checkedBoxes = grid.querySelectorAll('.checkbox-option:checked');
+                        updatedData[key] = Array.from(checkedBoxes).map(cb => cb.value);
+                    });
+                    
+                    // Calculate wealth category
+                    if (updatedData.price >= 500 && updatedData.price <= 20000) {
+                        updatedData.wealth = 'Poor';
+                    } else if (updatedData.price > 20000 && updatedData.price <= 50000) {
+                        updatedData.wealth = 'Moderate';
+                    } else if (updatedData.price > 50000 && updatedData.price <= 1000000) {
+                        updatedData.wealth = 'Rich';
+                    } else {
+                        updatedData.wealth = '';
+                    }
+                    
+                    // Update in Firebase
+                    const docRef = db.collection('products').doc(currentProductId);
+                    await docRef.update(updatedData);
+                    
+                    // Update local data
+                    Object.assign(currentProductData, updatedData);
+                    
+                    // Refresh products list
+                    await loadAllProducts();
+                    
+                    // Close edit panel
+                    closeEditPanel();
+                    
+                    notificationSystem.show('success', 'Product updated successfully!', 3000);
+                }, 'Saving changes...');
+            } catch (error) {
+                console.error('Save error:', error);
+                notificationSystem.show('error', `Failed to save changes: ${error.message}`, 4000);
+            }
+        }
+    </script>
+</body>
+</html>
