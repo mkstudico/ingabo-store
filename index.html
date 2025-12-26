@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INGABO Online Shop</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -30,6 +30,34 @@
             padding: 0;
         }
         
+        /* Notification Box */
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            color: white;
+            padding: 20px 30px;
+            z-index: 999999;
+            display: none;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .notification.show {
+            display: block;
+            animation: fadeInOut 4s forwards;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
         /* Announcement Banner */
         .announcement-banner {
             background-color: var(--accent-color, #ff6a00);
@@ -42,10 +70,6 @@
         
         .announcement-banner.show {
             display: block;
-        }
-        
-        .announcement-content {
-            margin: 0 auto;
         }
         
         /* Paused Mode */
@@ -116,6 +140,20 @@
         .cart-title {
             font-size: 18px;
             font-weight: bold;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .clear-cart {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
         }
         
         .close-cart {
@@ -443,7 +481,7 @@
         /* Hero Section */
         .hero-section {
             position: relative;
-            height: 300px;
+            height: 320px;
             background: linear-gradient(90deg, #000 0%, rgba(0,0,0,0.8) 30%, transparent 100%), 
                         url('https://i.ibb.co/DDpVZx8W/Ingabo-store.png');
             background-size: cover;
@@ -452,11 +490,16 @@
             align-items: center;
             padding: 0 40px;
             margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
         .hero-overlay {
             max-width: 500px;
             color: white;
+            position: relative;
+            z-index: 2;
+            padding-right: 40px;
         }
         
         .hero-title {
@@ -482,6 +525,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            border-radius: 8px;
         }
         
         .cinematic-fade {
@@ -498,6 +542,7 @@
                 rgba(0,0,0,0.4) 80%,
                 rgba(0,0,0,0.8) 100%);
             animation: cinematicMove 6s ease-in-out infinite;
+            z-index: 1;
         }
         
         @keyframes cinematicMove {
@@ -509,25 +554,59 @@
             }
         }
         
-        /* Small Category Boxes */
-        .small-categories {
+        /* Category Boxes with Images */
+        .category-boxes {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 30px;
         }
         
-        .small-category-box {
-            background: #f8f8f8;
-            padding: 15px 10px;
-            text-align: center;
-            font-size: 12px;
+        .category-box {
+            position: relative;
+            height: 80px;
+            overflow: hidden;
             cursor: pointer;
-            border: 1px solid #eee;
         }
         
-        .small-category-box:hover {
-            background: #f0f0f0;
+        .category-box-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .category-box-fade {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+            animation: fadeMove 4s ease-in-out infinite;
+        }
+        
+        @keyframes fadeMove {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        .category-box-name {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 2;
         }
         
         /* Top Picks Section */
@@ -561,7 +640,7 @@
         
         .top-pick-card {
             background: #fff;
-            padding: 15px;
+            padding: 12px;
             border: 1px solid #e5e5e5;
         }
         
@@ -569,24 +648,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .card-title {
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .view-all-link {
             color: #888;
-            font-size: 12px;
+            font-size: 11px;
             text-decoration: none;
         }
         
         .product-images {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
+            gap: 4px;
         }
         
         .product-image {
@@ -622,6 +701,7 @@
             background: #fff;
             border: 1px solid #e5e5e5;
             cursor: pointer;
+            position: relative;
         }
         
         .product-image-container {
@@ -629,12 +709,29 @@
             height: 160px;
             background: #f8f8f8;
             overflow: hidden;
+            position: relative;
         }
         
         .product-image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #ff0000;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
         }
         
         .product-info {
@@ -653,6 +750,13 @@
             color: var(--accent-color, #ff6a00);
             font-weight: bold;
             font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .original-price {
+            color: #888;
+            font-size: 11px;
+            text-decoration: line-through;
         }
         
         /* Right Sidebar */
@@ -787,6 +891,7 @@
         .social-icon {
             width: 35px;
             height: 35px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -890,6 +995,7 @@
             background: #fff;
             border: 1px solid #e5e5e5;
             cursor: pointer;
+            position: relative;
         }
         
         .filter-product-image {
@@ -921,16 +1027,6 @@
             font-size: 16px;
         }
         
-        /* Loading */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-            font-size: 16px;
-            color: #666;
-        }
-        
         /* Mobile Check */
         @media (max-width: 768px) {
             .mobile-redirect {
@@ -952,6 +1048,9 @@
     </style>
 </head>
 <body>
+    <!-- Notification Box -->
+    <div class="notification" id="notification"></div>
+    
     <!-- Audio Players -->
     <audio id="morningAudio" style="display:none">
         <source src="Assets/audios/morning.mp3" type="audio/mpeg">
@@ -975,7 +1074,10 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
             <div class="cart-title">Your Cart</div>
-            <button class="close-cart" id="closeCart">×</button>
+            <div class="cart-actions">
+                <button class="clear-cart" id="clearCart">Clear Cart</button>
+                <button class="close-cart" id="closeCart">×</button>
+            </div>
         </div>
         <div class="cart-items-container" id="cartItemsContainer">
             <!-- Cart items will be loaded here -->
@@ -1051,9 +1153,9 @@
                         </div>
                     </section>
                     
-                    <!-- Small Category Boxes -->
-                    <div class="small-categories" id="smallCategories">
-                        <!-- Small category boxes will be loaded here -->
+                    <!-- Category Boxes with Images -->
+                    <div class="category-boxes" id="categoryBoxes">
+                        <!-- Category boxes will be loaded here -->
                     </div>
                     
                     <!-- Top Picks Section -->
@@ -1208,7 +1310,6 @@
             measurementId: "G-QSXTGP9R1Q"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -1220,35 +1321,39 @@
         let allProducts = [];
         let sitePersonalization = null;
         let cartItems = JSON.parse(localStorage.getItem('ingabo_cart') || '[]');
-        let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db']; // Orange, Violet, Green, Blue
+        let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db'];
         let currentHour = new Date().getHours();
+        let searchTimer = null;
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', function() {
-            // Check screen size for mobile redirect
             if (window.innerWidth <= 768) {
                 window.location.href = 'indexp.html';
                 return;
             }
             
-            // Initialize accent color
             initializeAccentColor();
-            
-            // Play time-based audio
             playTimeBasedAudio();
-            
-            // Initialize all components
             initializeApp();
         });
 
+        // ==================== NOTIFICATION SYSTEM ====================
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
         // ==================== ACCENT COLOR ROTATION ====================
         function initializeAccentColor() {
-            // Set initial color based on hour
             const hour = new Date().getHours();
             const colorIndex = hour % accentColors.length;
             document.documentElement.style.setProperty('--accent-color', accentColors[colorIndex]);
             
-            // Change color every hour
             setInterval(() => {
                 const currentTime = new Date().getHours();
                 if (currentTime !== currentHour) {
@@ -1264,13 +1369,9 @@
             const hour = new Date().getHours();
             let audioToPlay = '';
             
-            if (hour >= 5 && hour < 12) {
-                audioToPlay = 'morning';
-            } else if (hour >= 12 && hour < 18) {
-                audioToPlay = 'afternoon';
-            } else {
-                audioToPlay = 'evening';
-            }
+            if (hour >= 5 && hour < 12) audioToPlay = 'morning';
+            else if (hour >= 12 && hour < 18) audioToPlay = 'afternoon';
+            else audioToPlay = 'evening';
             
             const lastPlayed = localStorage.getItem('last_audio_played');
             const lastPlayTime = localStorage.getItem('last_play_time');
@@ -1290,14 +1391,10 @@
 
         // ==================== CART FUNCTIONALITY ====================
         function initializeCart() {
-            const cartButton = document.getElementById('cartButton');
-            const closeCart = document.getElementById('closeCart');
-            const cartOverlay = document.getElementById('cartOverlay');
-            const cartSidebar = document.getElementById('cartSidebar');
-            
-            cartButton.addEventListener('click', showCart);
-            closeCart.addEventListener('click', hideCart);
-            cartOverlay.addEventListener('click', hideCart);
+            document.getElementById('cartButton').addEventListener('click', showCart);
+            document.getElementById('closeCart').addEventListener('click', hideCart);
+            document.getElementById('cartOverlay').addEventListener('click', hideCart);
+            document.getElementById('clearCart').addEventListener('click', clearCart);
             
             updateCartCount();
         }
@@ -1311,6 +1408,16 @@
         function hideCart() {
             document.getElementById('cartOverlay').classList.remove('active');
             document.getElementById('cartSidebar').classList.remove('active');
+        }
+
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                cartItems = [];
+                localStorage.setItem('ingabo_cart', JSON.stringify(cartItems));
+                loadCartItems();
+                updateCartCount();
+                showNotification('Cart cleared');
+            }
         }
 
         function loadCartItems() {
@@ -1417,10 +1524,18 @@
                     .get();
                 
                 const categoryCounts = {};
+                const categoryProducts = {};
+                
                 productsSnapshot.forEach(doc => {
                     const product = doc.data();
                     if (product.category) {
                         categoryCounts[product.category] = (categoryCounts[product.category] || 0) + 1;
+                        if (!categoryProducts[product.category]) {
+                            categoryProducts[product.category] = [];
+                        }
+                        if (categoryProducts[product.category].length < 1) {
+                            categoryProducts[product.category].push(product);
+                        }
                     }
                 });
                 
@@ -1428,11 +1543,11 @@
                 
                 const categoryList = document.getElementById('categoryList');
                 const categoryLinks = document.getElementById('categoryLinks');
-                const smallCategories = document.getElementById('smallCategories');
+                const categoryBoxes = document.getElementById('categoryBoxes');
                 
                 categoryList.innerHTML = '';
                 categoryLinks.innerHTML = '';
-                smallCategories.innerHTML = '';
+                categoryBoxes.innerHTML = '';
                 
                 uniqueCategories.forEach(category => {
                     if (!category) return;
@@ -1459,13 +1574,23 @@
                     });
                     categoryLinks.appendChild(linkLi);
                     
-                    // Small category boxes (first 4 only)
+                    // Category boxes with images (first 4 only)
                     if (uniqueCategories.indexOf(category) < 4) {
-                        const smallBox = document.createElement('div');
-                        smallBox.className = 'small-category-box';
-                        smallBox.textContent = category;
-                        smallBox.addEventListener('click', () => showFilteredProducts(category, 'category'));
-                        smallCategories.appendChild(smallBox);
+                        const box = document.createElement('div');
+                        box.className = 'category-box';
+                        
+                        const productImage = categoryProducts[category] && categoryProducts[category][0] && categoryProducts[category][0].images && categoryProducts[category][0].images[0]
+                            ? categoryProducts[category][0].images[0]
+                            : 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800';
+                        
+                        box.innerHTML = `
+                            <div class="category-box-bg" style="background-image: url('${productImage}')"></div>
+                            <div class="category-box-fade"></div>
+                            <div class="category-box-name">${category}</div>
+                        `;
+                        
+                        box.addEventListener('click', () => showFilteredProducts(category, 'category'));
+                        categoryBoxes.appendChild(box);
                     }
                 });
             } catch (error) {
@@ -1501,7 +1626,6 @@
                 const productsByCategory = {};
                 const shuffledProducts = [...allProducts].sort(() => Math.random() - 0.5);
                 
-                // Group 6 random products by category
                 shuffledProducts.slice(0, 12).forEach(product => {
                     if (!productsByCategory[product.category]) {
                         productsByCategory[product.category] = [];
@@ -1511,7 +1635,6 @@
                     }
                 });
                 
-                // Take first 2 categories
                 const categories = Object.keys(productsByCategory).slice(0, 2);
                 
                 categories.forEach(category => {
@@ -1559,7 +1682,7 @@
 
         async function loadProductsGrid() {
             try {
-                // Get most viewed products
+                // Get view counts for algorithm
                 const viewsSnapshot = await db.collection('user_activity')
                     .where('type', '==', 'view')
                     .limit(100)
@@ -1571,18 +1694,39 @@
                     viewCounts[activity.productId] = (viewCounts[activity.productId] || 0) + 1;
                 });
                 
-                // Sort products by view count or randomly
-                const sortedProducts = [...allProducts].sort((a, b) => {
-                    const viewsA = viewCounts[a.id] || 0;
-                    const viewsB = viewCounts[b.id] || 0;
-                    if (viewsA !== viewsB) return viewsB - viewsA;
-                    return Math.random() - 0.5;
-                });
+                // Algorithm: Sort by view count and user personalization
+                let sortedProducts = [...allProducts];
+                
+                if (userPersonalCode !== 'GUEST-CODE') {
+                    // For logged in users: prioritize by personalization
+                    sortedProducts.sort((a, b) => {
+                        const scoreA = calculateMatchScore(userPersonalCode, a.suggestionCode);
+                        const scoreB = calculateMatchScore(userPersonalCode, b.suggestionCode);
+                        if (scoreA !== scoreB) return scoreB - scoreA;
+                        
+                        const viewsA = viewCounts[a.id] || 0;
+                        const viewsB = viewCounts[b.id] || 0;
+                        if (viewsA !== viewsB) return viewsB - viewsA;
+                        
+                        return Math.random() - 0.5;
+                    });
+                } else {
+                    // For guests: prioritize by views and random
+                    sortedProducts.sort((a, b) => {
+                        const viewsA = viewCounts[a.id] || 0;
+                        const viewsB = viewCounts[b.id] || 0;
+                        if (viewsA !== viewsB) return viewsB - viewsA;
+                        return Math.random() - 0.5;
+                    });
+                }
                 
                 const container = document.getElementById('productsGrid');
                 container.innerHTML = '';
                 
                 sortedProducts.forEach(product => {
+                    const discount = product.discount || 0;
+                    const originalPrice = product.originalPrice || product.price;
+                    
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     card.innerHTML = `
@@ -1593,10 +1737,12 @@
                                     <i class='bx bx-image'></i>
                                 </div>`
                             }
+                            ${discount > 0 ? `<div class="discount-badge">-${discount}%</div>` : ''}
                         </div>
                         <div class="product-info">
                             <div class="product-name">${product.name}</div>
                             <div class="product-price">${formatPrice(product.price)} RWF</div>
+                            ${originalPrice > product.price ? `<div class="original-price">${formatPrice(originalPrice)} RWF</div>` : ''}
                         </div>
                     `;
                     
@@ -1618,12 +1764,17 @@
             const searchButton = document.getElementById('searchButton');
             
             searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                
                 const query = this.value.trim();
                 if (query.length < 2) {
                     document.getElementById('searchResults').classList.remove('active');
                     return;
                 }
-                performSearch(query);
+                
+                searchTimer = setTimeout(() => {
+                    performSearch(query, true); // true = preview mode
+                }, 300);
             });
             
             searchInput.addEventListener('keypress', function(e) {
@@ -1631,6 +1782,8 @@
                     const query = this.value.trim();
                     if (query) {
                         showFilteredProducts(query, 'search');
+                        this.value = '';
+                        document.getElementById('searchResults').classList.remove('active');
                     }
                 }
             });
@@ -1639,11 +1792,21 @@
                 const query = searchInput.value.trim();
                 if (query) {
                     showFilteredProducts(query, 'search');
+                    searchInput.value = '';
+                    document.getElementById('searchResults').classList.remove('active');
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                const searchResults = document.getElementById('searchResults');
+                if (!searchResults.contains(e.target) && e.target !== searchInput && e.target !== searchButton) {
+                    searchResults.classList.remove('active');
                 }
             });
         }
 
-        async function performSearch(query) {
+        async function performSearch(query, preview = false) {
             const searchResults = document.getElementById('searchResults');
             
             try {
@@ -1653,13 +1816,19 @@
                     product.category.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 6);
                 
-                displaySearchResults(results, query);
+                if (preview) {
+                    // Show only search results, no "Also you may like"
+                    displaySearchPreview(results, query);
+                } else {
+                    // Show full search results with "Also you may like"
+                    displaySearchResults(results, query);
+                }
             } catch (error) {
                 console.error('Search error:', error);
             }
         }
 
-        function displaySearchResults(results, query) {
+        function displaySearchPreview(results, query) {
             const searchResults = document.getElementById('searchResults');
             
             if (results.length === 0) {
@@ -1685,53 +1854,20 @@
                     item.addEventListener('click', () => {
                         window.location.href = `view.html?id=${product.id}`;
                         searchResults.classList.remove('active');
+                        document.getElementById('searchInput').value = '';
                     });
                     
                     searchResults.appendChild(item);
                 });
-                
-                // Add "Also you may like"
-                loadAlsoYouMayLike(results[0].category, searchResults);
             }
             
             searchResults.classList.add('active');
         }
 
-        async function loadAlsoYouMayLike(category, container) {
-            try {
-                const similarProducts = allProducts
-                    .filter(p => p.category === category)
-                    .slice(0, 4);
-                
-                if (similarProducts.length === 0) return;
-                
-                const alsoLikeSection = document.createElement('div');
-                alsoLikeSection.className = 'also-like-section';
-                alsoLikeSection.innerHTML = `
-                    <div class="also-like-title">Also you may like:</div>
-                    <div class="also-like-grid"></div>
-                `;
-                
-                similarProducts.forEach(product => {
-                    const item = document.createElement('div');
-                    item.className = 'also-like-item';
-                    item.innerHTML = `
-                        <div style="font-size: 11px;">${product.name.substring(0, 30)}...</div>
-                        <div style="font-size: 12px; color: var(--accent-color, #ff6a00);">${formatPrice(product.price)} RWF</div>
-                    `;
-                    
-                    item.addEventListener('click', () => {
-                        window.location.href = `view.html?id=${product.id}`;
-                        document.getElementById('searchResults').classList.remove('active');
-                    });
-                    
-                    alsoLikeSection.querySelector('.also-like-grid').appendChild(item);
-                });
-                
-                container.appendChild(alsoLikeSection);
-            } catch (error) {
-                console.error('Error loading also like:', error);
-            }
+        function displaySearchResults(results, query) {
+            // This is called when enter/search button is clicked
+            // The results are shown in the filter view
+            // "Also you may like" will be added in loadFilteredProducts
         }
 
         // ==================== FILTER VIEW ====================
@@ -1750,7 +1886,7 @@
 
         async function loadFilteredProducts(filter, type) {
             const container = document.getElementById('filterGrid');
-            container.innerHTML = '<div class="loading">Loading products...</div>';
+            container.innerHTML = '<div style="text-align:center;padding:40px;">Loading...</div>';
             
             let filteredProducts = allProducts;
             
@@ -1765,10 +1901,10 @@
                 );
             }
             
-            displayFilteredProducts(filteredProducts, container);
+            displayFilteredProducts(filteredProducts, container, filter, type);
         }
 
-        function displayFilteredProducts(products, container) {
+        function displayFilteredProducts(products, container, filter, type) {
             container.innerHTML = '';
             
             if (products.length === 0) {
@@ -1777,6 +1913,9 @@
             }
             
             products.forEach(product => {
+                const discount = product.discount || 0;
+                const originalPrice = product.originalPrice || product.price;
+                
                 const card = document.createElement('div');
                 card.className = 'filter-product-card';
                 card.innerHTML = `
@@ -1787,10 +1926,12 @@
                                 <i class='bx bx-image'></i>
                             </div>`
                         }
+                        ${discount > 0 ? `<div class="discount-badge">-${discount}%</div>` : ''}
                     </div>
                     <div class="filter-product-info">
                         <div class="filter-product-name">${product.name}</div>
                         <div class="filter-product-price">${formatPrice(product.price)} RWF</div>
+                        ${originalPrice > product.price ? `<div class="original-price">${formatPrice(originalPrice)} RWF</div>` : ''}
                     </div>
                 `;
                 
@@ -1800,38 +1941,48 @@
                 
                 container.appendChild(card);
             });
+            
+            // Add "Also you may like" section for search results
+            if (type === 'search' && products.length > 0) {
+                addAlsoYouMayLike(products[0].category, container);
+            }
         }
 
-        // ==================== SUBSCRIPTION ====================
-        function initializeSubscription() {
-            document.getElementById('subscribeButton').addEventListener('click', async () => {
-                const email = document.getElementById('subscribeEmail').value.trim();
-                
-                if (!email || !email.includes('@')) {
-                    alert('Please enter a valid email');
-                    return;
-                }
-                
-                try {
-                    await db.collection('subscriptions').add({
-                        email: email,
-                        date: new Date().toISOString()
-                    });
-                    
-                    alert('Thank you for subscribing!');
-                    document.getElementById('subscribeEmail').value = '';
-                } catch (error) {
-                    console.error('Subscription error:', error);
-                    alert('Failed to subscribe');
-                }
+        function addAlsoYouMayLike(category, container) {
+            // Get 4 random products from same category (excluding already shown ones)
+            const similarProducts = allProducts
+                .filter(p => p.category === category)
+                .slice(0, 8);
+            
+            if (similarProducts.length === 0) return;
+            
+            const alsoLikeSection = document.createElement('div');
+            alsoLikeSection.style.cssText = `
+                grid-column: 1 / -1;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+            `;
+            alsoLikeSection.innerHTML = `
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">Also you may like:</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    ${similarProducts.map(product => `
+                        <div style="border: 1px solid #eee; padding: 10px; cursor: pointer;">
+                            <div style="font-size: 12px; margin-bottom: 5px;">${product.name.substring(0, 30)}...</div>
+                            <div style="font-size: 14px; color: var(--accent-color, #ff6a00); font-weight: bold;">${formatPrice(product.price)} RWF</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Add click events
+            alsoLikeSection.querySelectorAll('div > div').forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    window.location.href = `view.html?id=${similarProducts[index].id}`;
+                });
             });
-        }
-
-        // ==================== COPY TO CLIPBOARD ====================
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Copied to clipboard!');
-            });
+            
+            container.appendChild(alsoLikeSection);
         }
 
         // ==================== PERSONALIZATION ALGORITHM ====================
@@ -1882,6 +2033,21 @@
             return code;
         }
 
+        function calculateMatchScore(userCode, productCode) {
+            if (userCode === 'GUEST-CODE') return 0;
+            const userParts = userCode.split('-');
+            const productParts = productCode.split('-');
+            let score = 0;
+            for (let i = 0; i < Math.min(userParts.length, productParts.length); i++) {
+                const userMetrics = userParts[i].split('+');
+                const productMetrics = productParts[i].split('+');
+                for (const userMetric of userMetrics) {
+                    if (productMetrics.includes(userMetric)) { score += 1; break; }
+                }
+            }
+            return score;
+        }
+
         async function trackProductView(productId) {
             if (!currentUser) return;
             try {
@@ -1896,7 +2062,38 @@
             }
         }
 
-        // ==================== SITE PERSONALIZATION ====================
+        // ==================== HELPER FUNCTIONS ====================
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!');
+            });
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            document.getElementById('backToHome').addEventListener('click', () => {
+                document.getElementById('normalView').style.display = 'block';
+                document.getElementById('filterView').classList.remove('active');
+            });
+        }
+
+        // ==================== MAIN INITIALIZATION ====================
+        async function initializeApp() {
+            initializeCart();
+            initializeAuth();
+            initializeSearch();
+            setupEventListeners();
+            
+            await Promise.all([
+                loadSitePersonalization(),
+                loadCategories()
+            ]);
+        }
+
         async function loadSitePersonalization() {
             try {
                 const doc = await db.collection('site_personalization').doc('settings').get();
@@ -1933,35 +2130,6 @@
             } else {
                 pausedOverlay.classList.remove('active');
             }
-        }
-
-        // ==================== HELPER FUNCTIONS ====================
-        function formatPrice(price) {
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // ==================== EVENT LISTENERS ====================
-        function setupEventListeners() {
-            document.getElementById('backToHome').addEventListener('click', () => {
-                document.getElementById('normalView').style.display = 'block';
-                document.getElementById('filterView').classList.remove('active');
-                document.getElementById('searchInput').value = '';
-                document.getElementById('searchResults').classList.remove('active');
-            });
-        }
-
-        // ==================== MAIN INITIALIZATION ====================
-        async function initializeApp() {
-            initializeCart();
-            initializeAuth();
-            initializeSearch();
-            initializeSubscription();
-            setupEventListeners();
-            
-            await Promise.all([
-                loadSitePersonalization(),
-                loadCategories()
-            ]);
         }
     </script>
 </body>
