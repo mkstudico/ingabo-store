@@ -546,42 +546,49 @@
             font-weight: 600;
         }
         
-        /* ==================== TODAY'S DEAL SLIDER ==================== */
+        /* ==================== TODAY'S DEAL - FIXED: NO DUPLICATION, SMALLER WIDTH, NO ROUNDED EDGES ==================== */
         .todays-deal {
             margin: 25px 0;
             width: 100%;
         }
         
-        .deal-slider {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-        }
-        
-        .deal-slider-track {
+        .deal-cards-container {
             display: flex;
-            gap: 15px;
-            transition: transform 0.3s ease;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 12px;
             padding: 0 5px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            margin-bottom: 15px;
         }
         
-        .deal-card {
-            min-width: calc(70% - 8px);
+        .deal-cards-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* FIXED: Smaller width for deal cards - 65% of screen */
+        .deal-card-improved {
+            flex: 0 0 65%;
             background-color: white;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             cursor: pointer;
             position: relative;
-            flex-shrink: 0;
+            scroll-snap-align: start;
+            border: 1px solid #e5e5e5;
+            /* FIXED: No rounded edges */
+            border-radius: 0;
         }
         
         .deal-image {
             width: 100%;
-            height: 120px;
+            height: 110px;
             background-color: #f8f8f8;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            /* FIXED: No rounded edges */
+            border-radius: 0;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -596,7 +603,7 @@
             transition: transform 0.3s ease;
         }
         
-        .deal-card:active .deal-image img {
+        .deal-card-improved:active .deal-image img {
             transform: scale(1.05);
         }
         
@@ -620,26 +627,26 @@
         .deal-title-text {
             font-size: 13px;
             color: #333;
-            margin-bottom: 8px;
-            line-height: 1.4;
-            height: 36px;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            height: 34px;
             overflow: hidden;
         }
         
         .deal-price {
             color: #ff0000;
             font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 3px;
+            font-size: 14px;
+            margin-bottom: 2px;
         }
         
         .original-price {
             color: #888;
-            font-size: 12px;
+            font-size: 11px;
             text-decoration: line-through;
         }
         
-        /* ==================== PERSONALIZED FOR YOU GRID ==================== */
+        /* ==================== PERSONALIZED FOR YOU GRID - FIXED: NO ROUNDED EDGES ==================== */
         .personalized-section {
             margin: 25px 0;
             width: 100%;
@@ -648,20 +655,22 @@
         .personalized-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             padding: 0 5px;
         }
         
+        /* FIXED: No rounded edges for personalized cards */
         .personalized-card {
             background-color: white;
-            border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             cursor: pointer;
             position: relative;
             transition: transform 0.2s ease;
             border: 1px solid #e5e5e5;
+            /* FIXED: No rounded edges */
+            border-radius: 0;
         }
         
         .personalized-card:active {
@@ -670,8 +679,8 @@
         
         .relevance-indicator {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             width: 8px;
             height: 8px;
             background-color: #4CAF50;
@@ -680,10 +689,11 @@
         
         .personalized-image {
             width: 100%;
-            height: 100px;
+            height: 90px;
             background-color: #f8f8f8;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            /* FIXED: No rounded edges */
+            border-radius: 0;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -697,20 +707,20 @@
         }
         
         .personalized-title {
-            font-size: 13px;
+            font-size: 12px;
             color: #333;
             font-weight: 500;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             line-height: 1.3;
-            height: 34px;
+            height: 32px;
             overflow: hidden;
         }
         
         .personalized-price {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--accent-color, #ff6a00);
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         
         /* ==================== CATEGORY VIEW ==================== */
@@ -1128,65 +1138,6 @@
             max-width: 100%;
             overflow-x: hidden;
         }
-        
-        /* ==================== IMPROVED TODAY'S DEAL FLEX LAYOUT ==================== */
-        .deal-cards-container {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 15px;
-            padding: 0 5px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            margin-bottom: 15px;
-        }
-        
-        .deal-cards-container::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .deal-card-improved {
-            flex: 0 0 calc(70% - 8px);
-            background-color: white;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-            cursor: pointer;
-            position: relative;
-            scroll-snap-align: start;
-        }
-        
-        /* Responsive deal cards */
-        @media (min-width: 480px) {
-            .deal-card-improved {
-                flex: 0 0 calc(50% - 8px);
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .deal-card-improved {
-                flex: 0 0 calc(33.333% - 10px);
-            }
-        }
-        
-        /* Desktop redirect - immediate and silent */
-        .desktop-redirect-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 999999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            color: #333;
-            font-size: 16px;
-            text-align: center;
-            padding: 20px;
-        }
     </style>
 </head>
 <body>
@@ -1290,18 +1241,18 @@
                     <div class="time-text">Today's Special</div>
                 </div>
                 
-                <!-- Today's Deal - IMPROVED FLEX LAYOUT -->
+                <!-- Today's Deal - FIXED: Only 2 products, smaller width, no rounded edges -->
                 <section class="todays-deal" id="todaysDealSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
                         <h2>Today's Deal</h2>
                     </div>
                     <div class="deal-cards-container" id="dealCardsContainer">
-                        <!-- Deal cards will be loaded here -->
+                        <!-- Deal cards will be loaded here (MAX 2) -->
                     </div>
                 </section>
                 
-                <!-- Personalized For You Grid -->
+                <!-- Personalized For You Grid - FIXED: No rounded edges -->
                 <section class="personalized-section" id="personalizedSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
@@ -1432,16 +1383,13 @@
             const notificationBox = document.getElementById('notificationBox');
             if (!notificationBox) return;
             
-            // Remove any existing notification
             notificationBox.classList.add('hidden');
             
-            // Set new message and show
             setTimeout(() => {
                 notificationBox.textContent = message;
                 notificationBox.classList.remove('hidden');
             }, 50);
             
-            // Auto-hide after 6 seconds
             setTimeout(() => {
                 notificationBox.classList.add('hidden');
             }, 6000);
@@ -1812,7 +1760,7 @@
             });
         }
 
-        // ==================== TODAY'S DEAL - IMPROVED FLEX LAYOUT ====================
+        // ==================== TODAY'S DEAL - FIXED: ONLY 2 PRODUCTS, NO DUPLICATION ====================
         async function loadTodaysDeals() {
             const container = document.getElementById('dealCardsContainer');
             if (!container) return;
@@ -1839,10 +1787,11 @@
                     return Math.random() - 0.5;
                 });
                 
-                topProducts = topProducts.slice(0, 10);
+                // FIXED: Take ONLY 2 products, no duplication
+                topProducts = topProducts.slice(0, 2);
                 
                 if (topProducts.length === 0) {
-                    container.innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">No deals available today</div>';
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888; width: 100%;">No deals available today</div>';
                     return;
                 }
                 
@@ -1859,7 +1808,7 @@
                             ${product.images && product.images[0] ? 
                                 `<img src="${product.images[0]}" alt="${product.name}">` : 
                                 `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
-                                    <i class='bx bx-image' style="font-size:24px;color:#ccc;"></i>
+                                    <i class='bx bx-image' style="font-size:20px;color:#ccc;"></i>
                                 </div>`
                             }
                         </div>
@@ -1878,7 +1827,7 @@
                 
             } catch (error) {
                 console.error('Error loading today\'s deals:', error);
-                container.innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">Error loading deals</div>';
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888; width: 100%;">Error loading deals</div>';
             }
         }
 
@@ -1945,6 +1894,7 @@
             return score;
         }
 
+        // ==================== PERSONALIZED GRID - FIXED: NO ROUNDED EDGES ====================
         function loadPersonalizedGrid() {
             const container = document.getElementById('personalizedGrid');
             if (!container) return;
@@ -1987,7 +1937,7 @@
                         ${product.images && product.images[0] ? 
                             `<img src="${product.images[0]}" alt="${product.name}">` : 
                             `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
-                                <i class='bx bx-image' style="font-size:32px;color:#ccc;"></i>
+                                <i class='bx bx-image' style="font-size:24px;color:#ccc;"></i>
                             </div>`
                         }
                     </div>
