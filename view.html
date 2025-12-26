@@ -493,12 +493,12 @@
         }
         
         .btn-buy {
-            background: #ff6a00;
+            background: #25D366;
             color: white;
         }
         
         .btn-buy:hover {
-            background: #ff8c42;
+            background: #128C7E;
         }
         
         /* Product Meta - Mobile Optimized */
@@ -777,7 +777,7 @@
         
         .modal-icon {
             font-size: 50px;
-            color: #ff6a00;
+            color: #25D366;
             margin-bottom: 20px;
         }
         
@@ -825,7 +825,7 @@
         }
         
         .modal-btn.confirm {
-            background: #ff6a00;
+            background: #25D366;
             color: white;
         }
         
@@ -885,16 +885,16 @@
     <div class="modal-overlay" id="confirmationModal">
         <div class="confirmation-modal">
             <div class="modal-icon">
-                <i class='bx bx-message-dots'></i>
+                <i class='bx bxl-whatsapp'></i>
             </div>
-            <div class="modal-title">Contact Product Manager</div>
+            <div class="modal-title">Contact Seller via WhatsApp</div>
             <div class="modal-text">
-                Are you sure you want to contact the product manager about this product? 
-                You'll be able to discuss price, negotiate, and arrange purchase details.
+                This will open WhatsApp to send product details to the seller at 0782520531. 
+                You can discuss price, negotiate, and arrange purchase.
             </div>
             <div class="modal-actions">
                 <button class="modal-btn cancel" id="cancelContact">Cancel</button>
-                <button class="modal-btn confirm" id="confirmContact">Yes, Contact Manager</button>
+                <button class="modal-btn confirm" id="confirmContact">BUY</button>
             </div>
         </div>
     </div>
@@ -1002,7 +1002,7 @@
                                     <i class='bx bx-cart'></i> Add to Cart
                                 </button>
                                 <button class="btn btn-buy" id="buyNow">
-                                    <i class='bx bxs-message'></i> Contact to Buy
+                                    <i class='bx bxl-whatsapp'></i> BUY
                                 </button>
                             </div>
                         </div>
@@ -1193,7 +1193,7 @@
             }
             
             if (confirmContact) {
-                confirmContact.addEventListener('click', startChatWithManager);
+                confirmContact.addEventListener('click', startWhatsAppPurchase);
             }
         }
 
@@ -1728,58 +1728,49 @@
             });
         }
 
-        async function startChatWithManager() {
+        function startWhatsAppPurchase() {
             const confirmationModal = document.getElementById('confirmationModal');
             if (confirmationModal) {
                 confirmationModal.classList.remove('active');
             }
             
-            if (!currentUser) {
-                showNotification('Please login first to contact product manager', 'error');
-                setTimeout(() => {
-                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-                }, 1500);
-                return;
-            }
+            if (!currentProduct) return;
             
-            try {
-                // Create chat inquiry
-                const inquiryData = {
-                    productId: currentProduct.id,
-                    productName: currentProduct.name,
-                    productImages: currentProduct.images || [],
-                    productCategory: currentProduct.category,
-                    userId: currentUser.uid,
-                    userName: currentUser.displayName || currentUser.email,
-                    userEmail: currentUser.email,
-                    status: 'pending',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    messages: [
-                        {
-                            senderId: 'system',
-                            senderName: 'System',
-                            content: `User ${currentUser.displayName || currentUser.email} is interested in purchasing "${currentProduct.name}". Please contact them to discuss details.`,
-                            timestamp: new Date().toISOString(), // Use ISO string instead of serverTimestamp
-                            type: 'system'
-                        }
-                    ]
-                };
-                
-                // Save to Firestore
-                const inquiryRef = await db.collection('inquiries').add(inquiryData);
-                
-                showNotification('Your inquiry has been sent! Redirecting to chat...', 'success');
-                
-                // Redirect to chat page
-                setTimeout(() => {
-                    window.location.href = `chat.html?inquiry=${inquiryRef.id}`;
-                }, 1500);
-                
-            } catch (error) {
-                console.error('Error creating inquiry:', error);
-                showNotification('Failed to send inquiry. Please try again.', 'error');
-            }
+            // Get selected options
+            const selectedColor = document.querySelector('.color-option.active')?.title || currentProduct.color?.[0] || 'Not specified';
+            const selectedSize = document.querySelector('.size-option.active')?.textContent || currentProduct.size?.[0] || 'Not specified';
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            
+            // Format price
+            const price = formatPrice(currentProduct.price || 0);
+            const totalPrice = formatPrice((currentProduct.price || 0) * quantity);
+            
+            // Create WhatsApp message
+            const message = `PRODUCT DETAILS\n\n` +
+                           `Product Name: ${currentProduct.name || 'N/A'}\n` +
+                           `Product ID: ${currentProduct.id || 'N/A'}\n` +
+                           `Category: ${currentProduct.category || 'N/A'}\n` +
+                           `Price: ${price} RWF\n` +
+                           `Selected Color: ${selectedColor}\n` +
+                           `Selected Size: ${selectedSize}\n` +
+                           `Quantity: ${quantity}\n` +
+                           `Total: ${totalPrice} RWF\n\n` +
+                           `I'm interested in purchasing this product from INGABO Online Shop.`;
+            
+            // WhatsApp phone number
+            const phoneNumber = '250782520531'; // 0782520531 with country code
+            
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Create WhatsApp URL
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // Open WhatsApp
+            window.open(whatsappURL, '_blank');
+            
+            // Show confirmation
+            showNotification('Opening WhatsApp to contact seller...', 'success');
         }
 
         // ==================== AUTHENTICATION ====================
