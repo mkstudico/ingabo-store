@@ -1401,6 +1401,36 @@
     </div>
 
     <script>
+        // ==================== MOBILE REDIRECTION ====================
+        (function() {
+            // Immediate mobile detection at the very beginning
+            function isMobileDevice() {
+                // Screen width check
+                if (window.innerWidth <= 768) return true;
+                
+                // Touch screen detection
+                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                    // Additional checks for touch devices
+                    if (window.innerWidth <= 1024) return true;
+                }
+                
+                // User agent detection
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+                
+                return mobileRegex.test(userAgent);
+            }
+            
+            // Check and redirect IMMEDIATELY
+            if (isMobileDevice()) {
+                // Prevent infinite redirect loop
+                if (!window.location.href.includes('indexp.html')) {
+                    window.location.href = 'indexp.html';
+                    return; // Stop execution
+                }
+            }
+        })();
+
         // ==================== FIREBASE CONFIGURATION ====================
         const firebaseConfig = {
             apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
@@ -1429,10 +1459,23 @@
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', function() {
+            // Mobile check on load
             if (window.innerWidth <= 768) {
-                window.location.href = 'indexp.html';
-                return;
+                if (!window.location.href.includes('indexp.html')) {
+                    window.location.href = 'indexp.html';
+                    return;
+                }
             }
+            
+            // Mobile check on resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 768) {
+                    if (!window.location.href.includes('indexp.html')) {
+                        window.location.href = 'indexp.html';
+                        return;
+                    }
+                }
+            });
             
             initializeAccentColor();
             playTimeBasedAudio();
