@@ -11,33 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     
-    <!-- =====================================================
-      BASIC SEO & META (Same as desktop)
-    ===================================================== -->
+    <!-- SEO & META -->
     <meta name="description" content="Ingabo Store is a Kigali-based online marketplace offering electronics, fashion, and home products with fast local delivery in Kicukiro and across Kigali.">
     <meta name="keywords" content="Ingabo Store, buy online Kigali, online shopping Rwanda, Kicukiro delivery, electronics Rwanda">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ingabostore.vercel.app/">
-    <meta name="language" content="en">
-    <meta name="geo.region" content="RW">
-    <meta name="geo.placename" content="Kigali">
-    
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Ingabo Store | Buy Products Online in Kigali">
-    <meta property="og:description" content="Shop electronics, fashion, and home products online with fast delivery in Kicukiro and across Kigali.">
-    <meta property="og:url" content="https://ingabostore.vercel.app/">
-    <meta property="og:image" content="https://i.ibb.co/GQLLKNf4/E-Books-Tablets-Go-Daddy-Store-Image.png">
-    <meta property="og:site_name" content="Ingabo Store">
-    
-    <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Ingabo Store | Online Shopping in Kigali">
-    <meta name="twitter:description" content="Affordable products with fast local delivery in Kicukiro and across Kigali.">
-    <meta name="twitter:image" content="https://i.ibb.co/GQLLKNf4/E-Books-Tablets-Go-Daddy-Store-Image.png">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/twmDHQFX/logo-2.png">
     
     <style>
         * {
@@ -67,30 +43,27 @@
             display: none !important;
         }
         
-        .visible {
-            display: block !important;
-        }
-        
-        /* ==================== NOTIFICATION SYSTEM ==================== */
-        .notification {
+        /* ==================== NOTIFICATION BOX ==================== */
+        .notification-box {
             position: fixed;
             top: 15%;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            z-index: 9999;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 99999;
             font-size: 14px;
             font-weight: 500;
             text-align: center;
             max-width: 90%;
-            animation: slideDown 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideInDown 0.3s ease, fadeOut 0.3s ease 5.7s forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
         }
         
-        @keyframes slideDown {
+        @keyframes slideInDown {
             from {
                 transform: translate(-50%, -20px);
                 opacity: 0;
@@ -98,6 +71,16 @@
             to {
                 transform: translate(-50%, 0);
                 opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
             }
         }
         
@@ -144,8 +127,15 @@
             display: block;
         }
         
-        .announcement-content {
-            padding: 0 10px;
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
         
         /* ==================== MOBILE HEADER ==================== */
@@ -325,15 +315,6 @@
             font-weight: 600;
         }
         
-        .search-result-category {
-            font-size: 10px;
-            color: #888;
-            background: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 6px;
-        }
-        
         .no-results {
             padding: 30px 20px;
             text-align: center;
@@ -421,67 +402,6 @@
         
         .hero-button:active {
             transform: scale(0.98);
-        }
-        
-        /* ==================== CATEGORY SLIDER ==================== */
-        .category-slider-section {
-            margin: 25px 0;
-            width: 100%;
-        }
-        
-        .category-slider {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .category-slider-track {
-            display: flex;
-            gap: 12px;
-            transition: transform 0.5s ease;
-            padding: 0 5px;
-        }
-        
-        .category-slide {
-            min-width: 120px;
-            height: 80px;
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        
-        .category-slide-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .category-slide-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
-        }
-        
-        .category-slide-name {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            width: 90%;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         /* ==================== INGABO TOP PICKS ==================== */
@@ -1209,172 +1129,69 @@
             overflow-x: hidden;
         }
         
-        /* ==================== FOOTER SECTIONS ==================== */
-        .footer-sections {
-            background: #fff;
-            padding: 25px 0;
-            border-top: 1px solid #e5e5e5;
-            margin-top: 30px;
-        }
-        
-        .footer-columns {
+        /* ==================== IMPROVED TODAY'S DEAL FLEX LAYOUT ==================== */
+        .deal-cards-container {
             display: flex;
-            flex-direction: column;
-            gap: 25px;
-            padding: 0 15px;
-        }
-        
-        .footer-column {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 15px;
             padding: 0 5px;
-        }
-        
-        .footer-title {
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #333;
-        }
-        
-        .subscription-form {
-            display: flex;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-        
-        .email-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            border-radius: 5px 0 0 5px;
-        }
-        
-        .subscribe-button {
-            background: var(--accent-color, #ff6a00);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 0 5px 5px 0;
-        }
-        
-        .helper-text {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.4;
-        }
-        
-        .sell-text {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .join-text {
-            color: var(--accent-color, #ff6a00);
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 5px;
-        }
-        
-        .social-icons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .social-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            text-decoration: none;
-            background: #000;
-        }
-        
-        /* ==================== FOOTER LINKS ==================== */
-        .footer-links {
-            background: #f8f8f8;
-            padding: 25px 0;
-            margin-top: 20px;
-        }
-        
-        .links-container {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            padding: 0 15px;
-        }
-        
-        .links-column h3 {
-            font-weight: bold;
-            font-size: 16px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
             margin-bottom: 15px;
-            color: #333;
         }
         
-        .links-list {
-            list-style: none;
+        .deal-cards-container::-webkit-scrollbar {
+            display: none;
         }
         
-        .links-list li {
-            margin-bottom: 8px;
-        }
-        
-        .links-list a {
-            color: #666;
-            text-decoration: none;
-            font-size: 13px;
-        }
-        
-        .contact-info {
-            font-size: 13px;
-            color: #666;
-        }
-        
-        .contact-item {
-            margin-bottom: 10px;
+        .deal-card-improved {
+            flex: 0 0 calc(70% - 8px);
+            background-color: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
             cursor: pointer;
-            padding: 5px 0;
+            position: relative;
+            scroll-snap-align: start;
         }
         
-        /* ==================== MOBILE CHECK ==================== */
-        @media (min-width: 769px) {
-            .desktop-redirect {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: white;
-                z-index: 999999;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-                text-align: center;
+        /* Responsive deal cards */
+        @media (min-width: 480px) {
+            .deal-card-improved {
+                flex: 0 0 calc(50% - 8px);
             }
+        }
+        
+        @media (min-width: 768px) {
+            .deal-card-improved {
+                flex: 0 0 calc(33.333% - 10px);
+            }
+        }
+        
+        /* Desktop redirect - immediate and silent */
+        .desktop-redirect-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <!-- Desktop Redirect Overlay (hidden by default) -->
-    <div class="desktop-redirect hidden" id="desktopRedirect">
-        <h2>Redirecting to Desktop Version</h2>
-        <p>Your screen is large enough for the desktop experience.</p>
-        <p>Redirecting in 3 seconds...</p>
-    </div>
-    
-    <!-- Notification -->
-    <div class="notification hidden" id="notification"></div>
+    <!-- Notification Box -->
+    <div class="notification-box hidden" id="notificationBox"></div>
     
     <!-- Paused Mode Overlay -->
     <div class="paused-overlay" id="pausedOverlay">
@@ -1451,19 +1268,6 @@
                     </div>
                 </section>
                 
-                <!-- Category Slider -->
-                <section class="category-slider-section">
-                    <div class="section-title">
-                        <div class="orange-dot"></div>
-                        <h2>Shop by Category</h2>
-                    </div>
-                    <div class="category-slider">
-                        <div class="category-slider-track" id="categorySliderTrack">
-                            <!-- Categories will be loaded here -->
-                        </div>
-                    </div>
-                </section>
-                
                 <!-- INGABO TOP PICKS -->
                 <section class="top-picks-section" id="topPicksSection">
                     <div class="section-title">
@@ -1486,19 +1290,14 @@
                     <div class="time-text">Today's Special</div>
                 </div>
                 
-                <!-- Today's Deal Slider -->
+                <!-- Today's Deal - IMPROVED FLEX LAYOUT -->
                 <section class="todays-deal" id="todaysDealSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
                         <h2>Today's Deal</h2>
                     </div>
-                    <div class="deal-slider">
-                        <div class="deal-slider-track" id="dealSliderTrack">
-                            <!-- Deals will be loaded here -->
-                        </div>
-                    </div>
-                    <div class="slider-controls" id="dealSliderControls">
-                        <!-- Dots will be generated -->
+                    <div class="deal-cards-container" id="dealCardsContainer">
+                        <!-- Deal cards will be loaded here -->
                     </div>
                 </section>
                 
@@ -1512,89 +1311,6 @@
                         <!-- Personalized products will be loaded here -->
                     </div>
                 </section>
-                
-                <!-- Footer Sections -->
-                <div class="footer-sections">
-                    <div class="footer-columns">
-                        <div class="footer-column">
-                            <div class="footer-title">Subscription</div>
-                            <div class="subscription-form">
-                                <input type="email" class="email-input" id="subscribeEmail" placeholder="Enter your email">
-                                <button class="subscribe-button" id="subscribeButton">Subscribe</button>
-                            </div>
-                            <div class="helper-text">Register now for updates on promotions and coupons</div>
-                        </div>
-                        
-                        <div class="footer-column">
-                            <div class="footer-title">Sell on INGABO</div>
-                            <div class="sell-text">Join us</div>
-                            <div class="join-text" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSdK3c9V1kEBZcWo0tWLVVomlb_vOiVmLjXoHkDFMeN-6Q_fcA/viewform?usp=dialog', '_blank')">
-                                Join Us
-                            </div>
-                        </div>
-                        
-                        <div class="footer-column">
-                            <div class="footer-title">Stay Connected</div>
-                            <div class="social-icons">
-                                <a href="https://facebook.com" target="_blank" class="social-icon">
-                                    <i class='bx bxl-facebook'></i>
-                                </a>
-                                <a href="https://twitter.com" target="_blank" class="social-icon">
-                                    <i class='bx bxl-twitter'></i>
-                                </a>
-                                <a href="https://whatsapp.com" target="_blank" class="social-icon">
-                                    <i class='bx bxl-whatsapp'></i>
-                                </a>
-                                <a href="https://instagram.com" target="_blank" class="social-icon">
-                                    <i class='bx bxl-instagram'></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Footer Links -->
-                <div class="footer-links">
-                    <div class="links-container">
-                        <div class="links-column">
-                            <h3>FAQs</h3>
-                            <ul class="links-list">
-                                <li><a href="faqs.html">Shipping information</a></li>
-                                <li><a href="faqs.html">How to buy</a></li>
-                                <li><a href="faqs.html">How to pay</a></li>
-                                <li><a href="faqs.html">Return policy</a></li>
-                                <li><a href="faqs.html">Terms</a></li>
-                                <li><a href="faqs.html">Contact support</a></li>
-                            </ul>
-                        </div>
-                        
-                        <div class="links-column">
-                            <h3>Browse by Category</h3>
-                            <ul class="links-list" id="categoryLinks">
-                                <!-- Dynamic categories -->
-                            </ul>
-                        </div>
-                        
-                        <div class="links-column">
-                            <h3>About</h3>
-                            <ul class="links-list">
-                                <li><a href="privacy.html">Privacy Policy</a></li>
-                            </ul>
-                        </div>
-                        
-                        <div class="links-column">
-                            <h3>Contact Us</h3>
-                            <div class="contact-info">
-                                <div class="contact-item" onclick="copyToClipboard('RWANDA-KICUKIRO')">
-                                    Address: RWANDA-KICUKIRO
-                                </div>
-                                <div class="contact-item" onclick="copyToClipboard('+250 782 520 531')">
-                                    Phone number: +250 782 520 531
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <!-- Category View -->
@@ -1657,7 +1373,7 @@
         </nav>
     </div>
 
-    <!-- Audio Players (Same as desktop) -->
+    <!-- Audio Players -->
     <audio id="morningAudio" style="display:none">
         <source src="Assets/audios/morning.mp3" type="audio/mpeg">
     </audio>
@@ -1696,23 +1412,15 @@
         let currentAccentColor = '#ff6a00';
         let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db'];
         let topPicksSlideIndex = 0;
-        let dealSlideIndex = 0;
+        let currentView = 'home';
         let categoryProducts = {};
         let allCategories = [];
-        let categorySliderInterval;
-        let currentView = 'home';
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if on desktop (redirect if screen is large)
+            // Silent redirect to desktop if screen is large
             if (window.innerWidth > 768) {
-                const redirectOverlay = document.getElementById('desktopRedirect');
-                if (redirectOverlay) {
-                    redirectOverlay.classList.remove('hidden');
-                }
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 3000);
+                window.location.href = 'index.html';
                 return;
             }
             
@@ -1721,15 +1429,22 @@
 
         // ==================== NOTIFICATION SYSTEM ====================
         function showNotification(message) {
-            const notification = document.getElementById('notification');
-            if (!notification) return;
+            const notificationBox = document.getElementById('notificationBox');
+            if (!notificationBox) return;
             
-            notification.textContent = message;
-            notification.classList.remove('hidden');
+            // Remove any existing notification
+            notificationBox.classList.add('hidden');
             
+            // Set new message and show
             setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 3000);
+                notificationBox.textContent = message;
+                notificationBox.classList.remove('hidden');
+            }, 50);
+            
+            // Auto-hide after 6 seconds
+            setTimeout(() => {
+                notificationBox.classList.add('hidden');
+            }, 6000);
         }
 
         // ==================== ACCENT COLOR ROTATION ====================
@@ -1739,7 +1454,6 @@
             currentAccentColor = accentColors[colorIndex];
             document.documentElement.style.setProperty('--accent-color', currentAccentColor);
             
-            // Update color every hour
             setInterval(() => {
                 const currentTime = new Date().getHours();
                 if (currentTime !== hour) {
@@ -1766,8 +1480,8 @@
             if (lastPlayed !== audioToPlay || lastPlayTime !== currentTime) {
                 const audioElement = document.getElementById(audioToPlay + 'Audio');
                 if (audioElement) {
-                    audioElement.volume = 0.5; // Lower volume for mobile
-                    audioElement.play().catch(e => console.log('Audio play failed on mobile'));
+                    audioElement.volume = 0.3;
+                    audioElement.play().catch(e => console.log('Audio play failed'));
                     
                     localStorage.setItem('last_audio_played', audioToPlay);
                     localStorage.setItem('last_play_time', currentTime);
@@ -1794,29 +1508,15 @@
             const cartOverlay = document.getElementById('cartOverlay');
             const navCart = document.getElementById('navCart');
             
-            if (cartButton) {
-                cartButton.addEventListener('click', showCart);
-            }
-            
-            if (navCart) {
-                navCart.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showCart();
-                    updateNavigation('cart');
-                });
-            }
-            
-            if (closeCart) {
-                closeCart.addEventListener('click', hideCart);
-            }
-            
-            if (clearCart) {
-                clearCart.addEventListener('click', clearCartItems);
-            }
-            
-            if (cartOverlay) {
-                cartOverlay.addEventListener('click', hideCart);
-            }
+            if (cartButton) cartButton.addEventListener('click', showCart);
+            if (navCart) navCart.addEventListener('click', (e) => {
+                e.preventDefault();
+                showCart();
+                updateNavigation('cart');
+            });
+            if (closeCart) closeCart.addEventListener('click', hideCart);
+            if (clearCart) clearCart.addEventListener('click', clearCartItems);
+            if (cartOverlay) cartOverlay.addEventListener('click', hideCart);
             
             updateCartCount();
         }
@@ -1828,7 +1528,6 @@
             if (!cartOverlay || !cartSidebar) return;
             
             loadCartItems();
-            
             cartOverlay.classList.add('active');
             cartSidebar.classList.add('active');
         }
@@ -1862,7 +1561,6 @@
                     <div class="empty-cart">
                         <i class='bx bx-cart' style="font-size: 50px; margin-bottom: 15px; color: #ccc;"></i>
                         <div>Your cart is empty</div>
-                        <div style="font-size: 12px; color: #888; margin-top: 10px;">Add items to get started</div>
                     </div>
                 `;
                 return;
@@ -1924,7 +1622,6 @@
                     userPersonalCode = 'GUEST-CODE';
                 }
                 
-                // Reload personalized content
                 if (currentView === 'home') {
                     loadPersonalizedGrid();
                 }
@@ -1939,7 +1636,6 @@
                     sitePersonalization = doc.data();
                     applySitePersonalization();
                     
-                    // Listen for real-time updates
                     db.collection('site_personalization').doc('settings')
                         .onSnapshot((snapshot) => {
                             sitePersonalization = snapshot.data();
@@ -1954,12 +1650,10 @@
         function applySitePersonalization() {
             if (!sitePersonalization) return;
             
-            // Paused mode
             const pausedOverlay = document.getElementById('pausedOverlay');
             if (sitePersonalization.status === 'PAUSED') {
                 pausedOverlay.classList.add('active');
                 document.body.style.filter = 'grayscale(100%)';
-                
                 document.querySelectorAll('button, a, input').forEach(el => {
                     el.style.pointerEvents = 'none';
                     el.style.opacity = '0.6';
@@ -1967,14 +1661,12 @@
             } else {
                 pausedOverlay.classList.remove('active');
                 document.body.style.filter = 'none';
-                
                 document.querySelectorAll('button, a, input').forEach(el => {
                     el.style.pointerEvents = 'auto';
                     el.style.opacity = '1';
                 });
             }
             
-            // Announcements
             const announcementBanner = document.getElementById('announcementBanner');
             const announcementContent = document.getElementById('announcementContent');
             
@@ -1990,87 +1682,10 @@
                 announcementBanner.classList.remove('show');
             }
             
-            // Hero section customization
             if (sitePersonalization.heroImage) {
                 document.getElementById('heroSection').style.backgroundImage = 
                     `linear-gradient(90deg, #000 0%, rgba(0,0,0,0.8) 30%, transparent 100%), url('${sitePersonalization.heroImage}')`;
             }
-            
-            if (sitePersonalization.heroTitle) {
-                const heroTitle = document.querySelector('.hero-title');
-                if (heroTitle) {
-                    heroTitle.textContent = sitePersonalization.heroTitle;
-                }
-            }
-            
-            if (sitePersonalization.heroSubtitle) {
-                const heroSubtitle = document.querySelector('.hero-subtitle');
-                if (heroSubtitle) {
-                    heroSubtitle.textContent = sitePersonalization.heroSubtitle;
-                }
-            }
-        }
-
-        // ==================== CATEGORY SLIDER ====================
-        function createCategorySlider() {
-            const track = document.getElementById('categorySliderTrack');
-            if (!track) return;
-            
-            track.innerHTML = '';
-            
-            // Get unique categories
-            const categories = allCategories.filter(Boolean);
-            
-            if (categories.length === 0) {
-                track.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No categories available</div>';
-                return;
-            }
-            
-            // Create slides (duplicate for infinite effect)
-            const slideCategories = [...categories, ...categories];
-            
-            slideCategories.forEach((category, index) => {
-                const product = categoryProducts[category] && categoryProducts[category][0];
-                const productImage = product && product.images && product.images[0] 
-                    ? product.images[0] 
-                    : 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800';
-                
-                const slide = document.createElement('div');
-                slide.className = 'category-slide';
-                slide.innerHTML = `
-                    <div class="category-slide-bg" style="background-image: url('${productImage}')"></div>
-                    <div class="category-slide-overlay"></div>
-                    <div class="category-slide-name">${category}</div>
-                `;
-                
-                slide.addEventListener('click', () => {
-                    showCategoryProducts(category);
-                });
-                
-                track.appendChild(slide);
-            });
-            
-            // Auto slide every 10 seconds
-            let currentSlide = 0;
-            const slideWidth = 132; // 120px + 12px gap
-            
-            clearInterval(categorySliderInterval);
-            categorySliderInterval = setInterval(() => {
-                currentSlide++;
-                track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-                
-                // Reset to beginning for infinite effect
-                if (currentSlide >= categories.length) {
-                    setTimeout(() => {
-                        currentSlide = 0;
-                        track.style.transition = 'none';
-                        track.style.transform = `translateX(0)`;
-                        setTimeout(() => {
-                            track.style.transition = 'transform 0.5s ease';
-                        }, 50);
-                    }, 500);
-                }
-            }, 10000);
         }
 
         // ==================== TOP PICKS SLIDER ====================
@@ -2083,7 +1698,6 @@
             grid.innerHTML = '';
             controls.innerHTML = '';
             
-            // Get products by category
             const productsByCategory = {};
             const shuffledProducts = [...allProducts].sort(() => Math.random() - 0.5);
             
@@ -2105,7 +1719,6 @@
                 return;
             }
             
-            // Create slides
             categories.forEach((category, index) => {
                 const products = productsByCategory[category].slice(0, 6);
                 
@@ -2130,7 +1743,6 @@
                     </div>
                 `;
                 
-                // Add click events
                 card.querySelectorAll('.product-image').forEach(img => {
                     img.addEventListener('click', function() {
                         const productId = this.getAttribute('data-product');
@@ -2147,7 +1759,6 @@
                 
                 grid.appendChild(card);
                 
-                // Create dot
                 const dot = document.createElement('div');
                 dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
                 dot.addEventListener('click', () => {
@@ -2181,7 +1792,6 @@
                 }
             });
             
-            // Auto slide every 5 seconds
             if (categories.length > 1) {
                 setInterval(() => {
                     topPicksSlideIndex = (topPicksSlideIndex + 1) % categories.length;
@@ -2197,24 +1807,19 @@
             if (!grid) return;
             
             grid.style.transform = `translateX(-${topPicksSlideIndex * 50}%)`;
-            
             dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === topPicksSlideIndex);
             });
         }
 
-        // ==================== TODAY'S DEAL SLIDER ====================
+        // ==================== TODAY'S DEAL - IMPROVED FLEX LAYOUT ====================
         async function loadTodaysDeals() {
-            const track = document.getElementById('dealSliderTrack');
-            const controls = document.getElementById('dealSliderControls');
+            const container = document.getElementById('dealCardsContainer');
+            if (!container) return;
             
-            if (!track || !controls) return;
-            
-            track.innerHTML = '';
-            controls.innerHTML = '';
+            container.innerHTML = '';
             
             try {
-                // Get view counts for algorithm
                 const viewsSnapshot = await db.collection('user_activity')
                     .where('type', '==', 'view')
                     .limit(100)
@@ -2226,7 +1831,6 @@
                     viewCounts[activity.productId] = (viewCounts[activity.productId] || 0) + 1;
                 });
                 
-                // Sort by view count
                 let topProducts = [...allProducts];
                 topProducts.sort((a, b) => {
                     const viewsA = viewCounts[a.id] || 0;
@@ -2235,109 +1839,47 @@
                     return Math.random() - 0.5;
                 });
                 
-                // Take top 10
                 topProducts = topProducts.slice(0, 10);
                 
                 if (topProducts.length === 0) {
-                    track.innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">No deals available today</div>';
+                    container.innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">No deals available today</div>';
                     return;
                 }
                 
-                const slidesCount = Math.ceil(topProducts.length / 2); // 2 products per slide
-                
-                // Create slides
-                for (let i = 0; i < topProducts.length; i += 2) {
-                    const slideDiv = document.createElement('div');
-                    slideDiv.style.display = 'flex';
-                    slideDiv.style.gap = '15px';
+                topProducts.forEach(product => {
+                    const discount = product.discount || 0;
+                    const originalPrice = product.originalPrice || product.price;
                     
-                    // Add first product
-                    const product1 = topProducts[i];
-                    slideDiv.innerHTML += createDealCard(product1);
+                    const card = document.createElement('div');
+                    card.className = 'deal-card-improved';
+                    card.dataset.product = product.id;
+                    card.innerHTML = `
+                        ${discount > 0 ? `<div class="discount-badge">-${discount}%</div>` : ''}
+                        <div class="deal-image">
+                            ${product.images && product.images[0] ? 
+                                `<img src="${product.images[0]}" alt="${product.name}">` : 
+                                `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
+                                    <i class='bx bx-image' style="font-size:24px;color:#ccc;"></i>
+                                </div>`
+                            }
+                        </div>
+                        <div class="deal-title-text">${product.name}</div>
+                        <div class="deal-price">${formatPrice(product.price)} RWF</div>
+                        ${originalPrice > product.price ? `<div class="original-price">${formatPrice(originalPrice)} RWF</div>` : ''}
+                    `;
                     
-                    // Add second product if exists
-                    if (i + 1 < topProducts.length) {
-                        const product2 = topProducts[i + 1];
-                        slideDiv.innerHTML += createDealCard(product2);
-                    }
-                    
-                    track.appendChild(slideDiv);
-                }
-                
-                // Create dots
-                for (let i = 0; i < slidesCount; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = `slider-dot ${i === 0 ? 'active' : ''}`;
-                    dot.addEventListener('click', () => {
-                        dealSlideIndex = i;
-                        updateDealSlider();
+                    card.addEventListener('click', () => {
+                        trackProductView(product.id);
+                        window.location.href = `view.html?id=${product.id}`;
                     });
-                    controls.appendChild(dot);
-                }
-                
-                // Add swipe functionality
-                let startX = 0;
-                let currentX = 0;
-                
-                track.addEventListener('touchstart', (e) => {
-                    startX = e.touches[0].clientX;
-                });
-                
-                track.addEventListener('touchmove', (e) => {
-                    currentX = e.touches[0].clientX;
-                });
-                
-                track.addEventListener('touchend', () => {
-                    const diff = startX - currentX;
-                    if (Math.abs(diff) > 50) {
-                        if (diff > 0 && dealSlideIndex < slidesCount - 1) {
-                            dealSlideIndex++;
-                        } else if (diff < 0 && dealSlideIndex > 0) {
-                            dealSlideIndex--;
-                        }
-                        updateDealSlider();
-                    }
+                    
+                    container.appendChild(card);
                 });
                 
             } catch (error) {
                 console.error('Error loading today\'s deals:', error);
-                track.innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">Error loading deals</div>';
+                container.innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">Error loading deals</div>';
             }
-        }
-
-        function createDealCard(product) {
-            const discount = product.discount || 0;
-            const originalPrice = product.originalPrice || product.price;
-            
-            return `
-                <div class="deal-card" data-product="${product.id}">
-                    ${discount > 0 ? `<div class="discount-badge">-${discount}%</div>` : ''}
-                    <div class="deal-image">
-                        ${product.images && product.images[0] ? 
-                            `<img src="${product.images[0]}" alt="${product.name}">` : 
-                            `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
-                                <i class='bx bx-image' style="font-size:24px;color:#ccc;"></i>
-                            </div>`
-                        }
-                    </div>
-                    <div class="deal-title-text">${product.name}</div>
-                    <div class="deal-price">${formatPrice(product.price)} RWF</div>
-                    ${originalPrice > product.price ? `<div class="original-price">${formatPrice(originalPrice)} RWF</div>` : ''}
-                </div>
-            `;
-        }
-
-        function updateDealSlider() {
-            const track = document.getElementById('dealSliderTrack');
-            const dots = document.querySelectorAll('#dealSliderControls .slider-dot');
-            
-            if (!track) return;
-            
-            track.style.transform = `translateX(-${dealSlideIndex * 100}%)`;
-            
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === dealSlideIndex);
-            });
         }
 
         // ==================== PERSONALIZATION ALGORITHM ====================
@@ -2414,7 +1956,6 @@
                 return;
             }
             
-            // Sort products by personalization algorithm
             let sortedProducts = [...allProducts];
             
             if (userPersonalCode !== 'GUEST-CODE') {
@@ -2426,11 +1967,9 @@
                 scoredProducts.sort((a, b) => b.matchScore - a.matchScore);
                 sortedProducts = scoredProducts;
             } else {
-                // For guests: random shuffle
                 sortedProducts.sort(() => Math.random() - 0.5);
             }
             
-            // Take first 12 products
             const displayProducts = sortedProducts.slice(0, 12);
             
             if (displayProducts.length === 0) {
@@ -2470,7 +2009,6 @@
             const grid = document.getElementById('categoryGrid');
             if (!grid) return;
             
-            // Get unique categories with products
             const categories = allCategories.filter(cat => 
                 categoryProducts[cat] && categoryProducts[cat].length > 0
             );
@@ -2488,7 +2026,6 @@
                     ? product.images[0] 
                     : 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800';
                 
-                // Different overlay colors
                 const overlayColors = [
                     'linear-gradient(135deg, rgba(255, 106, 0, 0.7) 0%, rgba(255, 140, 66, 0.3) 100%)',
                     'linear-gradient(135deg, rgba(138, 43, 226, 0.7) 0%, rgba(186, 104, 255, 0.3) 100%)',
@@ -2517,26 +2054,6 @@
                 
                 grid.appendChild(card);
             });
-            
-            // Also update footer category links
-            updateFooterCategoryLinks(categories);
-        }
-
-        function updateFooterCategoryLinks(categories) {
-            const categoryLinks = document.getElementById('categoryLinks');
-            if (!categoryLinks) return;
-            
-            categoryLinks.innerHTML = '';
-            
-            categories.slice(0, 6).forEach(category => {
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="#" data-category="${category}">${category}</a>`;
-                li.querySelector('a').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showCategoryProducts(category);
-                });
-                categoryLinks.appendChild(li);
-            });
         }
 
         function showCategoryProducts(category) {
@@ -2549,13 +2066,10 @@
             if (categoryView) categoryView.classList.add('active');
             if (searchView) searchView.classList.remove('active');
             
-            if (filterTitle) {
-                filterTitle.textContent = category;
-            }
+            if (filterTitle) filterTitle.textContent = category;
             
             currentView = 'category';
             updateNavigation('category');
-            
             loadCategoryProductsList(category);
         }
 
@@ -2615,7 +2129,6 @@
                 clearTimeout(searchTimer);
                 
                 const query = this.value.trim();
-                
                 if (query.length < 2) {
                     searchResults.classList.remove('active');
                     return;
@@ -2646,7 +2159,6 @@
                 }
             });
             
-            // Close search results when clicking outside
             document.addEventListener('click', function(e) {
                 if (!searchResults.contains(e.target) && e.target !== searchInput && e.target !== searchButton) {
                     searchResults.classList.remove('active');
@@ -2688,7 +2200,7 @@
                             <div class="search-result-name">${product.name}</div>
                             <div style="display: flex; align-items: center; margin-top: 3px;">
                                 <span class="search-result-price">${formatPrice(product.price)} RWF</span>
-                                ${product.category ? `<span class="search-result-category">${product.category}</span>` : ''}
+                                ${product.category ? `<span style="font-size: 10px; color: #888; background: #f0f0f0; padding: 2px 6px; border-radius: 10px; margin-left: 6px;">${product.category}</span>` : ''}
                             </div>
                         </div>
                     `;
@@ -2723,7 +2235,6 @@
             
             currentView = 'search';
             updateNavigation('search');
-            
             loadSearchResultsList(query);
         }
 
@@ -2780,22 +2291,18 @@
             
             switch(activeTab) {
                 case 'home':
-                    const navHome = document.getElementById('navHome');
-                    if (navHome) navHome.classList.add('active');
+                    document.getElementById('navHome')?.classList.add('active');
                     currentView = 'home';
                     break;
                 case 'category':
-                    const navCategory = document.getElementById('navCategory');
-                    if (navCategory) navCategory.classList.add('active');
+                    document.getElementById('navCategory')?.classList.add('active');
                     currentView = 'category';
                     break;
                 case 'cart':
-                    const navCart = document.getElementById('navCart');
-                    if (navCart) navCart.classList.add('active');
+                    document.getElementById('navCart')?.classList.add('active');
                     break;
                 case 'account':
-                    const navAccount = document.getElementById('navAccount');
-                    if (navAccount) navAccount.classList.add('active');
+                    document.getElementById('navAccount')?.classList.add('active');
                     break;
             }
         }
@@ -2811,8 +2318,6 @@
             
             currentView = 'home';
             updateNavigation('home');
-            
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2820,27 +2325,17 @@
             const normalView = document.getElementById('normalView');
             const categoryView = document.getElementById('categoryView');
             const searchView = document.getElementById('searchView');
-            const filterTitle = document.getElementById('filterTitle');
-            const categoryProductList = document.getElementById('categoryProductList');
             
             if (normalView) normalView.style.display = 'none';
             if (categoryView) categoryView.classList.add('active');
             if (searchView) searchView.classList.remove('active');
             
-            if (filterTitle) {
-                filterTitle.textContent = 'Categories';
-            }
-            
-            if (categoryProductList) {
-                categoryProductList.innerHTML = '';
-            }
+            document.getElementById('filterTitle').textContent = 'Categories';
+            document.getElementById('categoryProductList').innerHTML = '';
             
             currentView = 'category';
             updateNavigation('category');
-            
             loadCategoryGrid();
-            
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2861,7 +2356,6 @@
                     product.suggestionCode = generateSuggestionCode(product);
                     allProducts.push(product);
                     
-                    // Organize by category
                     if (product.category) {
                         if (!categoryProducts[product.category]) {
                             categoryProducts[product.category] = [];
@@ -2871,16 +2365,16 @@
                     }
                 });
                 
-                // Initialize components that depend on products
-                createCategorySlider();
                 createTopPicksGrid();
                 loadTodaysDeals();
                 loadPersonalizedGrid();
                 loadCategoryGrid();
                 
+                showNotification('Products loaded successfully');
+                
             } catch (error) {
                 console.error('Error loading products:', error);
-                showNotification('Error loading products. Please check your connection.');
+                showNotification('Error loading products');
             }
         }
 
@@ -2888,14 +2382,6 @@
         function formatPrice(price) {
             if (!price) return '0';
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('Copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
         }
 
         async function trackProductView(productId) {
@@ -2916,53 +2402,33 @@
         // ==================== EVENT LISTENERS ====================
         function setupEventListeners() {
             // Home link
-            const homeLink = document.getElementById('homeLink');
-            if (homeLink) {
-                homeLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showHome();
-                });
-            }
+            document.getElementById('homeLink')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                showHome();
+            });
             
             // Navigation buttons
-            const navHome = document.getElementById('navHome');
-            const navCategory = document.getElementById('navCategory');
-            const navAccount = document.getElementById('navAccount');
-            const backToHome = document.getElementById('backToHome');
-            const backToHomeSearch = document.getElementById('backToHomeSearch');
+            document.getElementById('navHome')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                showHome();
+            });
             
-            if (navHome) {
-                navHome.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showHome();
-                });
-            }
+            document.getElementById('navCategory')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                showCategories();
+            });
             
-            if (navCategory) {
-                navCategory.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showCategories();
-                });
-            }
+            document.getElementById('navAccount')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = currentUser ? 'account.html' : 'login.html';
+            });
             
-            if (navAccount) {
-                navAccount.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.location.href = currentUser ? 'account.html' : 'login.html';
-                });
-            }
-            
-            if (backToHome) {
-                backToHome.addEventListener('click', showHome);
-            }
-            
-            if (backToHomeSearch) {
-                backToHomeSearch.addEventListener('click', showHome);
-            }
+            document.getElementById('backToHome')?.addEventListener('click', showHome);
+            document.getElementById('backToHomeSearch')?.addEventListener('click', showHome);
             
             // Deal card clicks
             document.addEventListener('click', (e) => {
-                const dealCard = e.target.closest('.deal-card');
+                const dealCard = e.target.closest('.deal-card-improved');
                 if (dealCard) {
                     const productId = dealCard.dataset.product;
                     trackProductView(productId);
@@ -2970,100 +2436,53 @@
                 }
             });
             
-            // Subscribe button
-            const subscribeButton = document.getElementById('subscribeButton');
-            if (subscribeButton) {
-                subscribeButton.addEventListener('click', () => {
-                    const emailInput = document.getElementById('subscribeEmail');
-                    const email = emailInput ? emailInput.value.trim() : '';
-                    
-                    if (!email) {
-                        showNotification('Please enter your email address');
-                        return;
-                    }
-                    
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                        showNotification('Please enter a valid email address');
-                        return;
-                    }
-                    
-                    // Here you would typically send the email to your backend
-                    showNotification('Thank you for subscribing!');
-                    if (emailInput) emailInput.value = '';
+            // Hero button analytics
+            document.getElementById('heroButton')?.addEventListener('click', () => {
+                analytics.logEvent('waitlist_click', {
+                    user_id: currentUser ? currentUser.uid : 'guest',
+                    timestamp: new Date().toISOString()
                 });
-            }
-            
-            // Join waitlist button
-            const heroButton = document.getElementById('heroButton');
-            if (heroButton) {
-                heroButton.addEventListener('click', () => {
-                    analytics.logEvent('waitlist_click', {
-                        user_id: currentUser ? currentUser.uid : 'guest',
-                        timestamp: new Date().toISOString()
-                    });
-                });
-            }
+            });
         }
 
         // ==================== MAIN INITIALIZATION ====================
         async function initializeApp() {
-            // Check screen size on load and resize
-            function checkScreenSize() {
-                if (window.innerWidth > 768) {
-                    const redirectOverlay = document.getElementById('desktopRedirect');
-                    if (redirectOverlay) {
-                        redirectOverlay.classList.remove('hidden');
-                    }
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 3000);
-                    return true;
-                }
-                return false;
+            // Silent redirect to desktop if screen is large
+            if (window.innerWidth > 768) {
+                window.location.href = 'index.html';
+                return;
             }
             
-            if (checkScreenSize()) return;
-            
-            // Initialize components
             initializeAccentColor();
             playTimeBasedAudio();
             updateCurrentTime();
-            setInterval(updateCurrentTime, 60000); // Update time every minute
+            setInterval(updateCurrentTime, 60000);
             
             initializeCart();
             initializeAuth();
             initializeSearch();
             setupEventListeners();
             
-            // Load data
             await Promise.all([
                 loadSitePersonalization(),
                 loadAllProducts()
             ]);
             
-            // Initialize analytics
             analytics.logEvent('mobile_page_view', {
-                page_title: 'Mobile Homepage',
                 screen_width: window.innerWidth,
                 user_agent: navigator.userAgent
             });
             
-            console.log('INGABO Mobile Store initialized successfully');
+            showNotification('Welcome to INGABO Store');
         }
 
         // Start the application
         initializeApp();
         
-        // Handle resize events
+        // Handle resize for silent redirect
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
-                const redirectOverlay = document.getElementById('desktopRedirect');
-                if (redirectOverlay) {
-                    redirectOverlay.classList.remove('hidden');
-                }
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 3000);
+                window.location.href = 'index.html';
             }
         });
     </script>
