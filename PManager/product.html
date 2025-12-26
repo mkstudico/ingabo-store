@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Add Product - INGABO</title>
+    <title>Manage Products - INGABO</title>
     <!-- Preload boxicons to avoid slow network warning -->
     <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/fonts/boxicons.woff2" as="font" type="font/woff2" crossorigin>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <style>
-         /* ========== RESET & BASE ========== */
+        /* ========== RESET & BASE ========== */
         * {
             margin: 0;
             padding: 0;
@@ -84,135 +84,451 @@
             color: #000;
         }
         
-        /* ========== NOTIFICATION SYSTEM ========== */
-        .notification-container {
-            position: fixed;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 350px;
-            z-index: 1000;
-            pointer-events: none;
-        }
-        
-        .notification {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideDown 0.3s ease;
-            pointer-events: auto;
-            border-left: 4px solid;
-        }
-        
-        .notification.success {
-            border-left-color: #28a745;
-        }
-        
-        .notification.error {
-            border-left-color: #dc3545;
-        }
-        
-        .notification.loading {
-            border-left-color: #17a2b8;
-        }
-        
-        .notification-icon {
-            font-size: 20px;
-        }
-        
-        .notification.success .notification-icon {
-            color: #28a745;
-        }
-        
-        .notification.error .notification-icon {
-            color: #dc3545;
-        }
-        
-        .notification.loading .notification-icon {
-            color: #17a2b8;
-        }
-        
-        .notification-text {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .notification-close {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* ========== FORM CONTAINER ========== */
-        .form-container {
+        /* ========== SEARCH SECTION ========== */
+        .search-section {
             background: white;
             border-radius: 12px;
-            margin: 15px 0 70px;
-            padding: 20px 15px;
+            margin: 15px 0;
+            padding: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
-        .form-title {
+        .search-container {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 45px 14px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6a00;
+            background: white;
+        }
+        
+        .search-input::placeholder {
+            color: #888;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
             font-size: 18px;
+        }
+        
+        .search-hint {
+            font-size: 11px;
+            color: #888;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        /* ========== TABS NAVIGATION ========== */
+        .tabs-navigation {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 13px;
             font-weight: 600;
-            color: #ff6a00;
-            margin-bottom: 20px;
-            text-align: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
         }
         
-        /* ========== FORM SECTIONS ========== */
-        .form-section {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #f0f0f0;
+        .tab-button.active {
+            background: #ff6a00;
+            color: white;
         }
         
-        .section-title {
-            font-size: 15px;
+        .tab-button:hover:not(.active) {
+            background: #f9f9f9;
+        }
+        
+        /* ========== PRODUCTS LIST ========== */
+        .products-section {
+            display: none;
+        }
+        
+        .products-section.active {
+            display: block;
+        }
+        
+        .products-list {
+            margin-bottom: 80px;
+        }
+        
+        .product-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .product-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f8f8f8;
+            border: 1px solid #eee;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .product-name {
+            font-size: 14px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ff6a00;
+            margin-bottom: 4px;
+        }
+        
+        .product-meta {
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
+        .product-category {
+            font-size: 11px;
+            color: #666;
+            background: #f8f8f8;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .product-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            background: white;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        
+        .no-products-icon {
+            font-size: 48px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+        
+        .no-products-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .no-products-text {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        /* ========== SLIDE UP PANEL ========== */
+        .slide-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 2000;
+        }
+        
+        .slide-panel-overlay.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .slide-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: 2001;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .slide-panel.active {
+            transform: translateY(0);
+        }
+        
+        .panel-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 20px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .panel-header-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .panel-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .panel-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .panel-content {
+            padding: 20px 15px;
+            padding-bottom: 80px;
+        }
+        
+        /* ========== STATUS PANEL CONTENT ========== */
+        .info-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
         .section-title i {
+            font-size: 16px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+        
+        .info-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .copy-id-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .copy-id-button {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .copy-id-button:hover {
+            background: #e55a00;
+        }
+        
+        .toggle-status-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #17a2b8, #35c6d9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-status-button:hover {
+            background: linear-gradient(to right, #138496, #2db4c9);
+            transform: translateY(-1px);
+        }
+        
+        .price-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .price-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .current-price {
+            font-size: 20px;
+            font-weight: 700;
             color: #ff6a00;
         }
         
-        /* ========== FORM GROUPS ========== */
-        .form-group {
-            margin-bottom: 16px;
+        .original-price {
+            font-size: 14px;
+            color: #666;
+            text-decoration: line-through;
         }
         
-        .form-label {
+        /* ========== EDIT PANEL CONTENT ========== */
+        .edit-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .edit-form-label {
             display: block;
             font-size: 13px;
             font-weight: 500;
@@ -220,12 +536,7 @@
             margin-bottom: 6px;
         }
         
-        .required-star {
-            color: #ff0000;
-            margin-left: 2px;
-        }
-        
-        .form-input, .form-textarea, .form-select {
+        .edit-form-input, .edit-form-textarea, .edit-form-select {
             width: 100%;
             padding: 12px 14px;
             border: 1px solid #ddd;
@@ -235,23 +546,22 @@
             transition: all 0.2s ease;
         }
         
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
+        .edit-form-input:focus, .edit-form-textarea:focus, .edit-form-select:focus {
             outline: none;
             border-color: #ff6a00;
             background: white;
         }
         
-        .form-textarea {
-            min-height: 90px;
+        .edit-form-textarea {
+            min-height: 80px;
             resize: vertical;
             font-family: inherit;
         }
         
-        /* ========== CHECKBOX GRID ========== */
         .checkbox-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 8px;
             margin-top: 5px;
         }
         
@@ -263,13 +573,13 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 10px;
+            padding: 10px 8px;
             border: 1.5px solid #e0e0e0;
             border-radius: 8px;
             background: white;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 13px;
+            font-size: 12px;
         }
         
         .checkbox-label:hover {
@@ -284,7 +594,7 @@
         
         .checkbox-icon {
             color: #666;
-            font-size: 16px;
+            font-size: 14px;
             transition: all 0.2s ease;
         }
         
@@ -292,41 +602,13 @@
             color: #ff6a00;
         }
         
-        /* ========== PRICE INPUT ========== */
-        .price-container {
-            position: relative;
-        }
-        
-        .price-input {
-            padding-left: 50px !important;
-        }
-        
-        .currency-label {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            font-weight: 500;
-            color: #666;
-        }
-        
-        .price-range {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: #888;
-            margin-top: 4px;
-        }
-        
-        /* ========== IMAGE UPLOAD ========== */
         .image-upload-box {
             border: 2px dashed #e0e0e0;
             border-radius: 10px;
             padding: 20px;
             text-align: center;
             background: #fafafa;
-            margin-top: 5px;
+            margin-top: 10px;
         }
         
         .upload-icon {
@@ -360,7 +642,7 @@
         .image-preview {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             margin-top: 15px;
         }
         
@@ -394,55 +676,231 @@
             justify-content: center;
         }
         
-        /* ========== CODE DISPLAY ========== */
-        .code-box {
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
+        /* ========== CONFIRMATION POPUP ========== */
+        .confirmation-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease;
         }
         
-        .code-label {
-            font-size: 12px;
-            color: #666;
+        .confirmation-popup-overlay.active {
+            display: flex;
+        }
+        
+        .confirmation-popup {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 320px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease;
+        }
+        
+        .popup-header {
+            background: #ff6a00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .popup-title {
+            font-size: 16px;
+            font-weight: 600;
             margin-bottom: 5px;
         }
         
-        .code-value {
-            font-family: monospace;
+        .popup-message {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .popup-content {
+            padding: 25px 20px;
+            text-align: center;
+        }
+        
+        .popup-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .popup-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .popup-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
-            color: #333;
-            background: white;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            word-break: break-all;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        /* ========== VALIDATION ERROR ========== */
-        .error-text {
-            color: #ff0000;
-            font-size: 11px;
-            margin-top: 4px;
+        .popup-cancel {
+            background: #f8f8f8;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .popup-cancel:hover {
+            background: #eee;
+        }
+        
+        .popup-confirm {
+            background: #28a745;
+            color: white;
+        }
+        
+        .popup-confirm:hover {
+            background: #218838;
+        }
+        
+        .popup-confirm.warning {
+            background: #dc3545;
+        }
+        
+        .popup-confirm.warning:hover {
+            background: #c82333;
+        }
+        
+        .popup-confirm.info {
+            background: #17a2b8;
+        }
+        
+        .popup-confirm.info:hover {
+            background: #138496;
+        }
+        
+        /* ========== FLOATING APPLY BUTTON ========== */
+        .floating-apply-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6a00;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
             display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+            z-index: 9999; /* CHANGED FROM 100 TO 9999 - HIGHEST PRIORITY */
+            transition: all 0.3s ease;
+            min-width: 140px;
         }
         
-        .has-error .form-input,
-        .has-error .form-select,
-        .has-error .form-textarea {
-            border-color: #ff0000;
+        .floating-apply-button.active {
+            display: flex;
+            animation: slideUpButton 0.3s ease;
         }
         
-        .has-error .checkbox-grid {
-            border: 1px solid #ff0000;
-            border-radius: 8px;
-            padding: 10px;
+        .floating-apply-button:hover {
+            background: #e55a00;
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
         }
         
-        .has-error .error-text {
-            display: block;
+        /* ========== NOTIFICATION BOXES ========== */
+        .notification-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+            pointer-events: auto;
+            border-left: 4px solid;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+        }
+        
+        .notification.info {
+            border-left-color: #17a2b8;
+        }
+        
+        .notification.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .notification.success .notification-icon {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-icon {
+            color: #dc3545;
+        }
+        
+        .notification.info .notification-icon {
+            color: #17a2b8;
+        }
+        
+        .notification.warning .notification-icon {
+            color: #ffc107;
+        }
+        
+        .notification-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         /* ========== LOADING OVERLAY ========== */
@@ -452,12 +910,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
+            z-index: 3000;
         }
         
         .loading-overlay.active {
@@ -480,63 +938,77 @@
             font-weight: 500;
         }
         
+        /* ========== ANIMATIONS ========== */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         
-        /* ========== FORM ACTIONS ========== */
-        .form-actions {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 12px;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 10px;
-            max-width: 375px;
-            margin: 0 auto;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        .action-button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
+        @keyframes slideUpButton {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
         
-        .submit-btn {
-            background: linear-gradient(to right, #ff6a00, #ff8c42);
-            color: white;
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
         
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        /* ========== UTILITY ========== */
+        .hidden {
+            display: none;
         }
         
-        .reset-btn {
-            background: #f8f8f8;
-            color: #666;
-            border: 1px solid #e0e0e0;
+        .mt-10 { margin-top: 10px; }
+        .mt-15 { margin-top: 15px; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-15 { margin-bottom: 15px; }
+        
+        /* ========== SCROLLBAR ========== */
+        .slide-panel::-webkit-scrollbar {
+            width: 6px;
         }
         
-        /* ========== HELPER TEXT ========== */
-        .helper-text {
-            font-size: 11px;
-            color: #888;
-            margin-top: 4px;
+        .slide-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .slide-panel::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .slide-panel::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
@@ -547,8 +1019,65 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text" id="loadingText">Processing...</div>
+        <div class="loading-text" id="loadingText">Loading...</div>
     </div>
+    
+    <!-- Confirmation Popup -->
+    <div class="confirmation-popup-overlay" id="confirmationPopup">
+        <div class="confirmation-popup">
+            <div class="popup-header">
+                <div class="popup-title" id="popupTitle">Confirm Action</div>
+                <div class="popup-message" id="popupMessage">Please confirm your action</div>
+            </div>
+            <div class="popup-content">
+                <div class="popup-text" id="popupText">Are you sure you want to perform this action?</div>
+                <div class="popup-actions">
+                    <button class="popup-button popup-cancel" id="popupCancelBtn">Cancel</button>
+                    <button class="popup-button popup-confirm" id="popupConfirmBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide Panel Overlay -->
+    <div class="slide-panel-overlay" id="panelOverlay"></div>
+    
+    <!-- Status Panel -->
+    <div class="slide-panel" id="statusPanel">
+        <div class="panel-header" id="statusPanelHeader">
+            <div class="panel-header-content">
+                <div class="panel-title" id="statusPanelTitle">Product Name</div>
+                <div class="panel-status" id="statusPanelStatus">Active</div>
+            </div>
+            <button class="panel-close" id="closeStatusPanel">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="panel-content" id="statusPanelContent">
+            <!-- Filled by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Edit Panel -->
+    <div class="slide-panel" id="editPanel">
+        <div class="panel-header" id="editPanelHeader">
+            <div class="panel-header-content">
+                <div class="panel-title" id="editPanelTitle">Edit Product</div>
+                <div class="panel-status" id="editPanelStatus">Active</div>
+            </div>
+            <button class="panel-close" id="closeEditPanel">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="panel-content" id="editPanelContent">
+            <!-- Filled by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Floating Apply Button -->
+    <button class="floating-apply-button" id="floatingApplyBtn">
+        <i class='bx bx-check'></i> Apply Changes
+    </button>
     
     <div class="container">
         <!-- Mobile Header -->
@@ -568,183 +1097,65 @@
             </div>
         </header>
         
-        <!-- Form Container -->
-        <div class="form-container">
-            <h2 class="form-title">Add New Product</h2>
-            
-            <!-- Basic Information -->
-            <div class="form-section">
-                <div class="section-title">
-                    <i class='bx bx-info-circle'></i>
-                    Basic Information
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Product Name<span class="required-star">*</span></label>
-                    <input type="text" class="form-input" id="productName" placeholder="Enter product name">
-                    <div class="error-text">Product name is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Category<span class="required-star">*</span></label>
-                    <select class="form-select" id="productCategory">
-                        <option value="">Select category</option>
-                        <option value="Shoes">Shoes</option>
-                        <option value="T-shirts">T-shirts</option>
-                        <option value="Pants">Pants</option>
-                        <option value="Watches">Watches</option>
-                        <option value="Necklace">Necklace</option>
-                        <option value="Bracelets">Bracelets</option>
-                        <option value="Caps">Caps</option>
-                    </select>
-                    <div class="error-text">Category is required</div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Description<span class="required-star">*</span></label>
-                    <textarea class="form-textarea" id="productDescription" placeholder="Describe the product..."></textarea>
-                    <div class="error-text">Description is required</div>
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput"
+                       placeholder="Search by name, ID, or keyword..."
+                       spellcheck="false">
+                <div class="search-icon">
+                    <i class='bx bx-search'></i>
                 </div>
             </div>
-            
-            <!-- Product Details -->
-            <div class="form-section">
-                <div class="section-title">
-                    <i class='bx bx-cog'></i>
-                    Product Details
-                </div>
-                
-                <!-- Department Checkboxes -->
-                <div class="form-group">
-                    <label class="form-label">Department<span class="required-star">*</span></label>
-                    <div class="checkbox-grid" id="departmentGrid">
-                        <!-- Generated by JS -->
-                    </div>
-                    <div class="error-text">Select at least one department</div>
-                </div>
-                
-                <!-- Size Checkboxes -->
-                <div class="form-group">
-                    <label class="form-label">Size<span class="required-star">*</span></label>
-                    <div class="checkbox-grid" id="sizeGrid">
-                        <!-- Generated by JS -->
-                    </div>
-                    <div class="error-text">Select at least one size</div>
-                </div>
-                
-                <!-- Age Group Checkboxes -->
-                <div class="form-group">
-                    <label class="form-label">Age Group<span class="required-star">*</span></label>
-                    <div class="checkbox-grid" id="ageGrid">
-                        <!-- Generated by JS -->
-                    </div>
-                    <div class="error-text">Select at least one age group</div>
-                </div>
-                
-                <!-- Status Checkboxes -->
-                <div class="form-group">
-                    <label class="form-label">Status<span class="required-star">*</span></label>
-                    <div class="checkbox-grid" id="statusGrid">
-                        <!-- Generated by JS -->
-                    </div>
-                    <div class="error-text">Select at least one status</div>
-                </div>
+            <div class="search-hint">
+                Search products by name, Product ID, or any keyword. Results update in 300ms.
             </div>
-            
-            <!-- Colors -->
-            <div class="form-section">
-                <div class="section-title">
-                    <i class='bx bx-palette'></i>
-                    Colors<span class="required-star">*</span>
-                </div>
-                
-                <div class="checkbox-grid" id="colorGrid">
-                    <!-- Generated by JS -->
-                </div>
-                <div class="error-text">Select at least one color</div>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <div class="tabs-navigation">
+            <button class="tab-button active" data-tab="status">
+                <i class='bx bx-toggle-right'></i>
+                STATUS
+            </button>
+            <button class="tab-button" data-tab="edit">
+                <i class='bx bx-edit'></i>
+                EDIT
+            </button>
+        </div>
+        
+        <!-- Status Tab Content -->
+        <div class="products-section active" id="statusTab">
+            <div class="products-list" id="statusProductsList">
+                <!-- Filled by JavaScript -->
             </div>
-            
-            <!-- Pricing -->
-            <div class="form-section">
-                <div class="section-title">
-                    <i class='bx bx-dollar-circle'></i>
-                    Pricing
+            <div class="no-products hidden" id="statusNoProducts">
+                <div class="no-products-icon">
+                    <i class='bx bx-package'></i>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Price (RWF)<span class="required-star">*</span></label>
-                    <div class="price-container">
-                        <span class="currency-label">RWF</span>
-                        <input type="number" class="form-input price-input" id="productPrice" min="500" max="1000000" placeholder="0">
-                    </div>
-                    <div class="price-range">
-                        <span>Min: 500 RWF</span>
-                        <span>Max: 1,000,000 RWF</span>
-                    </div>
-                    <div class="error-text">Price must be between 500 and 1,000,000 RWF</div>
-                    <div class="helper-text">Wealth: <span id="wealthCategory">-</span></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Original Price (RWF)</label>
-                    <div class="price-container">
-                        <span class="currency-label">RWF</span>
-                        <input type="number" class="form-input price-input" id="originalPrice" placeholder="Optional">
-                    </div>
-                    <div class="helper-text">For sale/discount display</div>
-                </div>
-            </div>
-            
-            <!-- Images -->
-            <div class="form-section">
-                <div class="section-title">
-                    <i class='bx bx-image'></i>
-                    Product Images<span class="required-star">*</span>
-                </div>
-                
-                <div class="image-upload-box" id="uploadBox">
-                    <div class="upload-icon">
-                        <i class='bx bx-cloud-upload'></i>
-                    </div>
-                    <div class="upload-text">
-                        Tap to upload product photos
-                    </div>
-                    <button type="button" class="upload-button" id="uploadBtn">
-                        <i class='bx bx-camera'></i> Choose Photos
-                    </button>
-                    <div class="helper-text">Max 5 images, 2MB each</div>
-                </div>
-                
-                <div class="image-preview" id="imagePreview"></div>
-                <div class="error-text" id="imageError">At least one image is required</div>
-                
-                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
-            </div>
-            
-            <!-- Suggestion Code -->
-            <div class="form-section" style="border-bottom: none;">
-                <div class="section-title">
-                    <i class='bx bx-code'></i>
-                    Suggestion Code
-                </div>
-                
-                <div class="code-box">
-                    <div class="code-label">Personalization Code:</div>
-                    <div class="code-value" id="suggestionCode">-</div>
-                    <div class="helper-text">This code helps with personalized recommendations</div>
+                <div class="no-products-title">No Products Found</div>
+                <div class="no-products-text">
+                    No products match your search criteria. Try a different search term.
                 </div>
             </div>
         </div>
         
-        <!-- Form Actions -->
-        <div class="form-actions">
-            <button type="button" class="action-button reset-btn" id="resetBtn">
-                <i class='bx bx-reset'></i> Clear
-            </button>
-            <button type="button" class="action-button submit-btn" id="submitBtn" disabled>
-                <span id="submitText">Add Product</span>
-                <div class="spinner" id="submitSpinner" style="display: none;"></div>
-            </button>
+        <!-- Edit Tab Content -->
+        <div class="products-section" id="editTab">
+            <div class="products-list" id="editProductsList">
+                <!-- Filled by JavaScript -->
+            </div>
+            <div class="no-products hidden" id="editNoProducts">
+                <div class="no-products-icon">
+                    <i class='bx bx-package'></i>
+                </div>
+                <div class="no-products-title">No Products Found</div>
+                <div class="no-products-text">
+                    No products match your search criteria. Try a different search term.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -768,8 +1179,15 @@
         const analytics = firebase.analytics();
 
         // ==================== GLOBAL VARIABLES ====================
-        const IMGBB_API_KEY = '7275819de7bfd56f03b903f483157d22';
+        const IMGBB_API_KEY = 'f4542dd1b6382bcc91cc4dea44bfc3c1';
+        let allProducts = [];
+        let currentProductId = null;
+        let currentProductData = null;
+        let searchTimeout = null;
         let uploadedImages = [];
+        let isEditing = false;
+        let hasChanges = false;
+        let confirmationCallback = null;
         
         // Data configurations
         const formData = {
@@ -806,16 +1224,10 @@
             statuses: [
                 { name: 'New', icon: 'bx bx-package' },
                 { name: 'Used', icon: 'bx bx-recycle' }
+            ],
+            categories: [
+                'Shoes', 'T-shirts', 'Pants', 'Watches', 'Necklace', 'Bracelets', 'Caps'
             ]
-        };
-
-        // Selected values
-        const selections = {
-            colors: [],
-            departments: [],
-            sizes: [],
-            ageGroups: [],
-            statuses: []
         };
 
         // ==================== NOTIFICATION SYSTEM ====================
@@ -839,8 +1251,11 @@
                     case 'error':
                         icon = '<i class="bx bx-error-circle notification-icon"></i>';
                         break;
-                    case 'loading':
-                        icon = '<div class="loading-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+                    case 'info':
+                        icon = '<i class="bx bx-info-circle notification-icon"></i>';
+                        break;
+                    case 'warning':
+                        icon = '<i class="bx bx-error notification-icon"></i>';
                         break;
                 }
                 
@@ -855,8 +1270,7 @@
                 this.container.appendChild(notification);
                 this.notifications.push(id);
                 
-                // Auto remove if not loading type
-                if (type !== 'loading' && duration > 0) {
+                if (duration > 0) {
                     setTimeout(() => this.remove(id), duration);
                 }
                 
@@ -885,6 +1299,66 @@
         
         const notificationSystem = new NotificationSystem();
         
+        // ==================== CONFIRMATION POPUP SYSTEM ====================
+        class ConfirmationPopup {
+            constructor() {
+                this.popup = document.getElementById('confirmationPopup');
+                this.title = document.getElementById('popupTitle');
+                this.message = document.getElementById('popupMessage');
+                this.text = document.getElementById('popupText');
+                this.confirmBtn = document.getElementById('popupConfirmBtn');
+                this.cancelBtn = document.getElementById('popupCancelBtn');
+                this.callback = null;
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                this.cancelBtn.addEventListener('click', () => this.hide());
+                this.confirmBtn.addEventListener('click', () => {
+                    if (this.callback) {
+                        this.callback(true);
+                    }
+                    this.hide();
+                });
+                
+                // Close when clicking outside
+                this.popup.addEventListener('click', (e) => {
+                    if (e.target === this.popup) {
+                        this.hide();
+                    }
+                });
+            }
+            
+            show(title, message, text, confirmText = 'Confirm', confirmType = 'info', callback = null) {
+                this.title.textContent = title;
+                this.message.textContent = message;
+                this.text.textContent = text;
+                this.confirmBtn.textContent = confirmText;
+                
+                // Set button style
+                this.confirmBtn.className = 'popup-button popup-confirm';
+                if (confirmType === 'warning') {
+                    this.confirmBtn.classList.add('warning');
+                } else if (confirmType === 'info') {
+                    this.confirmBtn.classList.add('info');
+                }
+                
+                this.callback = callback;
+                this.popup.classList.add('active');
+            }
+            
+            hide() {
+                this.popup.classList.remove('active');
+                if (this.callback) {
+                    this.callback(false);
+                }
+                this.callback = null;
+            }
+        }
+        
+        const confirmationPopup = new ConfirmationPopup();
+        
         // ==================== LOADING SYSTEM ====================
         class LoadingSystem {
             constructor() {
@@ -892,7 +1366,7 @@
                 this.text = document.getElementById('loadingText');
             }
             
-            show(message = 'Processing...') {
+            show(message = 'Loading...') {
                 this.text.textContent = message;
                 this.overlay.classList.add('active');
             }
@@ -914,374 +1388,763 @@
         
         const loadingSystem = new LoadingSystem();
         
-        // ==================== SIMPLE VALIDATION SYSTEM ====================
-        class ValidationSystem {
-            constructor() {
-                this.formElements = {
-                    name: document.getElementById('productName'),
-                    category: document.getElementById('productCategory'),
-                    description: document.getElementById('productDescription'),
-                    price: document.getElementById('productPrice')
-                };
-            }
-            
-            // Simple field validation
-            validateField(field) {
-                if (!field) return false;
-                const value = field.value.trim();
-                return value.length > 0;
-            }
-            
-            validatePrice() {
-                const priceInput = this.formElements.price;
-                if (!priceInput) return false;
-                
-                const price = parseInt(priceInput.value) || 0;
-                return price >= 500 && price <= 1000000;
-            }
-            
-            validateSelection(selectionKey) {
-                return selections[selectionKey] && selections[selectionKey].length > 0;
-            }
-            
-            validateAllSelections() {
-                const selectionKeys = ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'];
-                return selectionKeys.every(key => this.validateSelection(key));
-            }
-            
-            validateImages() {
-                return uploadedImages.length > 0;
-            }
-            
-            validateForm() {
-                // Check basic fields
-                const basicValid = this.validateField(this.formElements.name) &&
-                                 this.validateField(this.formElements.category) &&
-                                 this.validateField(this.formElements.description);
-                
-                if (!basicValid) {
-                    console.log('Basic fields invalid');
-                    return false;
-                }
-                
-                // Check price
-                if (!this.validatePrice()) {
-                    console.log('Price invalid');
-                    return false;
-                }
-                
-                // Check selections
-                if (!this.validateAllSelections()) {
-                    console.log('Selections invalid');
-                    return false;
-                }
-                
-                // Check images
-                if (!this.validateImages()) {
-                    console.log('Images invalid');
-                    return false;
-                }
-                
-                console.log('Form is valid!');
-                return true;
-            }
-            
-            // Visual validation feedback
-            updateVisualValidation() {
-                // Name
-                const nameParent = this.formElements.name?.parentElement;
-                if (nameParent) {
-                    nameParent.classList.toggle('has-error', !this.validateField(this.formElements.name));
-                }
-                
-                // Category
-                const categoryParent = this.formElements.category?.parentElement;
-                if (categoryParent) {
-                    categoryParent.classList.toggle('has-error', !this.validateField(this.formElements.category));
-                }
-                
-                // Description
-                const descriptionParent = this.formElements.description?.parentElement;
-                if (descriptionParent) {
-                    descriptionParent.classList.toggle('has-error', !this.validateField(this.formElements.description));
-                }
-                
-                // Price
-                const priceParent = this.formElements.price?.parentElement?.parentElement;
-                if (priceParent) {
-                    priceParent.classList.toggle('has-error', !this.validatePrice());
-                }
-                
-                // Selections
-                ['colors', 'departments', 'sizes', 'ageGroups', 'statuses'].forEach(key => {
-                    const grid = document.getElementById(`${key}Grid`);
-                    const parent = grid?.parentElement;
-                    if (parent) {
-                        parent.classList.toggle('has-error', !this.validateSelection(key));
-                    }
-                });
-                
-                // Images
-                const imageParent = document.getElementById('uploadBox')?.parentElement;
-                if (imageParent) {
-                    imageParent.classList.toggle('has-error', !this.validateImages());
-                }
-            }
-        }
-        
-        const validationSystem = new ValidationSystem();
-        
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing...');
-            initializeCheckboxGrids();
+            console.log('Manage Products page loaded');
             setupEventListeners();
-            updateSuggestionCode();
-            updateSubmitButton();
-            analytics.logEvent('add_product_page_view');
+            loadAllProducts();
+            analytics.logEvent('manage_products_page_view');
         });
-
-        // ==================== CHECKBOX GRIDS INITIALIZATION ====================
-        function initializeCheckboxGrids() {
-            console.log('Initializing checkbox grids...');
-            // Initialize all checkbox grids
-            initializeGrid('colorGrid', formData.colors, 'colors');
-            initializeGrid('departmentGrid', formData.departments, 'departments');
-            initializeGrid('sizeGrid', formData.sizes, 'sizes');
-            initializeGrid('ageGrid', formData.ageGroups, 'ageGroups');
-            initializeGrid('statusGrid', formData.statuses, 'statuses');
-        }
-        
-        function initializeGrid(gridId, items, selectionKey) {
-            const grid = document.getElementById(gridId);
-            if (!grid) {
-                console.error(`Grid element not found: ${gridId}`);
-                return;
-            }
-            
-            grid.innerHTML = '';
-            
-            items.forEach(item => {
-                const checkboxId = `${selectionKey}-${item.name.toLowerCase().replace(/\s+/g, '-')}`;
-                const html = `
-                    <input type="checkbox" id="${checkboxId}" class="checkbox-option" value="${item.name}">
-                    <label for="${checkboxId}" class="checkbox-label">
-                        ${item.icon ? `<i class="${item.icon} checkbox-icon"></i>` : ''}
-                        ${item.hex ? `<span class="color-preview" style="background-color: ${item.hex};"></span>` : ''}
-                        <span>${item.name}</span>
-                    </label>
-                `;
-                grid.insertAdjacentHTML('beforeend', html);
-                
-                // Add event listener
-                const checkbox = document.getElementById(checkboxId);
-                if (checkbox) {
-                    checkbox.addEventListener('change', function() {
-                        console.log(`${selectionKey} checkbox changed: ${item.name} = ${this.checked}`);
-                        if (this.checked) {
-                            selections[selectionKey].push(item.name);
-                        } else {
-                            const index = selections[selectionKey].indexOf(item.name);
-                            if (index > -1) selections[selectionKey].splice(index, 1);
-                        }
-                        console.log(`${selectionKey} selections:`, selections[selectionKey]);
-                        validationSystem.updateVisualValidation();
-                        updateSuggestionCode();
-                        updateSubmitButton();
-                    });
-                }
-            });
-        }
-
-        // ==================== SUGGESTION CODE GENERATION ====================
-        function generateSuggestionCode() {
-            const category = document.getElementById('productCategory')?.value || '';
-            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
-            
-            // Metric mappings
-            const metricMappings = {
-                category: {
-                    'Shoes': 'A', 'T-shirts': 'B', 'Pants': 'C',
-                    'Watches': 'D', 'Necklace': 'E', 'Bracelets': 'F', 'Caps': 'G'
-                },
-                department: { 'Men': 'A', 'Women': 'B' },
-                color: {
-                    'White': 'A', 'Black': 'B', 'Blue': 'C', 'Green': 'D',
-                    'Red': 'E', 'Yellow': 'F', 'Chocolate': 'G', 'Purple': 'H',
-                    'Orange': 'I', 'Sky-blue': 'J', 'Reddish': 'K', 'Pink': 'L'
-                },
-                size: { 'Small': 'A', 'Medium': 'B', 'Large': 'C' },
-                age: { 'All': 'A', 'Young': 'B', 'Teens': 'C', 'Adult': 'D', 'Old': 'E' },
-                status: { 'New': 'A', 'Used': 'B' },
-                wealth: { 'Poor': 'A', 'Moderate': 'B', 'Rich': 'C' }
-            };
-
-            let code = '';
-            
-            // Category (single selection)
-            code += (category && metricMappings.category[category]) || 'X';
-            code += '-';
-            
-            // Department (multiple)
-            if (selections.departments.length > 0) {
-                const deptCodes = selections.departments.map(d => metricMappings.department[d] || 'X');
-                code += deptCodes.join('+');
-            } else {
-                code += 'X';
-            }
-            code += '-';
-            
-            // Color (multiple)
-            if (selections.colors.length > 0) {
-                const colorCodes = selections.colors.map(c => metricMappings.color[c] || 'X');
-                code += colorCodes.join('+');
-            } else {
-                code += 'X';
-            }
-            code += '-';
-            
-            // Size (multiple)
-            if (selections.sizes.length > 0) {
-                const sizeCodes = selections.sizes.map(s => metricMappings.size[s] || 'X');
-                code += sizeCodes.join('+');
-            } else {
-                code += 'X';
-            }
-            code += '-';
-            
-            // Age (multiple)
-            if (selections.ageGroups.length > 0) {
-                const ageCodes = selections.ageGroups.map(a => metricMappings.age[a] || 'X');
-                code += ageCodes.join('+');
-            } else {
-                code += 'X';
-            }
-            code += '-';
-            
-            // Status (multiple)
-            if (selections.statuses.length > 0) {
-                const statusCodes = selections.statuses.map(s => metricMappings.status[s] || 'X');
-                code += statusCodes.join('+');
-            } else {
-                code += 'X';
-            }
-            code += '-';
-            
-            // Wealth (auto-calculate)
-            let wealth = '';
-            if (price >= 500 && price <= 20000) wealth = 'Poor';
-            else if (price > 20000 && price <= 50000) wealth = 'Moderate';
-            else if (price > 50000 && price <= 1000000) wealth = 'Rich';
-            
-            // Update wealth display
-            const wealthDisplay = document.getElementById('wealthCategory');
-            if (wealthDisplay) {
-                wealthDisplay.textContent = wealth || '-';
-                wealthDisplay.style.color = wealth ? '#ff6a00' : '#888';
-                wealthDisplay.style.fontWeight = wealth ? '600' : '400';
-            }
-            
-            code += (wealth && metricMappings.wealth[wealth]) || 'X';
-            
-            return code;
-        }
-
-        function updateSuggestionCode() {
-            const code = generateSuggestionCode();
-            const display = document.getElementById('suggestionCode');
-            if (display) {
-                display.textContent = code;
-            }
-        }
 
         // ==================== EVENT LISTENERS ====================
         function setupEventListeners() {
-            console.log('Setting up event listeners...');
+            // Tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
             
-            // Upload button
-            const uploadBtn = document.getElementById('uploadBtn');
-            if (uploadBtn) {
-                uploadBtn.addEventListener('click', () => {
-                    const fileInput = document.getElementById('fileInput');
-                    if (fileInput) fileInput.click();
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        filterProducts(this.value);
+                    }, 300);
                 });
             }
-
-            // File input change
-            const fileInput = document.getElementById('fileInput');
-            if (fileInput) {
-                fileInput.addEventListener('change', handleImageUpload);
-            }
-
-            // Drag and drop for images
-            const uploadBox = document.getElementById('uploadBox');
-            if (uploadBox) {
-                uploadBox.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadBox.style.borderColor = '#ff6a00';
-                    uploadBox.style.background = 'rgba(255, 106, 0, 0.05)';
-                });
-
-                uploadBox.addEventListener('dragleave', () => {
-                    uploadBox.style.borderColor = '#e0e0e0';
-                    uploadBox.style.background = '#fafafa';
-                });
-
-                uploadBox.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    uploadBox.style.borderColor = '#e0e0e0';
-                    uploadBox.style.background = '#fafafa';
-                    
-                    const files = Array.from(e.dataTransfer.files);
-                    handleImageFiles(files);
-                });
-            }
-
-            // Input validation for basic fields
-            const inputs = ['productName', 'productCategory', 'productDescription', 'productPrice', 'originalPrice'];
-            inputs.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', () => {
-                        validationSystem.updateVisualValidation();
-                        updateSuggestionCode();
-                        updateSubmitButton();
-                    });
+            
+            // Panel close buttons
+            document.getElementById('closeStatusPanel').addEventListener('click', closeStatusPanel);
+            document.getElementById('closeEditPanel').addEventListener('click', () => {
+                if (hasChanges) {
+                    showUnsavedChangesPopup();
+                } else {
+                    closeEditPanel();
                 }
             });
-
-            // Reset button
-            const resetBtn = document.getElementById('resetBtn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', resetForm);
-            }
-
-            // Submit button
-            const submitBtn = document.getElementById('submitBtn');
-            if (submitBtn) {
-                submitBtn.addEventListener('click', submitProduct);
+            
+            // Panel overlay click
+            document.getElementById('panelOverlay').addEventListener('click', function() {
+                if (document.getElementById('editPanel').classList.contains('active') && hasChanges) {
+                    showUnsavedChangesPopup();
+                } else {
+                    closeStatusPanel();
+                    closeEditPanel();
+                }
+            });
+            
+            // Panel header drag to close
+            setupPanelDragClose('statusPanelHeader', closeStatusPanel);
+            setupPanelDragClose('editPanelHeader', () => {
+                if (hasChanges) {
+                    showUnsavedChangesPopup();
+                } else {
+                    closeEditPanel();
+                }
+            });
+            
+            // Floating apply button
+            document.getElementById('floatingApplyBtn').addEventListener('click', saveProductChanges);
+        }
+        
+        function setupPanelDragClose(headerId, closeFunction) {
+            const header = document.getElementById(headerId);
+            let startY = 0;
+            let currentY = 0;
+            
+            header.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            });
+            
+            header.addEventListener('touchmove', function(e) {
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                if (diff > 50) {
+                    closeFunction();
+                }
+            });
+            
+            header.addEventListener('mousedown', function(e) {
+                startY = e.clientY;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+            
+            function onMouseMove(e) {
+                currentY = e.clientY;
+                const diff = currentY - startY;
+                if (diff > 50) {
+                    closeFunction();
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
             }
             
-            console.log('Event listeners setup complete');
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
         }
-
-        // ==================== IMAGE UPLOAD ====================
-        async function handleImageUpload(e) {
+        
+        function showUnsavedChangesPopup() {
+            confirmationPopup.show(
+                'Unsaved Changes',
+                'Warning',
+                'You have unsaved changes. Are you sure you want to close without saving?',
+                'Discard',
+                'warning',
+                (confirmed) => {
+                    if (confirmed) {
+                        closeEditPanel();
+                    }
+                }
+            );
+        }
+        
+        // ==================== TAB MANAGEMENT ====================
+        function switchTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.toggle('active', button.getAttribute('data-tab') === tabId);
+            });
+            
+            // Update tab content
+            document.querySelectorAll('.products-section').forEach(section => {
+                section.classList.toggle('active', section.id === tabId + 'Tab');
+            });
+            
+            // Refresh the current tab's products
+            filterProducts(document.getElementById('searchInput').value);
+        }
+        
+        // ==================== LOAD PRODUCTS ====================
+        async function loadAllProducts() {
+            try {
+                await loadingSystem.withLoading(async () => {
+                    const querySnapshot = await db.collection('products')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    
+                    allProducts = [];
+                    querySnapshot.forEach(doc => {
+                        allProducts.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    console.log(`Loaded ${allProducts.length} products`);
+                    displayProducts(allProducts);
+                }, 'Loading products...');
+            } catch (error) {
+                console.error('Error loading products:', error);
+                notificationSystem.show('error', `Failed to load products: ${error.message}`, 4000);
+            }
+        }
+        
+        // ==================== SEARCH & FILTER ====================
+        function filterProducts(searchTerm) {
+            if (!searchTerm.trim()) {
+                displayProducts(allProducts);
+                return;
+            }
+            
+            const term = searchTerm.toLowerCase().trim();
+            const filtered = allProducts.filter(product => {
+                // Search in name
+                if (product.name && product.name.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                // Search in ID
+                if (product.id && product.id.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                // Search in description
+                if (product.description && product.description.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                // Search in category
+                if (product.category && product.category.toLowerCase().includes(term)) {
+                    return true;
+                }
+                
+                return false;
+            });
+            
+            displayProducts(filtered);
+        }
+        
+        // ==================== DISPLAY PRODUCTS ====================
+        function displayProducts(products) {
+            const activeTab = document.querySelector('.tab-button.active').getAttribute('data-tab');
+            const listId = activeTab + 'ProductsList';
+            const noProductsId = activeTab + 'NoProducts';
+            
+            const listContainer = document.getElementById(listId);
+            const noProductsContainer = document.getElementById(noProductsId);
+            
+            if (!listContainer || !noProductsContainer) return;
+            
+            // Clear existing content
+            listContainer.innerHTML = '';
+            
+            if (products.length === 0) {
+                listContainer.classList.add('hidden');
+                noProductsContainer.classList.remove('hidden');
+                return;
+            }
+            
+            listContainer.classList.remove('hidden');
+            noProductsContainer.classList.add('hidden');
+            
+            // Create product items
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.dataset.productId = product.id;
+                
+                // Get first image or placeholder
+                let imageUrl = 'https://via.placeholder.com/60x60/FFFFFF/DDDDDD?text=No+Image';
+                if (product.images && product.images.length > 0) {
+                    imageUrl = product.images[0];
+                }
+                
+                // Format price
+                const price = product.price ? parseInt(product.price).toLocaleString() : '0';
+                
+                item.innerHTML = `
+                    <div class="product-image">
+                        <img src="${imageUrl}" alt="${product.name || 'Product'}" loading="lazy">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name || 'Unnamed Product'}</div>
+                        <div class="product-price">${price} RWF</div>
+                        <div class="product-meta">
+                            <div class="product-category">${product.category || 'No Category'}</div>
+                            <div class="product-status ${product.active ? 'status-active' : 'status-inactive'}">
+                                ${product.active ? 'Active' : 'Inactive'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event
+                item.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    openProductPanel(productId, activeTab);
+                });
+                
+                listContainer.appendChild(item);
+            });
+        }
+        
+        // ==================== OPEN PRODUCT PANEL ====================
+        async function openProductPanel(productId, panelType) {
+            try {
+                await loadingSystem.withLoading(async () => {
+                    // Get product data
+                    const docRef = db.collection('products').doc(productId);
+                    const docSnap = await docRef.get();
+                    
+                    if (!docSnap.exists) {
+                        notificationSystem.show('error', 'Product not found', 3000);
+                        return;
+                    }
+                    
+                    currentProductId = productId;
+                    currentProductData = docSnap.data();
+                    
+                    if (panelType === 'status') {
+                        openStatusPanel();
+                    } else if (panelType === 'edit') {
+                        openEditPanel();
+                    }
+                }, 'Loading product...');
+            } catch (error) {
+                console.error('Error opening product:', error);
+                notificationSystem.show('error', `Failed to load product: ${error.message}`, 4000);
+            }
+        }
+        
+        // ==================== STATUS PANEL ====================
+        function openStatusPanel() {
+            const panel = document.getElementById('statusPanel');
+            const overlay = document.getElementById('panelOverlay');
+            const title = document.getElementById('statusPanelTitle');
+            const status = document.getElementById('statusPanelStatus');
+            const content = document.getElementById('statusPanelContent');
+            
+            // Update header
+            title.textContent = currentProductData.name || 'Unnamed Product';
+            status.textContent = currentProductData.active ? 'Active' : 'Inactive';
+            status.className = `panel-status ${currentProductData.active ? 'status-active' : 'status-inactive'}`;
+            
+            // Format price
+            const price = currentProductData.price ? parseInt(currentProductData.price).toLocaleString() : '0';
+            const originalPrice = currentProductData.originalPrice ? parseInt(currentProductData.originalPrice).toLocaleString() : price;
+            const discount = currentProductData.discount || 0;
+            
+            // Create content
+            content.innerHTML = `
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class='bx bx-info-circle'></i>
+                        Product Information
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Product ID</div>
+                            <div class="info-value copy-id-container">
+                                <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">${currentProductId}</span>
+                                <button class="copy-id-button" onclick="copyProductId('${currentProductId}')">
+                                    <i class='bx bx-copy'></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Category</div>
+                            <div class="info-value">${currentProductData.category || '-'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Featured</div>
+                            <div class="info-value">${currentProductData.featured ? 'Yes' : 'No'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Wealth Category</div>
+                            <div class="info-value">${currentProductData.wealth || '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10">
+                        <div class="info-label">Description</div>
+                        <div class="info-value" style="background: #f8f9fa; padding: 10px; border-radius: 6px; line-height: 1.5;">${currentProductData.description || '-'}</div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class='bx bx-dollar-circle'></i>
+                        Pricing
+                    </div>
+                    
+                    <div class="price-container">
+                        <div class="price-row">
+                            <div>
+                                <div style="font-size: 11px; color: #666;">Current Price</div>
+                                <div class="current-price">${price} RWF</div>
+                            </div>
+                            ${discount > 0 ? `
+                                <div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 11px; color: #666;">Original Price</div>
+                                        <div class="original-price">${originalPrice} RWF</div>
+                                    </div>
+                                    <div class="discount-badge" style="margin-top: 5px; display: inline-block;">${discount}% OFF</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="section-title">
+                        <i class='bx bx-toggle-right'></i>
+                        Product Status
+                    </div>
+                    
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                            Current status: <strong>${currentProductData.active ? 'ACTIVE' : 'INACTIVE'}</strong>
+                        </div>
+                        <button class="toggle-status-button" onclick="showToggleStatusConfirmation()">
+                            <i class='bx bx-toggle-${currentProductData.active ? 'left' : 'right'}'></i>
+                            ${currentProductData.active ? 'Deactivate Product' : 'Activate Product'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Show panel
+            overlay.classList.add('active');
+            panel.classList.add('active');
+        }
+        
+        function closeStatusPanel() {
+            document.getElementById('statusPanel').classList.remove('active');
+            document.getElementById('panelOverlay').classList.remove('active');
+            currentProductId = null;
+            currentProductData = null;
+        }
+        
+        // ==================== EDIT PANEL ====================
+        function openEditPanel() {
+            const panel = document.getElementById('editPanel');
+            const overlay = document.getElementById('panelOverlay');
+            const title = document.getElementById('editPanelTitle');
+            const status = document.getElementById('editPanelStatus');
+            const content = document.getElementById('editPanelContent');
+            
+            // Update header
+            title.textContent = currentProductData.name || 'Edit Product';
+            status.textContent = currentProductData.active ? 'Active' : 'Inactive';
+            status.className = `panel-status ${currentProductData.active ? 'status-active' : 'status-inactive'}`;
+            
+            // Reset uploaded images
+            uploadedImages = currentProductData.images ? [...currentProductData.images] : [];
+            hasChanges = false;
+            
+            // Create edit form content
+            content.innerHTML = createEditForm();
+            
+            // Initialize checkboxes and event listeners
+            initializeEditCheckboxes();
+            
+            // Hide apply button initially
+            document.getElementById('floatingApplyBtn').classList.remove('active');
+            
+            // Show panel
+            overlay.classList.add('active');
+            panel.classList.add('active');
+        }
+        
+        function closeEditPanel() {
+            document.getElementById('editPanel').classList.remove('active');
+            document.getElementById('panelOverlay').classList.remove('active');
+            document.getElementById('floatingApplyBtn').classList.remove('active');
+            currentProductId = null;
+            currentProductData = null;
+            uploadedImages = [];
+            hasChanges = false;
+        }
+        
+        function createEditForm() {
+            return `
+                <form id="editProductForm">
+                    <!-- Basic Information -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Product Name</label>
+                        <input type="text" 
+                               class="edit-form-input" 
+                               id="editName"
+                               value="${currentProductData.name || ''}"
+                               required
+                               oninput="checkForChanges()">
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Category</label>
+                        <select class="edit-form-select" id="editCategory" onchange="checkForChanges()">
+                            <option value="">Select category</option>
+                            ${formData.categories.map(cat => 
+                                `<option value="${cat}" ${currentProductData.category === cat ? 'selected' : ''}>${cat}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Description</label>
+                        <textarea class="edit-form-textarea" id="editDescription" rows="3" oninput="checkForChanges()">${currentProductData.description || ''}</textarea>
+                    </div>
+                    
+                    <!-- Department -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Department</label>
+                        <div class="checkbox-grid" id="editDepartmentGrid">
+                            ${formData.departments.map(dept => {
+                                const isSelected = currentProductData.department && 
+                                                  currentProductData.department.includes(dept.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-dept-${dept.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${dept.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-dept-${dept.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${dept.icon} checkbox-icon"></i>
+                                        <span>${dept.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Colors -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Colors</label>
+                        <div class="checkbox-grid" id="editColorGrid">
+                            ${formData.colors.map(color => {
+                                const isSelected = currentProductData.color && 
+                                                  currentProductData.color.includes(color.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" 
+                                           class="checkbox-option" 
+                                           value="${color.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" class="checkbox-label">
+                                        <span class="color-preview" style="background-color: ${color.hex}; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
+                                        <span>${color.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Size -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Size</label>
+                        <div class="checkbox-grid" id="editSizeGrid">
+                            ${formData.sizes.map(size => {
+                                const isSelected = currentProductData.size && 
+                                                  currentProductData.size.includes(size.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-size-${size.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${size.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-size-${size.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${size.icon} checkbox-icon"></i>
+                                        <span>${size.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Age Group -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Age Group</label>
+                        <div class="checkbox-grid" id="editAgeGrid">
+                            ${formData.ageGroups.map(age => {
+                                const isSelected = currentProductData.age && 
+                                                  currentProductData.age.includes(age.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-age-${age.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${age.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-age-${age.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${age.icon} checkbox-icon"></i>
+                                        <span>${age.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Condition</label>
+                        <div class="checkbox-grid" id="editStatusGrid">
+                            ${formData.statuses.map(status => {
+                                const isSelected = currentProductData.status && 
+                                                  currentProductData.status.includes(status.name);
+                                return `
+                                    <input type="checkbox" 
+                                           id="edit-status-${status.name.toLowerCase()}" 
+                                           class="checkbox-option" 
+                                           value="${status.name}"
+                                           ${isSelected ? 'checked' : ''}
+                                           onchange="checkForChanges()">
+                                    <label for="edit-status-${status.name.toLowerCase()}" class="checkbox-label">
+                                        <i class="${status.icon} checkbox-icon"></i>
+                                        <span>${status.name}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Price (RWF)</label>
+                        <input type="number" 
+                               class="edit-form-input" 
+                               id="editPrice"
+                               value="${currentProductData.price || ''}"
+                               min="500" 
+                               max="1000000"
+                               oninput="checkForChanges()">
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Original Price (RWF)</label>
+                        <input type="number" 
+                               class="edit-form-input" 
+                               id="editOriginalPrice"
+                               value="${currentProductData.originalPrice || ''}"
+                               min="0"
+                               oninput="checkForChanges()">
+                    </div>
+                    
+                    <!-- Featured -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">
+                            <input type="checkbox" 
+                                   id="editFeatured" 
+                                   ${currentProductData.featured ? 'checked' : ''}
+                                   onchange="checkForChanges()"
+                                   style="margin-right: 8px;">
+                            Featured Product
+                        </label>
+                    </div>
+                    
+                    <!-- Active Status -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">
+                            <input type="checkbox" 
+                                   id="editActive" 
+                                   ${currentProductData.active ? 'checked' : ''}
+                                   onchange="checkForChanges()"
+                                   style="margin-right: 8px;">
+                            Active Product
+                        </label>
+                    </div>
+                    
+                    <!-- Images -->
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">Product Images</label>
+                        <div class="image-upload-box" id="editUploadBox">
+                            <div class="upload-icon">
+                                <i class='bx bx-cloud-upload'></i>
+                            </div>
+                            <div class="upload-text">
+                                Tap to upload new images
+                            </div>
+                            <button type="button" class="upload-button" onclick="document.getElementById('editFileInput').click()">
+                                <i class='bx bx-camera'></i> Choose Images
+                            </button>
+                            <div style="font-size: 11px; color: #888; margin-top: 10px;">
+                                Max 5 images, 2MB each
+                            </div>
+                        </div>
+                        
+                        <div class="image-preview" id="editImagePreview">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                        
+                        <input type="file" id="editFileInput" accept="image/*" multiple style="display: none;">
+                    </div>
+                </form>
+            `;
+        }
+        
+        function initializeEditCheckboxes() {
+            // Add event listeners for file input
+            const fileInput = document.getElementById('editFileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleEditImageUpload);
+            }
+            
+            // Initialize image preview
+            updateEditImagePreview();
+        }
+        
+        function checkForChanges() {
+            if (!currentProductId) return;
+            
+            // Collect form data for comparison
+            const newData = {
+                name: document.getElementById('editName').value.trim(),
+                category: document.getElementById('editCategory').value,
+                description: document.getElementById('editDescription').value.trim(),
+                price: parseInt(document.getElementById('editPrice').value) || 0,
+                originalPrice: parseInt(document.getElementById('editOriginalPrice').value) || null,
+                featured: document.getElementById('editFeatured').checked,
+                active: document.getElementById('editActive').checked
+            };
+            
+            // Collect checkbox values
+            const checkboxes = {
+                department: 'editDepartmentGrid',
+                color: 'editColorGrid',
+                size: 'editSizeGrid',
+                age: 'editAgeGrid',
+                status: 'editStatusGrid'
+            };
+            
+            Object.entries(checkboxes).forEach(([key, gridId]) => {
+                const grid = document.getElementById(gridId);
+                const checkedBoxes = grid.querySelectorAll('.checkbox-option:checked');
+                newData[key] = Array.from(checkedBoxes).map(cb => cb.value);
+            });
+            
+            // Compare with original data
+            const hasFormChanges = 
+                newData.name !== currentProductData.name ||
+                newData.category !== currentProductData.category ||
+                newData.description !== currentProductData.description ||
+                newData.price !== currentProductData.price ||
+                newData.originalPrice !== currentProductData.originalPrice ||
+                newData.featured !== currentProductData.featured ||
+                newData.active !== currentProductData.active ||
+                JSON.stringify(newData.department) !== JSON.stringify(currentProductData.department) ||
+                JSON.stringify(newData.color) !== JSON.stringify(currentProductData.color) ||
+                JSON.stringify(newData.size) !== JSON.stringify(currentProductData.size) ||
+                JSON.stringify(newData.age) !== JSON.stringify(currentProductData.age) ||
+                JSON.stringify(newData.status) !== JSON.stringify(currentProductData.status) ||
+                JSON.stringify(uploadedImages) !== JSON.stringify(currentProductData.images);
+            
+            hasChanges = hasFormChanges;
+            
+            // Show/hide apply button
+            const applyBtn = document.getElementById('floatingApplyBtn');
+            if (hasChanges) {
+                applyBtn.classList.add('active');
+            } else {
+                applyBtn.classList.remove('active');
+            }
+        }
+        
+        function updateEditImagePreview() {
+            const container = document.getElementById('editImagePreview');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            uploadedImages.forEach((imageUrl, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <img src="${imageUrl}" alt="Image ${index + 1}">
+                    <button type="button" class="remove-btn" onclick="removeEditImage(${index})">
+                        <i class='bx bx-x'></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+            
+            checkForChanges();
+        }
+        
+        async function handleEditImageUpload(e) {
             const files = Array.from(e.target.files);
-            await handleImageFiles(files);
-        }
-
-        async function handleImageFiles(files) {
-            const notificationId = notificationSystem.show('loading', 'Uploading images...', 0);
             
             // Validate files
             const validFiles = files.filter(file => {
                 if (file.size > 2 * 1024 * 1024) {
-                    notificationSystem.show('error', `${file.name} is too large (max 2MB)`);
+                    notificationSystem.show('error', `${file.name} is too large (max 2MB)`, 3000);
                     return false;
                 }
                 if (!file.type.startsWith('image/')) {
-                    notificationSystem.show('error', `${file.name} is not an image`);
+                    notificationSystem.show('error', `${file.name} is not an image`, 3000);
                     return false;
                 }
                 return true;
@@ -1289,23 +2152,20 @@
 
             // Check limit
             if (uploadedImages.length + validFiles.length > 5) {
-                notificationSystem.show('error', 'Maximum 5 images allowed');
-                notificationSystem.remove(notificationId);
+                notificationSystem.show('error', 'Maximum 5 images allowed', 3000);
                 return;
             }
 
             // Upload each file
             for (const file of validFiles) {
-                await uploadImageToImgBB(file);
+                await uploadEditImage(file);
             }
             
-            notificationSystem.remove(notificationId);
-            validationSystem.updateVisualValidation();
-            updateSubmitButton();
+            updateEditImagePreview();
         }
-
-        async function uploadImageToImgBB(file) {
-            const uploadId = notificationSystem.show('loading', `Uploading ${file.name}...`, 0);
+        
+        async function uploadEditImage(file) {
+            const notificationId = notificationSystem.show('info', `Uploading ${file.name}...`, 0);
             
             const formData = new FormData();
             formData.append('key', IMGBB_API_KEY);
@@ -1320,194 +2180,159 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    uploadedImages.push({
-                        url: data.data.url,
-                        thumb: data.data.thumb.url,
-                        name: file.name
-                    });
-                    updateImagePreview();
-                    notificationSystem.remove(uploadId);
+                    uploadedImages.push(data.data.url);
+                    notificationSystem.remove(notificationId);
                     notificationSystem.show('success', `Uploaded ${file.name}`, 2000);
                 } else {
                     throw new Error(data.error?.message || 'Upload failed');
                 }
             } catch (error) {
                 console.error('Upload error:', error);
-                notificationSystem.remove(uploadId);
+                notificationSystem.remove(notificationId);
                 notificationSystem.show('error', `Failed: ${file.name}`, 3000);
             }
         }
-
-        function updateImagePreview() {
-            const container = document.getElementById('imagePreview');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            uploadedImages.forEach((image, index) => {
-                const item = document.createElement('div');
-                item.className = 'preview-item';
-                item.innerHTML = `
-                    <img src="${image.thumb}" alt="Image ${index + 1}">
-                    <button type="button" class="remove-btn" data-index="${index}">
-                        <i class='bx bx-x'></i>
-                    </button>
-                `;
-                container.appendChild(item);
-            });
-
-            // Add remove event listeners
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    uploadedImages.splice(index, 1);
-                    updateImagePreview();
-                    validationSystem.updateVisualValidation();
-                    updateSubmitButton();
+        
+        function removeEditImage(index) {
+            uploadedImages.splice(index, 1);
+            updateEditImagePreview();
+        }
+        
+        // ==================== PRODUCT ACTIONS ====================
+        function copyProductId(productId) {
+            navigator.clipboard.writeText(productId)
+                .then(() => {
+                    notificationSystem.show('success', 'Product ID copied to clipboard!', 2000);
+                })
+                .catch(err => {
+                    console.error('Copy failed:', err);
+                    notificationSystem.show('error', 'Failed to copy Product ID', 2000);
                 });
-            });
         }
-
-        // ==================== SUBMIT BUTTON UPDATES ====================
-        function updateSubmitButton() {
-            const submitBtn = document.getElementById('submitBtn');
-            if (!submitBtn) {
-                console.error('Submit button not found!');
-                return;
-            }
+        
+        function showToggleStatusConfirmation() {
+            const newStatus = !currentProductData.active;
+            const action = newStatus ? 'activate' : 'deactivate';
+            const productName = currentProductData.name || 'this product';
             
-            const isValid = validationSystem.validateForm();
-            console.log('Form validation result:', isValid);
-            
-            submitBtn.disabled = !isValid;
-            
-            if (isValid) {
-                console.log('Submit button should be enabled');
-            } else {
-                console.log('Submit button is disabled - validation failed');
-            }
+            confirmationPopup.show(
+                `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+                'Product Status',
+                `Are you sure you want to ${action} "${productName}"?`,
+                newStatus ? 'Activate' : 'Deactivate',
+                newStatus ? 'info' : 'warning',
+                (confirmed) => {
+                    if (confirmed) {
+                        toggleProductStatus();
+                    }
+                }
+            );
         }
-
-        // ==================== FORM SUBMISSION ====================
-        async function submitProduct() {
-            console.log('Submitting product...');
+        
+        async function toggleProductStatus() {
+            if (!currentProductId) return;
             
-            if (!validationSystem.validateForm()) {
-                notificationSystem.show('error', 'Please fix all errors before submitting', 3000);
-                return;
-            }
-
-            // Validate original price
-            const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || 0;
-            const price = parseInt(document.getElementById('productPrice')?.value) || 0;
-            if (originalPrice && originalPrice <= price) {
-                notificationSystem.show('error', 'Original price must be higher than sale price', 3000);
-                return;
-            }
-
+            const newStatus = !currentProductData.active;
+            
             try {
                 await loadingSystem.withLoading(async () => {
-                    // Get form values
-                    const price = parseInt(document.getElementById('productPrice')?.value) || 0;
-                    const originalPrice = parseInt(document.getElementById('originalPrice')?.value) || price;
-                    const discount = originalPrice > price ? 
-                        Math.round((1 - price / originalPrice) * 100) : 0;
-
-                    // Calculate wealth category
-                    let wealthCategory = '';
-                    if (price >= 500 && price <= 20000) wealthCategory = 'Poor';
-                    else if (price > 20000 && price <= 50000) wealthCategory = 'Moderate';
-                    else if (price > 50000 && price <= 1000000) wealthCategory = 'Rich';
-
-                    // Prepare product data
-                    const productData = {
-                        name: document.getElementById('productName')?.value.trim() || '',
-                        description: document.getElementById('productDescription')?.value.trim() || '',
-                        category: document.getElementById('productCategory')?.value || '',
-                        department: selections.departments,
-                        color: selections.colors,
-                        size: selections.sizes,
-                        age: selections.ageGroups,
-                        status: selections.statuses,
-                        wealth: wealthCategory,
-                        price: price,
-                        originalPrice: originalPrice > price ? originalPrice : null,
-                        discount: discount > 0 ? discount : null,
-                        images: uploadedImages.map(img => img.url),
-                        suggestionCode: generateSuggestionCode(),
-                        active: true,
-                        featured: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    const docRef = db.collection('products').doc(currentProductId);
+                    await docRef.update({
+                        active: newStatus,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-
-                    console.log('Saving product:', productData);
-                    
-                    // Save to Firestore
-                    const docRef = await db.collection('products').add(productData);
-                    
-                    // Analytics
-                    analytics.logEvent('product_added', {
-                        product_id: docRef.id,
-                        category: productData.category,
-                        price: productData.price
                     });
-
-                    // Success
-                    notificationSystem.show('success', `Product added successfully! ID: ${docRef.id}`, 4000);
                     
-                    // Auto-reset after 3 seconds
-                    setTimeout(() => {
-                        resetForm();
-                        notificationSystem.show('success', 'Form cleared. Add another product.', 3000);
-                    }, 3000);
-                }, 'Saving product...');
-
+                    // Update local data
+                    currentProductData.active = newStatus;
+                    
+                    // Update UI
+                    document.getElementById('statusPanelStatus').textContent = newStatus ? 'Active' : 'Inactive';
+                    document.getElementById('statusPanelStatus').className = `panel-status ${newStatus ? 'status-active' : 'status-inactive'}`;
+                    
+                    // Refresh products list
+                    await loadAllProducts();
+                    
+                    notificationSystem.show('success', 
+                        `Product ${newStatus ? 'activated' : 'deactivated'} successfully!`, 
+                        3000);
+                }, 'Updating status...');
             } catch (error) {
-                console.error('Error:', error);
-                notificationSystem.show('error', `Failed to add product: ${error.message}`, 4000);
+                console.error('Toggle status error:', error);
+                notificationSystem.show('error', `Failed to update status: ${error.message}`, 4000);
             }
         }
-
-        // ==================== FORM RESET ====================
-        function resetForm() {
-            console.log('Resetting form...');
+        
+        async function saveProductChanges() {
+            if (!currentProductId) return;
             
-            // Reset text inputs
-            const nameInput = document.getElementById('productName');
-            const categoryInput = document.getElementById('productCategory');
-            const descriptionInput = document.getElementById('productDescription');
-            const priceInput = document.getElementById('productPrice');
-            const originalPriceInput = document.getElementById('originalPrice');
-            
-            if (nameInput) nameInput.value = '';
-            if (categoryInput) categoryInput.value = '';
-            if (descriptionInput) descriptionInput.value = '';
-            if (priceInput) priceInput.value = '';
-            if (originalPriceInput) originalPriceInput.value = '';
-            
-            // Reset all checkbox selections
-            Object.keys(selections).forEach(key => {
-                selections[key] = [];
-            });
-            
-            // Uncheck all checkboxes
-            document.querySelectorAll('.checkbox-option').forEach(cb => {
-                cb.checked = false;
-            });
-            
-            // Reset images
-            uploadedImages = [];
-            updateImagePreview();
-            
-            // Reset suggestion code
-            updateSuggestionCode();
-            
-            // Reset validation
-            validationSystem.updateVisualValidation();
-            
-            // Update submit button
-            updateSubmitButton();
+            try {
+                await loadingSystem.withLoading(async () => {
+                    // Collect form data
+                    const updatedData = {
+                        name: document.getElementById('editName').value.trim(),
+                        category: document.getElementById('editCategory').value,
+                        description: document.getElementById('editDescription').value.trim(),
+                        price: parseInt(document.getElementById('editPrice').value) || 0,
+                        originalPrice: parseInt(document.getElementById('editOriginalPrice').value) || null,
+                        featured: document.getElementById('editFeatured').checked,
+                        active: document.getElementById('editActive').checked,
+                        images: uploadedImages.length > 0 ? uploadedImages : currentProductData.images,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    // Calculate discount if original price exists
+                    if (updatedData.originalPrice && updatedData.originalPrice > updatedData.price) {
+                        updatedData.discount = Math.round((1 - updatedData.price / updatedData.originalPrice) * 100);
+                    } else {
+                        updatedData.discount = null;
+                        updatedData.originalPrice = null;
+                    }
+                    
+                    // Collect checkbox values
+                    const checkboxes = {
+                        department: 'editDepartmentGrid',
+                        color: 'editColorGrid',
+                        size: 'editSizeGrid',
+                        age: 'editAgeGrid',
+                        status: 'editStatusGrid'
+                    };
+                    
+                    Object.entries(checkboxes).forEach(([key, gridId]) => {
+                        const grid = document.getElementById(gridId);
+                        const checkedBoxes = grid.querySelectorAll('.checkbox-option:checked');
+                        updatedData[key] = Array.from(checkedBoxes).map(cb => cb.value);
+                    });
+                    
+                    // Calculate wealth category
+                    if (updatedData.price >= 500 && updatedData.price <= 20000) {
+                        updatedData.wealth = 'Poor';
+                    } else if (updatedData.price > 20000 && updatedData.price <= 50000) {
+                        updatedData.wealth = 'Moderate';
+                    } else if (updatedData.price > 50000 && updatedData.price <= 1000000) {
+                        updatedData.wealth = 'Rich';
+                    } else {
+                        updatedData.wealth = '';
+                    }
+                    
+                    // Update in Firebase
+                    const docRef = db.collection('products').doc(currentProductId);
+                    await docRef.update(updatedData);
+                    
+                    // Update local data
+                    Object.assign(currentProductData, updatedData);
+                    
+                    // Refresh products list
+                    await loadAllProducts();
+                    
+                    // Close edit panel
+                    closeEditPanel();
+                    
+                    notificationSystem.show('success', 'Product updated successfully!', 3000);
+                }, 'Saving changes...');
+            } catch (error) {
+                console.error('Save error:', error);
+                notificationSystem.show('error', `Failed to save changes: ${error.message}`, 4000);
+            }
         }
     </script>
 </body>
