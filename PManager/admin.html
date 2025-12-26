@@ -178,6 +178,10 @@
             margin-bottom: 15px;
             display: none;
         }
+        
+        .message.error {
+            background: #ff0000;
+        }
     </style>
 </head>
 <body>
@@ -281,27 +285,48 @@
                 const doc = await db.collection('site_personalization').doc('settings').get();
                 if (doc.exists) {
                     siteSettings = doc.data();
-                    updateUI();
-                    
-                    db.collection('site_personalization').doc('settings')
-                        .onSnapshot((snapshot) => {
+                } else {
+                    // Create default settings if they don't exist
+                    siteSettings = {
+                        status: 'ACTIVE',
+                        announcements: [],
+                        heroImage: '',
+                        heroTitle: '',
+                        createdAt: new Date().toISOString()
+                    };
+                    await db.collection('site_personalization').doc('settings').set(siteSettings);
+                }
+                updateUI();
+                
+                // Listen for changes
+                db.collection('site_personalization').doc('settings')
+                    .onSnapshot((snapshot) => {
+                        if (snapshot.exists) {
                             siteSettings = snapshot.data();
                             updateUI();
-                        });
-                }
+                        }
+                    });
+                    
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error loading settings:', error);
+                showMessage('Error loading settings', 'error');
             }
         }
 
         function updateUI() {
             if (!siteSettings) return;
             
+            // Update site toggle
             document.getElementById('siteToggle').checked = siteSettings.status === 'ACTIVE';
+            
+            // Update hero settings
             document.getElementById('heroImageUrl').value = siteSettings.heroImage || '';
             document.getElementById('heroTitle').value = siteSettings.heroTitle || '';
             
+            // Load announcements
             loadAnnouncements();
+            
+            // Load statistics
             loadStatistics();
         }
 
@@ -310,11 +335,12 @@
             
             try {
                 await db.collection('site_personalization').doc('settings').update({
-                    status: status
+                    status: status,
+                    updatedAt: new Date().toISOString()
                 });
                 showMessage('Site status updated');
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error updating status:', error);
                 showMessage('Error updating status', 'error');
             }
         }
@@ -325,7 +351,10 @@
             const text = document.getElementById('announcementText').value.trim();
             const url = document.getElementById('announcementUrl').value.trim();
             
-            if (!text) return;
+            if (!text) {
+                showMessage('Please enter announcement text', 'error');
+                return;
+            }
             
             const newAnnouncement = {
                 content: text,
@@ -335,16 +364,20 @@
             };
             
             try {
-                const updatedAnnouncements = [...(siteSettings.announcements || []), newAnnouncement];
+                // Ensure announcements array exists
+                const currentAnnouncements = siteSettings.announcements || [];
+                const updatedAnnouncements = [...currentAnnouncements, newAnnouncement];
+                
                 await db.collection('site_personalization').doc('settings').update({
-                    announcements: updatedAnnouncements
+                    announcements: updatedAnnouncements,
+                    updatedAt: new Date().toISOString()
                 });
                 
                 document.getElementById('announcementText').value = '';
                 document.getElementById('announcementUrl').value = '';
                 showMessage('Announcement added');
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error adding announcement:', error);
                 showMessage('Error adding announcement', 'error');
             }
         }
@@ -353,12 +386,14 @@
             const container = document.getElementById('announcementList');
             container.innerHTML = '';
             
-            if (!siteSettings.announcements || siteSettings.announcements.length === 0) {
+            const announcements = siteSettings.announcements || [];
+            
+            if (announcements.length === 0) {
                 container.innerHTML = '<div>No announcements</div>';
                 return;
             }
             
-            siteSettings.announcements.forEach((announcement, index) => {
+            announcements.forEach((announcement, index) => {
                 const item = document.createElement('div');
                 item.className = 'announcement-item';
                 item.innerHTML = `
@@ -372,19 +407,25 @@
                 
                 container.appendChild(item);
             });
+            
+            // Update active announcements count
+            const activeCount = announcements.filter(a => a.active).length;
+            document.getElementById('activeAnnouncements').textContent = activeCount;
         }
 
         async function deleteAnnouncement(index) {
-            const updatedAnnouncements = [...siteSettings.announcements];
+            const currentAnnouncements = siteSettings.announcements || [];
+            const updatedAnnouncements = [...currentAnnouncements];
             updatedAnnouncements.splice(index, 1);
             
             try {
                 await db.collection('site_personalization').doc('settings').update({
-                    announcements: updatedAnnouncements
+                    announcements: updatedAnnouncements,
+                    updatedAt: new Date().toISOString()
                 });
                 showMessage('Announcement deleted');
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error deleting announcement:', error);
                 showMessage('Error deleting announcement', 'error');
             }
         }
@@ -396,36 +437,44 @@
             try {
                 await db.collection('site_personalization').doc('settings').update({
                     heroImage: imageUrl,
-                    heroTitle: title
+                    heroTitle: title,
+                    updatedAt: new Date().toISOString()
                 });
                 showMessage('Hero settings saved');
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error saving hero settings:', error);
                 showMessage('Error saving hero settings', 'error');
             }
         }
 
         async function loadStatistics() {
             try {
+                // Load total users
                 const usersSnapshot = await db.collection('users').get();
                 document.getElementById('totalUsers').textContent = usersSnapshot.size;
                 
+                // Load total products
                 const productsSnapshot = await db.collection('products').get();
                 document.getElementById('totalProducts').textContent = productsSnapshot.size;
                 
-                const activeAnnouncements = siteSettings.announcements ? 
-                    siteSettings.announcements.filter(a => a.active).length : 0;
-                document.getElementById('activeAnnouncements').textContent = activeAnnouncements;
+                // Load total orders
+                try {
+                    const ordersSnapshot = await db.collection('orders').get();
+                    document.getElementById('totalOrders').textContent = ordersSnapshot.size;
+                } catch (e) {
+                    document.getElementById('totalOrders').textContent = '0';
+                }
+                
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error loading statistics:', error);
             }
         }
 
         function showMessage(text, type = 'success') {
             const message = document.getElementById('message');
             message.textContent = text;
+            message.className = 'message' + (type === 'error' ? ' error' : '');
             message.style.display = 'block';
-            message.style.background = type === 'error' ? '#ff0000' : '#4CAF50';
             
             setTimeout(() => {
                 message.style.display = 'none';
