@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - INGABO</title>
+    
     <!-- Screen detection and redirect -->
     <script>
         // Check screen size and redirect to mobile version if needed
@@ -41,6 +42,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- COLOR SYSTEM CYCLE STYLES -->
+    <style>
+        :root {
+            --accent-color: #ff6a00; /* Default color */
+        }
+    </style>
+    
     <style>
         /* ========== RESET & BASE ========== */
         * {
@@ -85,7 +94,7 @@
             align-items: center;
             gap: 10px;
             padding: 12px 20px;
-            background: #ff6a00;
+            background: var(--accent-color, #ff6a00);
             color: white;
             border: none;
             border-radius: 25px;
@@ -185,7 +194,7 @@
         }
         
         .thumbnail.active {
-            border-color: #ff6a00;
+            border-color: var(--accent-color, #ff6a00);
         }
         
         .thumbnail img {
@@ -228,7 +237,7 @@
         .current-price {
             font-size: 36px;
             font-weight: 700;
-            color: #ff6a00;
+            color: var(--accent-color, #ff6a00);
         }
         
         .original-price {
@@ -374,13 +383,13 @@
         }
         
         .size-option:hover {
-            border-color: #ff6a00;
+            border-color: var(--accent-color, #ff6a00);
         }
         
         .size-option.active {
-            background: #ff6a00;
+            background: var(--accent-color, #ff6a00);
             color: white;
-            border-color: #ff6a00;
+            border-color: var(--accent-color, #ff6a00);
         }
         
         /* ========== QUANTITY & ACTIONS ========== */
@@ -430,7 +439,7 @@
         }
         
         .quantity-btn:hover {
-            background: #ff6a00;
+            background: var(--accent-color, #ff6a00);
             color: white;
         }
         
@@ -511,7 +520,7 @@
         
         .meta-icon {
             font-size: 24px;
-            color: #ff6a00;
+            color: var(--accent-color, #ff6a00);
             margin-bottom: 10px;
         }
         
@@ -587,7 +596,7 @@
         }
         
         .product-card-price {
-            color: #ff6a00;
+            color: var(--accent-color, #ff6a00);
             font-weight: 700;
             font-size: 16px;
         }
@@ -641,7 +650,7 @@
         }
         
         .submit-review {
-            background: #ff6a00;
+            background: var(--accent-color, #ff6a00);
             color: white;
             border: none;
             padding: 16px 30px;
@@ -675,7 +684,7 @@
             width: 50px;
             height: 50px;
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #ff6a00;
+            border-top: 4px solid var(--accent-color, #ff6a00);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
@@ -1031,6 +1040,31 @@
     </div>
 
     <script>
+        // ==================== COLOR SYSTEM CYCLE ====================
+        // Initialize accent color rotation (same as index.html)
+        let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db'];
+        let currentHour = new Date().getHours();
+        
+        function initializeAccentColor() {
+            const hour = new Date().getHours();
+            const colorIndex = hour % accentColors.length;
+            document.documentElement.style.setProperty('--accent-color', accentColors[colorIndex]);
+            
+            setInterval(() => {
+                const currentTime = new Date().getHours();
+                if (currentTime !== currentHour) {
+                    currentHour = currentTime;
+                    const newColorIndex = currentHour % accentColors.length;
+                    document.documentElement.style.setProperty('--accent-color', accentColors[newColorIndex]);
+                }
+            }, 600000); // Check every 10 minutes
+        }
+        
+        // Initialize color system on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAccentColor();
+        });
+        
         // ==================== FIREBASE CONFIGURATION ====================
         const firebaseConfig = {
             apiKey: "AIzaSyAQsQAEGPdFY2gKRBpC3crZTSEzUGQ4CKE",
