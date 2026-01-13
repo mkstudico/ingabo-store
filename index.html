@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -278,6 +279,7 @@
             padding: 10px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
+            position: relative;
         }
         
         .cart-item:hover {
@@ -308,6 +310,11 @@
             font-weight: bold;
         }
         
+        .cart-item-quantity {
+            font-size: 12px;
+            color: #666;
+        }
+        
         .empty-cart {
             text-align: center;
             padding: 40px 20px;
@@ -321,6 +328,75 @@
             padding: 2px 6px;
             border-radius: 10px;
             margin-left: 5px;
+        }
+        
+        /* Cart Footer */
+        .cart-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background: white;
+            display: none;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .total-amount {
+            color: var(--accent-color, #ff6a00);
+            font-size: 18px;
+        }
+        
+        .buy-products-btn {
+            width: 100%;
+            padding: 12px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .buy-products-btn:hover {
+            background: #128C7E;
+        }
+        
+        .buy-products-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .remove-item {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .cart-item:hover .remove-item {
+            opacity: 1;
+        }
+        
+        .remove-item:hover {
+            color: #ff0000;
         }
         
         /* Top Header */
@@ -1184,6 +1260,16 @@
         <div class="cart-items-container" id="cartItemsContainer">
             <!-- Cart items will be loaded here -->
         </div>
+        <!-- Cart Footer with BUY PRODUCTS button -->
+        <div class="cart-footer" id="cartFooter">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span class="total-amount" id="cartTotalAmount">0 RWF</span>
+            </div>
+            <button class="buy-products-btn" id="buyProductsBtn">
+                <i class='bx bxl-whatsapp'></i> BUY PRODUCTS
+            </button>
+        </div>
     </div>
     
     <!-- Announcement Banner -->
@@ -1540,6 +1626,7 @@
             document.getElementById('closeCart').addEventListener('click', hideCart);
             document.getElementById('cartOverlay').addEventListener('click', hideCart);
             document.getElementById('clearCart').addEventListener('click', clearCart);
+            document.getElementById('buyProductsBtn').addEventListener('click', goToCheckout);
             
             updateCartCount();
         }
@@ -1567,6 +1654,7 @@
 
         function loadCartItems() {
             const container = document.getElementById('cartItemsContainer');
+            const footer = document.getElementById('cartFooter');
             
             if (cartItems.length === 0) {
                 container.innerHTML = `
@@ -1575,11 +1663,19 @@
                         <div>Your cart is empty</div>
                     </div>
                 `;
+                footer.style.display = 'none';
                 return;
             }
             
+            footer.style.display = 'block';
             container.innerHTML = '';
-            cartItems.forEach(item => {
+            
+            let totalAmount = 0;
+            
+            cartItems.forEach((item, index) => {
+                const itemTotal = item.price * (item.quantity || 1);
+                totalAmount += itemTotal;
+                
                 const cartItem = document.createElement('div');
                 cartItem.className = 'cart-item';
                 cartItem.innerHTML = `
@@ -1587,10 +1683,17 @@
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-price">${formatPrice(item.price)} RWF</div>
+                        <div class="cart-item-quantity">Qty: ${item.quantity || 1}</div>
                     </div>
+                    <button class="remove-item" data-index="${index}">
+                        <i class='bx bx-trash'></i>
+                    </button>
                 `;
                 
-                cartItem.addEventListener('click', () => {
+                cartItem.addEventListener('click', (e) => {
+                    // Don't navigate if remove button was clicked
+                    if (e.target.closest('.remove-item')) return;
+                    
                     // FIRST: Check if item has id
                     if (item.id) {
                         window.location.href = `view.html?id=${item.id}`;
@@ -1611,8 +1714,32 @@
                     hideCart();
                 });
                 
+                // Add remove button functionality
+                const removeBtn = cartItem.querySelector('.remove-item');
+                removeBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const itemIndex = parseInt(this.getAttribute('data-index'));
+                    removeCartItem(itemIndex);
+                });
+                
                 container.appendChild(cartItem);
             });
+            
+            // Update total amount
+            document.getElementById('cartTotalAmount').textContent = `${formatPrice(totalAmount)} RWF`;
+        }
+
+        function removeCartItem(index) {
+            cartItems.splice(index, 1);
+            localStorage.setItem('ingabo_cart', JSON.stringify(cartItems));
+            loadCartItems();
+            updateCartCount();
+            showNotification('Item removed from cart');
+        }
+
+        function goToCheckout() {
+            hideCart();
+            window.location.href = 'cart.html';
         }
 
         function updateCartCount() {
