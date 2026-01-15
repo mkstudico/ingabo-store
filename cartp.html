@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout - INGABO Mobile</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Screen detection and redirect -->
+    <script>
+        // Check screen size and redirect to desktop version if needed
+        function checkScreenSizeAndRedirect() {
+            if (window.innerWidth > 768) {
+                window.location.href = 'cart.html';
+                return true;
+            }
+            return false;
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            if (checkScreenSizeAndRedirect()) return;
+        });
+        
+        window.addEventListener('resize', function() {
+            if (checkScreenSizeAndRedirect()) return;
+        });
+    </script>
+    
+    <style>
+        :root {
+            --accent-color: #ff6a00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            padding: 0 15px;
+        }
+        
+        /* ========== MOBILE HEADER ========== */
+        .mobile-header {
+            background-color: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 0 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: var(--accent-color, #ff6a00);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:active {
+            background: #e55a00;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+        
+        .logo-text h1 {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+        
+        .logo-text span {
+            font-size: 10px;
+            color: #666;
+            display: block;
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .cart-main {
+            padding: 20px 0 100px 0;
+        }
+        
+        /* ========== CART ITEMS SECTION ========== */
+        .cart-items-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 50px 20px;
+            color: #888;
+        }
+        
+        .empty-cart i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .empty-cart h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #666;
+        }
+        
+        .empty-cart p {
+            margin-bottom: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .shop-now-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--accent-color, #ff6a00);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+        
+        .shop-now-btn:active {
+            background: #e55a00;
+        }
+        
+        /* ========== CART ITEMS LIST ========== */
+        .cart-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .cart-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            transition: box-shadow 0.3s;
+            position: relative;
+            gap: 12px;
+        }
+        
+        .cart-item:active {
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        
+        .item-top-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .item-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-color, #ff6a00);
+        }
+        
+        .item-total {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            text-align: right;
+        }
+        
+        .quantity-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn:active {
+            background: #f0f0f0;
+        }
+        
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .remove-item {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        
+        .remove-item:active {
+            color: #ff0000;
+        }
+        
+        /* ========== ORDER SUMMARY ========== */
+        .order-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            position: sticky;
+            bottom: 80px;
+        }
+        
+        .summary-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .summary-details {
+            margin-bottom: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-label {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .summary-value {
+            color: #333;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #eee;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .total-label {
+            color: #333;
+        }
+        
+        .total-amount {
+            color: var(--accent-color, #ff6a00);
+        }
+        
+        /* ========== CHECKOUT BUTTON ========== */
+        .checkout-btn {
+            width: 100%;
+            padding: 18px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .checkout-btn:active {
+            background: #128C7E;
+        }
+        
+        .checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* ========== DELIVERY INFO ========== */
+        .delivery-info {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .info-icon {
+            font-size: 22px;
+            color: var(--accent-color, #ff6a00);
+            margin-bottom: 8px;
+        }
+        
+        .info-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .confirmation-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-icon {
+            font-size: 50px;
+            color: #25D366;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        .modal-text {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .delivery-costs {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 13px;
+        }
+        
+        .delivery-costs strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .delivery-costs div {
+            margin-bottom: 5px;
+            padding-left: 15px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .modal-btn.cancel {
+            background: #f8f8f8;
+            color: #666;
+        }
+        
+        .modal-btn.cancel:active {
+            background: #e8e8e8;
+        }
+        
+        .modal-btn.confirm {
+            background: #25D366;
+            color: white;
+        }
+        
+        .modal-btn.confirm:active {
+            background: #128C7E;
+        }
+        
+        /* ========== NOTIFICATION ========== */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 15px;
+            left: 15px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ========== BOTTOM NAV ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            padding: 8px 0 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            text-decoration: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-text {
+            font-size: 9px;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 106, 0, 0.1);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--accent-color, #ff6a00);
+        }
+        
+        .nav-item.active .nav-text {
+            color: var(--accent-color, #ff6a00);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmationModal">
+        <div class="confirmation-modal">
+            <div class="modal-icon">
+                <i class='bx bxl-whatsapp'></i>
+            </div>
+            <div class="modal-title">Complete Purchase via WhatsApp</div>
+            <div class="modal-text">
+                This will open WhatsApp to send your complete order details to the seller.
+            </div>
+            <div class="delivery-costs">
+                <strong>Delivery Costs:</strong>
+                <div>Kigali: 2,000 RWF</div>
+                <div>Other Cities: 5,000 RWF</div>
+                <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                    Delivery is next day. Same-day delivery can be arranged.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelPurchase">Cancel</button>
+                <button class="modal-btn confirm" id="confirmPurchase">Complete Order</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="mobile-header">
+        <div class="container">
+            <div class="header-content">
+                <button onclick="window.history.back()" class="back-button">
+                    <i class='bx bx-arrow-back'></i> Back
+                </button>
+                
+                <div class="logo-area">
+                    <img src="https://i.ibb.co/1fjd5Ncn/logo.png" alt="INGABO Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>INGABO</h1>
+                        <span>Online shop</span>
+                    </div>
+                </div>
+                
+                <!-- Empty space for alignment -->
+                <div style="width: 80px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="cart-main">
+            <!-- Cart Items -->
+            <div class="cart-items-section">
+                <h2 class="section-title">
+                    <i class='bx bx-cart'></i> Your Cart
+                </h2>
+                
+                <div id="cartItemsContainer">
+                    <!-- Cart items will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h2 class="summary-title">
+                    <i class='bx bx-receipt'></i> Order Summary
+                </h2>
+                
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span class="summary-label">Subtotal</span>
+                        <span class="summary-value" id="subtotalAmount">0 RWF</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Delivery Fee</span>
+                        <span class="summary-value" id="deliveryFee">0 RWF</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Tax (0%)</span>
+                        <span class="summary-value">0 RWF</span>
+                    </div>
+                </div>
+                
+                <div class="summary-total">
+                    <span class="total-label">Total</span>
+                    <span class="total-amount" id="totalAmount">0 RWF</span>
+                </div>
+                
+                <button class="checkout-btn" id="checkoutBtn">
+                    <i class='bx bxl-whatsapp'></i> COMPLETE PURCHASE
+                </button>
+            </div>
+            
+            <!-- Delivery Information -->
+            <div class="delivery-info">
+                <h2 class="section-title">
+                    <i class='bx bx-package'></i> Delivery Information
+                </h2>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class='bx bx-time'></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Delivery Time</strong><br>
+                            Next day delivery (Same-day available upon request)
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class='bx bx-map'></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Delivery Areas</strong><br>
+                            Kigali: 2,000 RWF<br>
+                            Other Cities: 5,000 RWF
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class='bx bx-credit-card'></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Payment Methods</strong><br>
+                            Cash on Delivery<br>
+                            Mobile Money
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class='bx bx-support'></i>
+                        </div>
+                        <div class="info-text">
+                            <strong>Need Help?</strong><br>
+                            Contact: +250 792 642 955<br>
+                            WhatsApp available 24/7
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="indexp.html" class="nav-item">
+            <i class='bx bx-home nav-icon'></i>
+            <div class="nav-text">Home</div>
+        </a>
+        <a href="indexp.html" class="nav-item">
+            <i class='bx bx-grid-alt nav-icon'></i>
+            <div class="nav-text">Category</div>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class='bx bx-cart nav-icon'></i>
+            <div class="nav-text">Cart</div>
+        </a>
+        <a href="account.html" class="nav-item">
+            <i class='bx bx-user nav-icon'></i>
+            <div class="nav-text">Account</div>
+        </a>
+    </nav>
+    
+    <!-- Notification -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        // ==================== COLOR SYSTEM CYCLE ====================
+        let accentColors = ['#ff6a00', '#8a2be2', '#2ecc71', '#3498db'];
+        let currentHour = new Date().getHours();
+        
+        function initializeAccentColor() {
+            const hour = new Date().getHours();
+            const colorIndex = hour % accentColors.length;
+            document.documentElement.style.setProperty('--accent-color', accentColors[colorIndex]);
+            
+            setInterval(() => {
+                const currentTime = new Date().getHours();
+                if (currentTime !== currentHour) {
+                    currentHour = currentTime;
+                    const newColorIndex = currentHour % accentColors.length;
+                    document.documentElement.style.setProperty('--accent-color', accentColors[newColorIndex]);
+                }
+            }, 600000);
+        }
+        
+        // ==================== GLOBAL VARIABLES ====================
+        let cartItems = [];
+        let deliveryFee = 2000; // Default Kigali delivery
+        
+        // ==================== NOTIFICATION SYSTEM ====================
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.background = type === 'success' ? '#28a745' : 
+                                          type === 'error' ? '#dc3545' : '#ff6a00';
+            
+            notification.innerHTML = `
+                <i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}'></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+        
+        // ==================== HELPER FUNCTIONS ====================
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // ==================== CART MANAGEMENT ====================
+        function loadCart() {
+            cartItems = JSON.parse(localStorage.getItem('ingabo_cart')) || [];
+            renderCartItems();
+            updateOrderSummary();
+        }
+        
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            
+            if (cartItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class='bx bx-cart'></i>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some products to your cart to proceed with checkout</p>
+                        <a href="indexp.html" class="shop-now-btn">
+                            <i class='bx bx-shopping-bag'></i> Shop Now
+                        </a>
+                    </div>
+                `;
+                
+                // Disable checkout button
+                const checkoutBtn = document.getElementById('checkoutBtn');
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = true;
+                }
+                
+                return;
+            }
+            
+            let html = '<div class="cart-items-list">';
+            
+            cartItems.forEach((item, index) => {
+                const itemTotal = item.price * (item.quantity || 1);
+                
+                html += `
+                    <div class="cart-item" data-index="${index}">
+                        <div class="item-top-row">
+                            <div class="item-image">
+                                ${item.image ? 
+                                    `<img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9IiNGMEYwRjAiLz48cGF0aCBkPSJNNTIgMzJIMzZINDhWNTJINTJWMzJaIiBmaWxsPSIjQ0NDQ0NDIi8+PHBhdGggZD0iTTU2IDUySDI0QzIwIDgwIDIwIDc2IDI0IDc2SDU2QzYwIDc2IDYwIDgwIDU2IDUyWiIgZmlsbD0iI0ZGRjZGNSIvPjwvc3ZnPg==';">` : 
+                                    `<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
+                                        <i class='bx bx-image' style="font-size:30px;color:#ccc;"></i>
+                                    </div>`
+                                }
+                            </div>
+                            
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-details">
+                                    ${item.color ? `<span>Color: ${item.color}</span>` : ''}
+                                    ${item.size ? `<span>Size: ${item.size}</span>` : ''}
+                                </div>
+                                <div class="item-price">${formatPrice(item.price)} RWF</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quantity-row">
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantity(${index})">-</button>
+                                <input type="number" class="quantity-input" value="${item.quantity || 1}" min="1" max="10" 
+                                       onchange="updateQuantity(${index}, this.value)" onclick="event.stopPropagation()">
+                                <button class="quantity-btn" onclick="increaseQuantity(${index})">+</button>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="item-total">${formatPrice(itemTotal)} RWF</div>
+                                <button class="remove-item" onclick="removeItem(${index})">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function removeItem(index) {
+            if (confirm('Are you sure you want to remove this item from your cart?')) {
+                cartItems.splice(index, 1);
+                localStorage.setItem('ingabo_cart', JSON.stringify(cartItems));
+                renderCartItems();
+                updateOrderSummary();
+                showNotification('Item removed from cart');
+            }
+        }
+        
+        function updateQuantity(index, newQuantity) {
+            newQuantity = parseInt(newQuantity);
+            
+            if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
+            if (newQuantity > 10) newQuantity = 10;
+            
+            cartItems[index].quantity = newQuantity;
+            localStorage.setItem('ingabo_cart', JSON.stringify(cartItems));
+            renderCartItems();
+            updateOrderSummary();
+        }
+        
+        function increaseQuantity(index) {
+            const currentQty = cartItems[index].quantity || 1;
+            if (currentQty < 10) {
+                updateQuantity(index, currentQty + 1);
+            }
+        }
+        
+        function decreaseQuantity(index) {
+            const currentQty = cartItems[index].quantity || 1;
+            if (currentQty > 1) {
+                updateQuantity(index, currentQty - 1);
+            }
+        }
+        
+        function updateOrderSummary() {
+            let subtotal = 0;
+            
+            cartItems.forEach(item => {
+                subtotal += item.price * (item.quantity || 1);
+            });
+            
+            const total = subtotal + deliveryFee;
+            
+            document.getElementById('subtotalAmount').textContent = `${formatPrice(subtotal)} RWF`;
+            document.getElementById('deliveryFee').textContent = `${formatPrice(deliveryFee)} RWF`;
+            document.getElementById('totalAmount').textContent = `${formatPrice(total)} RWF`;
+            
+            // Enable/disable checkout button
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn) {
+                checkoutBtn.disabled = cartItems.length === 0;
+            }
+        }
+        
+        // ==================== CHECKOUT FUNCTIONALITY ====================
+        function setupCheckout() {
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const cancelBtn = document.getElementById('cancelPurchase');
+            const confirmBtn = document.getElementById('confirmPurchase');
+            const modal = document.getElementById('confirmationModal');
+            
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', () => {
+                    if (cartItems.length === 0) {
+                        showNotification('Your cart is empty', 'error');
+                        return;
+                    }
+                    
+                    if (modal) {
+                        modal.classList.add('active');
+                    }
+                });
+            }
+            
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    if (modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            }
+            
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', completePurchase);
+            }
+            
+            // Close modal when clicking outside
+            const modalOverlay = document.getElementById('confirmationModal');
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) {
+                        modalOverlay.classList.remove('active');
+                    }
+                });
+            }
+        }
+        
+        function completePurchase() {
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            
+            if (cartItems.length === 0) {
+                showNotification('Your cart is empty', 'error');
+                return;
+            }
+            
+            // Calculate totals
+            let subtotal = 0;
+            let itemsText = '';
+            
+            cartItems.forEach((item, index) => {
+                const itemTotal = item.price * (item.quantity || 1);
+                subtotal += itemTotal;
+                
+                itemsText += `${index + 1}. ${item.name}\n`;
+                itemsText += `   Quantity: ${item.quantity || 1}\n`;
+                itemsText += `   Price: ${formatPrice(item.price)} RWF\n`;
+                itemsText += `   Total: ${formatPrice(itemTotal)} RWF\n`;
+                if (item.color) itemsText += `   Color: ${item.color}\n`;
+                if (item.size) itemsText += `   Size: ${item.size}\n`;
+                itemsText += '\n';
+            });
+            
+            const total = subtotal + deliveryFee;
+            
+            // Create WhatsApp message
+            const message = `ORDER DETAILS - INGABO STORE\n\n` +
+                           `Order Summary:\n` +
+                           `${itemsText}\n` +
+                           `Subtotal: ${formatPrice(subtotal)} RWF\n` +
+                           `Delivery Fee: ${formatPrice(deliveryFee)} RWF\n` +
+                           `Total Amount: ${formatPrice(total)} RWF\n\n` +
+                           `Delivery Information:\n` +
+                           `• Kigali: 2,000 RWF\n` +
+                           `• Other Cities: 5,000 RWF\n` +
+                           `• Next day delivery (Same-day available upon request)\n\n` +
+                           `Payment Methods:\n` +
+                           `• Cash on Delivery\n` +
+                           `• Mobile Money\n\n` +
+                           `I would like to purchase these items from INGABO Online Shop.`;
+            
+            // WhatsApp phone number
+            const phoneNumber = '250792642955';
+            
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Create WhatsApp URL
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // Open WhatsApp
+            window.open(whatsappURL, '_blank');
+            
+            // Show confirmation
+            showNotification('Opening WhatsApp to complete your order...', 'success');
+            
+            // Clear cart after successful order
+            setTimeout(() => {
+                localStorage.removeItem('ingabo_cart');
+                cartItems = [];
+                renderCartItems();
+                updateOrderSummary();
+            }, 2000);
+        }
+        
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if screen is desktop
+            if (window.innerWidth > 768) {
+                window.location.href = 'cart.html';
+                return;
+            }
+            
+            initializeAccentColor();
+            loadCart();
+            setupCheckout();
+            
+            // Check if coming from empty cart
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('empty') === 'true') {
+                showNotification('Your cart is empty. Please add items to proceed.', 'error');
+            }
+            
+            // Update navigation active state
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if (item.href.includes('cartp.html')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+        
+        // Handle resize for redirect
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                window.location.href = 'cart.html';
+            }
+        });
+    </script>
+</body>
+</html>
