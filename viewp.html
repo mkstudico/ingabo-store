@@ -1371,20 +1371,34 @@
             container.innerHTML = '';
             
             if (currentProduct.color && Array.isArray(currentProduct.color) && currentProduct.color.length > 0) {
-                // Color mapping for display
+                // Color mapping for display - UPDATED WITH 24 COLORS
                 const colorMap = {
-                    'White': '#FFFFFF',
-                    'Black': '#000000',
-                    'Blue': '#0000FF',
-                    'Green': '#008000',
-                    'Red': '#FF0000',
-                    'Yellow': '#FFFF00',
-                    'Chocolate': '#D2691E',
-                    'Purple': '#800080',
+                    'Pure White': '#FFFFFF',
+                    'Jet Black': '#000000',
+                    'Sky Blue': '#87CEEB',
+                    'Royal Blue': '#4169E1',
+                    'Forest Green': '#228B22',
+                    'Lime Green': '#32CD32',
+                    'Fire Red': '#FF0000',
+                    'Crimson': '#DC143C',
+                    'Sun Yellow': '#FFD700',
+                    'Gold': '#FFD700',
+                    'Deep Purple': '#800080',
+                    'Lavender': '#E6E6FA',
+                    'Hot Pink': '#FF69B4',
+                    'Rose Pink': '#FFC0CB',
                     'Orange': '#FFA500',
-                    'Sky-blue': '#87CEEB',
-                    'Reddish': '#FF6347',
-                    'Pink': '#FFC0CB'
+                    'Coral': '#FF7F50',
+                    'Chocolate': '#D2691E',
+                    'Brown': '#8B4513',
+                    'Silver': '#C0C0C0',
+                    'Gray': '#808080',
+                    'Teal': '#008080',
+                    'Turquoise': '#40E0D0',
+                    'Navy Blue': '#000080',
+                    'Maroon': '#800000',
+                    'Beige': '#F5F5DC',
+                    'Khaki': '#F0E68C'
                 };
                 
                 currentProduct.color.forEach(color => {
