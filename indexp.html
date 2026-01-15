@@ -546,7 +546,7 @@
             font-weight: 600;
         }
         
-        /* ==================== TODAY'S DEAL - FIXED: NO DUPLICATION, SMALLER WIDTH, NO ROUNDED EDGES ==================== */
+        /* ==================== TODAY'S DEAL ==================== */
         .todays-deal {
             margin: 25px 0;
             width: 100%;
@@ -568,7 +568,6 @@
             display: none;
         }
         
-        /* FIXED: Smaller width for deal cards - 65% of screen */
         .deal-card-improved {
             flex: 0 0 65%;
             background-color: white;
@@ -578,7 +577,6 @@
             position: relative;
             scroll-snap-align: start;
             border: 1px solid #e5e5e5;
-            /* FIXED: No rounded edges */
             border-radius: 0;
         }
         
@@ -586,7 +584,6 @@
             width: 100%;
             height: 110px;
             background-color: #f8f8f8;
-            /* FIXED: No rounded edges */
             border-radius: 0;
             margin-bottom: 8px;
             display: flex;
@@ -646,7 +643,7 @@
             text-decoration: line-through;
         }
         
-        /* ==================== PERSONALIZED FOR YOU GRID - FIXED: NO ROUNDED EDGES ==================== */
+        /* ==================== PERSONALIZED FOR YOU GRID ==================== */
         .personalized-section {
             margin: 25px 0;
             width: 100%;
@@ -660,7 +657,6 @@
             padding: 0 5px;
         }
         
-        /* FIXED: No rounded edges for personalized cards */
         .personalized-card {
             background-color: white;
             padding: 10px;
@@ -669,7 +665,6 @@
             position: relative;
             transition: transform 0.2s ease;
             border: 1px solid #e5e5e5;
-            /* FIXED: No rounded edges */
             border-radius: 0;
         }
         
@@ -691,7 +686,6 @@
             width: 100%;
             height: 90px;
             background-color: #f8f8f8;
-            /* FIXED: No rounded edges */
             border-radius: 0;
             margin-bottom: 8px;
             display: flex;
@@ -1022,6 +1016,59 @@
             margin-top: 3px;
         }
         
+        /* ==================== CART FOOTER WITH BUY BUTTON ==================== */
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background: white;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .total-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .total-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color, #ff6a00);
+        }
+        
+        .buy-products-btn {
+            width: 100%;
+            padding: 16px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .buy-products-btn:hover {
+            background: #128C7E;
+        }
+        
+        .buy-products-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
         .empty-cart {
             text-align: center;
             padding: 50px 20px;
@@ -1169,6 +1216,16 @@
         <div class="cart-items-container" id="cartItemsContainer">
             <!-- Cart items will be loaded here -->
         </div>
+        <!-- NEW: Cart Footer with Buy Button -->
+        <div class="cart-footer" id="cartFooter">
+            <div class="cart-total">
+                <div class="total-label">Total</div>
+                <div class="total-amount" id="cartTotalAmount">0 RWF</div>
+            </div>
+            <button class="buy-products-btn" id="buyProductsBtn">
+                <i class='bx bxl-whatsapp'></i> BUY PRODUCTS
+            </button>
+        </div>
     </div>
     
     <div class="container">
@@ -1241,7 +1298,7 @@
                     <div class="time-text">Today's Special</div>
                 </div>
                 
-                <!-- Today's Deal - FIXED: Only 2 products, smaller width, no rounded edges -->
+                <!-- Today's Deal -->
                 <section class="todays-deal" id="todaysDealSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
@@ -1252,7 +1309,7 @@
                     </div>
                 </section>
                 
-                <!-- Personalized For You Grid - FIXED: No rounded edges -->
+                <!-- Personalized For You Grid -->
                 <section class="personalized-section" id="personalizedSection">
                     <div class="section-title">
                         <div class="orange-dot"></div>
@@ -1455,6 +1512,7 @@
             const clearCart = document.getElementById('clearCart');
             const cartOverlay = document.getElementById('cartOverlay');
             const navCart = document.getElementById('navCart');
+            const buyProductsBtn = document.getElementById('buyProductsBtn');
             
             if (cartButton) cartButton.addEventListener('click', showCart);
             if (navCart) navCart.addEventListener('click', (e) => {
@@ -1465,8 +1523,10 @@
             if (closeCart) closeCart.addEventListener('click', hideCart);
             if (clearCart) clearCart.addEventListener('click', clearCartItems);
             if (cartOverlay) cartOverlay.addEventListener('click', hideCart);
+            if (buyProductsBtn) buyProductsBtn.addEventListener('click', proceedToCheckout);
             
             updateCartCount();
+            updateCartTotal();
         }
 
         function showCart() {
@@ -1476,6 +1536,7 @@
             if (!cartOverlay || !cartSidebar) return;
             
             loadCartItems();
+            updateCartTotal();
             cartOverlay.classList.add('active');
             cartSidebar.classList.add('active');
         }
@@ -1494,6 +1555,7 @@
                 localStorage.setItem('ingabo_cart', JSON.stringify(cartItems));
                 loadCartItems();
                 updateCartCount();
+                updateCartTotal();
                 showNotification('Cart cleared');
             }
         }
@@ -1546,6 +1608,41 @@
             if (cartCount) {
                 cartCount.textContent = totalItems;
             }
+        }
+
+        function updateCartTotal() {
+            const totalAmount = cartItems.reduce((total, item) => {
+                return total + (item.price * (item.quantity || 1));
+            }, 0);
+            
+            const totalAmountElement = document.getElementById('cartTotalAmount');
+            const buyProductsBtn = document.getElementById('buyProductsBtn');
+            
+            if (totalAmountElement) {
+                totalAmountElement.textContent = `${formatPrice(totalAmount)} RWF`;
+            }
+            
+            if (buyProductsBtn) {
+                buyProductsBtn.disabled = cartItems.length === 0;
+                if (cartItems.length === 0) {
+                    buyProductsBtn.style.opacity = '0.6';
+                } else {
+                    buyProductsBtn.style.opacity = '1';
+                }
+            }
+        }
+
+        function proceedToCheckout() {
+            if (cartItems.length === 0) {
+                showNotification('Your cart is empty. Add products first.');
+                return;
+            }
+            
+            // Close cart sidebar
+            hideCart();
+            
+            // Redirect to cart.html (which will handle the checkout process)
+            window.location.href = 'cart.html';
         }
 
         // ==================== AUTHENTICATION ====================
@@ -1760,7 +1857,7 @@
             });
         }
 
-        // ==================== TODAY'S DEAL - FIXED: ONLY 2 PRODUCTS, NO DUPLICATION ====================
+        // ==================== TODAY'S DEAL ====================
         async function loadTodaysDeals() {
             const container = document.getElementById('dealCardsContainer');
             if (!container) return;
@@ -1787,7 +1884,7 @@
                     return Math.random() - 0.5;
                 });
                 
-                // FIXED: Take ONLY 2 products, no duplication
+                // Take ONLY 2 products, no duplication
                 topProducts = topProducts.slice(0, 2);
                 
                 if (topProducts.length === 0) {
@@ -1894,7 +1991,7 @@
             return score;
         }
 
-        // ==================== PERSONALIZED GRID - FIXED: NO ROUNDED EDGES ====================
+        // ==================== PERSONALIZED GRID ====================
         function loadPersonalizedGrid() {
             const container = document.getElementById('personalizedGrid');
             if (!container) return;
