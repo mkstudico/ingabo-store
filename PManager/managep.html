@@ -335,7 +335,7 @@
             position: sticky;
             top: 0;
             background: white;
-            padding: 20px 15px;
+            padding: 15px 15px 10px 15px;
             border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
@@ -367,6 +367,60 @@
             display: inline-block;
         }
         
+        /* ========== SMALL SAVE BUTTON IN PANEL HEADER ========== */
+        .small-save-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-left: 10px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(40, 167, 69, 0.3);
+            min-width: 70px;
+        }
+        
+        .small-save-button.active {
+            display: flex;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        .small-save-button:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(40, 167, 69, 0.4);
+        }
+        
+        .small-save-button:active {
+            transform: translateY(0);
+        }
+        
+        .small-save-button.pulsing {
+            animation: pulseSmall 2s infinite;
+        }
+        
+        .save-spinner-small {
+            display: none;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .save-spinner-small.active {
+            display: block;
+        }
+        
         .panel-close {
             background: none;
             border: none;
@@ -379,7 +433,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: 10px;
+            margin-left: 5px;
             flex-shrink: 0;
         }
         
@@ -676,7 +730,7 @@
             justify-content: center;
         }
         
-        /* ========== CONFIRMATION POPUP ========== */
+        /* ========== CONFIRMATION POPUP WITH SAVE BUTTON ========== */
         .confirmation-popup-overlay {
             position: fixed;
             top: 0;
@@ -687,7 +741,7 @@
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 3000;
+            z-index: 4000;
             animation: fadeIn 0.3s ease;
         }
         
@@ -737,7 +791,8 @@
         
         .popup-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         
         .popup-button {
@@ -749,6 +804,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            min-width: 80px;
         }
         
         .popup-cancel {
@@ -761,64 +817,22 @@
             background: #eee;
         }
         
-        .popup-confirm {
+        .popup-discard {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .popup-discard:hover {
+            background: #c82333;
+        }
+        
+        .popup-save {
             background: #28a745;
             color: white;
         }
         
-        .popup-confirm:hover {
+        .popup-save:hover {
             background: #218838;
-        }
-        
-        .popup-confirm.warning {
-            background: #dc3545;
-        }
-        
-        .popup-confirm.warning:hover {
-            background: #c82333;
-        }
-        
-        .popup-confirm.info {
-            background: #17a2b8;
-        }
-        
-        .popup-confirm.info:hover {
-            background: #138496;
-        }
-        
-        /* ========== FLOATING APPLY BUTTON ========== */
-        .floating-apply-button {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ff6a00;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 14px 28px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
-            z-index: 100;
-            transition: all 0.3s ease;
-            min-width: 140px;
-        }
-        
-        .floating-apply-button.active {
-            display: flex;
-            animation: slideUpButton 0.3s ease;
-        }
-        
-        .floating-apply-button:hover {
-            background: #e55a00;
-            transform: translateX(-50%) translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
         }
         
         /* ========== NOTIFICATION BOXES ========== */
@@ -960,14 +974,14 @@
             to { opacity: 1; }
         }
         
-        @keyframes slideUpButton {
+        @keyframes slideInRight {
             from {
                 opacity: 0;
-                transform: translateX(-50%) translateY(20px);
+                transform: translateX(20px);
             }
             to {
                 opacity: 1;
-                transform: translateX(-50%) translateY(0);
+                transform: translateX(0);
             }
         }
         
@@ -979,6 +993,18 @@
             to {
                 opacity: 1;
                 transform: scale(1);
+            }
+        }
+        
+        @keyframes pulseSmall {
+            0% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 5px rgba(40, 167, 69, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
             }
         }
         
@@ -1026,14 +1052,15 @@
     <div class="confirmation-popup-overlay" id="confirmationPopup">
         <div class="confirmation-popup">
             <div class="popup-header">
-                <div class="popup-title" id="popupTitle">Confirm Action</div>
-                <div class="popup-message" id="popupMessage">Please confirm your action</div>
+                <div class="popup-title" id="popupTitle">Unsaved Changes</div>
+                <div class="popup-message" id="popupMessage">Warning</div>
             </div>
             <div class="popup-content">
-                <div class="popup-text" id="popupText">Are you sure you want to perform this action?</div>
+                <div class="popup-text" id="popupText">You have unsaved changes. Are you sure you want to close without saving?</div>
                 <div class="popup-actions">
                     <button class="popup-button popup-cancel" id="popupCancelBtn">Cancel</button>
-                    <button class="popup-button popup-confirm" id="popupConfirmBtn">Confirm</button>
+                    <button class="popup-button popup-discard" id="popupDiscardBtn">Discard</button>
+                    <button class="popup-button popup-save" id="popupSaveBtn">Save</button>
                 </div>
             </div>
         </div>
@@ -1065,6 +1092,11 @@
                 <div class="panel-title" id="editPanelTitle">Edit Product</div>
                 <div class="panel-status" id="editPanelStatus">Active</div>
             </div>
+            <button class="small-save-button" id="smallSaveBtn">
+                <div class="save-spinner-small" id="saveSpinnerSmall"></div>
+                <i class='bx bx-save'></i>
+                <span id="smallSaveText">SAVE</span>
+            </button>
             <button class="panel-close" id="closeEditPanel">
                 <i class='bx bx-x'></i>
             </button>
@@ -1073,11 +1105,6 @@
             <!-- Filled by JavaScript -->
         </div>
     </div>
-    
-    <!-- Floating Apply Button -->
-    <button class="floating-apply-button" id="floatingApplyBtn">
-        <i class='bx bx-check'></i> Apply Changes
-    </button>
     
     <div class="container">
         <!-- Mobile Header -->
@@ -1187,7 +1214,8 @@
         let uploadedImages = [];
         let isEditing = false;
         let hasChanges = false;
-        let confirmationCallback = null;
+        let originalData = null;
+        let changeDetectionTimeout = null;
         
         // Data configurations
         const formData = {
@@ -1299,6 +1327,99 @@
         
         const notificationSystem = new NotificationSystem();
         
+        // ==================== SMALL SAVE BUTTON SYSTEM ====================
+        class SmallSaveButton {
+            constructor() {
+                this.button = document.getElementById('smallSaveBtn');
+                this.spinner = document.getElementById('saveSpinnerSmall');
+                this.text = document.getElementById('smallSaveText');
+                this.isSaving = false;
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                this.button.addEventListener('click', () => {
+                    if (!this.isSaving) {
+                        this.saveChanges();
+                    }
+                });
+            }
+            
+            show() {
+                if (!this.button.classList.contains('active')) {
+                    this.button.classList.add('active');
+                    this.button.classList.add('pulsing');
+                    
+                    // Add subtle pulse animation
+                    setTimeout(() => {
+                        this.button.classList.remove('pulsing');
+                    }, 2000);
+                }
+            }
+            
+            hide() {
+                this.button.classList.remove('active');
+                this.button.classList.remove('pulsing');
+            }
+            
+            showSaving() {
+                this.isSaving = true;
+                this.spinner.classList.add('active');
+                this.text.textContent = 'SAVING...';
+                this.button.disabled = true;
+                this.button.classList.remove('pulsing');
+            }
+            
+            hideSaving() {
+                this.isSaving = false;
+                this.spinner.classList.remove('active');
+                this.text.textContent = 'SAVE';
+                this.button.disabled = false;
+            }
+            
+            showSuccess() {
+                this.button.style.background = '#28a745';
+                this.text.textContent = 'SAVED!';
+                setTimeout(() => {
+                    this.hide();
+                }, 1500);
+            }
+            
+            showError() {
+                this.button.style.background = '#dc3545';
+                this.text.textContent = 'ERROR!';
+                setTimeout(() => {
+                    this.button.style.background = '#28a745';
+                    this.text.textContent = 'SAVE';
+                    this.hideSaving();
+                }, 2000);
+            }
+            
+            async saveChanges() {
+                if (typeof window.saveProductChanges === 'function') {
+                    this.showSaving();
+                    try {
+                        await window.saveProductChanges();
+                        this.showSuccess();
+                    } catch (error) {
+                        console.error('Save error:', error);
+                        this.showError();
+                    }
+                }
+            }
+            
+            updateVisibility(hasChanges) {
+                if (hasChanges && !this.isSaving) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            }
+        }
+        
+        const smallSaveButton = new SmallSaveButton();
+        
         // ==================== CONFIRMATION POPUP SYSTEM ====================
         class ConfirmationPopup {
             constructor() {
@@ -1306,8 +1427,9 @@
                 this.title = document.getElementById('popupTitle');
                 this.message = document.getElementById('popupMessage');
                 this.text = document.getElementById('popupText');
-                this.confirmBtn = document.getElementById('popupConfirmBtn');
                 this.cancelBtn = document.getElementById('popupCancelBtn');
+                this.discardBtn = document.getElementById('popupDiscardBtn');
+                this.saveBtn = document.getElementById('popupSaveBtn');
                 this.callback = null;
                 
                 this.setupEventListeners();
@@ -1315,9 +1437,15 @@
             
             setupEventListeners() {
                 this.cancelBtn.addEventListener('click', () => this.hide());
-                this.confirmBtn.addEventListener('click', () => {
+                this.discardBtn.addEventListener('click', () => {
                     if (this.callback) {
-                        this.callback(true);
+                        this.callback('discard');
+                    }
+                    this.hide();
+                });
+                this.saveBtn.addEventListener('click', () => {
+                    if (this.callback) {
+                        this.callback('save');
                     }
                     this.hide();
                 });
@@ -1330,20 +1458,10 @@
                 });
             }
             
-            show(title, message, text, confirmText = 'Confirm', confirmType = 'info', callback = null) {
+            show(title = 'Unsaved Changes', message = 'Warning', text = 'You have unsaved changes. Are you sure you want to close without saving?', callback = null) {
                 this.title.textContent = title;
                 this.message.textContent = message;
                 this.text.textContent = text;
-                this.confirmBtn.textContent = confirmText;
-                
-                // Set button style
-                this.confirmBtn.className = 'popup-button popup-confirm';
-                if (confirmType === 'warning') {
-                    this.confirmBtn.classList.add('warning');
-                } else if (confirmType === 'info') {
-                    this.confirmBtn.classList.add('info');
-                }
-                
                 this.callback = callback;
                 this.popup.classList.add('active');
             }
@@ -1351,7 +1469,7 @@
             hide() {
                 this.popup.classList.remove('active');
                 if (this.callback) {
-                    this.callback(false);
+                    this.callback('cancel');
                 }
                 this.callback = null;
             }
@@ -1447,8 +1565,8 @@
                 }
             });
             
-            // Floating apply button
-            document.getElementById('floatingApplyBtn').addEventListener('click', saveProductChanges);
+            // Global change detection for save button
+            setupGlobalChangeDetection();
         }
         
         function setupPanelDragClose(headerId, closeFunction) {
@@ -1490,17 +1608,41 @@
             }
         }
         
+        function setupGlobalChangeDetection() {
+            // This will be used to detect changes in edit form
+            document.addEventListener('input', debounceCheckForChanges, true);
+            document.addEventListener('change', debounceCheckForChanges, true);
+            document.addEventListener('click', debounceCheckForChanges, true);
+        }
+        
+        function debounceCheckForChanges() {
+            clearTimeout(changeDetectionTimeout);
+            changeDetectionTimeout = setTimeout(() => {
+                if (document.getElementById('editPanel').classList.contains('active')) {
+                    checkForChanges();
+                }
+            }, 100);
+        }
+        
         function showUnsavedChangesPopup() {
             confirmationPopup.show(
                 'Unsaved Changes',
                 'Warning',
                 'You have unsaved changes. Are you sure you want to close without saving?',
-                'Discard',
-                'warning',
-                (confirmed) => {
-                    if (confirmed) {
+                (action) => {
+                    if (action === 'discard') {
+                        hasChanges = false;
                         closeEditPanel();
+                    } else if (action === 'save') {
+                        // Save changes first, then close
+                        saveProductChanges().then(() => {
+                            closeEditPanel();
+                        }).catch(error => {
+                            console.error('Save failed:', error);
+                            notificationSystem.show('error', 'Failed to save changes', 3000);
+                        });
                     }
+                    // If action is 'cancel', do nothing (popup just closes)
                 }
             );
         }
@@ -1660,6 +1802,7 @@
                     
                     currentProductId = productId;
                     currentProductData = docSnap.data();
+                    originalData = JSON.parse(JSON.stringify(currentProductData)); // Deep copy for comparison
                     
                     if (panelType === 'status') {
                         openStatusPanel();
@@ -1785,6 +1928,7 @@
             document.getElementById('panelOverlay').classList.remove('active');
             currentProductId = null;
             currentProductData = null;
+            originalData = null;
         }
         
         // ==================== EDIT PANEL ====================
@@ -1793,7 +1937,6 @@
             const overlay = document.getElementById('panelOverlay');
             const title = document.getElementById('editPanelTitle');
             const status = document.getElementById('editPanelStatus');
-            const content = document.getElementById('editPanelContent');
             
             // Update header
             title.textContent = currentProductData.name || 'Edit Product';
@@ -1804,28 +1947,32 @@
             uploadedImages = currentProductData.images ? [...currentProductData.images] : [];
             hasChanges = false;
             
+            // Hide save button initially
+            smallSaveButton.hide();
+            
             // Create edit form content
-            content.innerHTML = createEditForm();
+            document.getElementById('editPanelContent').innerHTML = createEditForm();
             
             // Initialize checkboxes and event listeners
             initializeEditCheckboxes();
             
-            // Hide apply button initially
-            document.getElementById('floatingApplyBtn').classList.remove('active');
-            
             // Show panel
             overlay.classList.add('active');
             panel.classList.add('active');
+            
+            // Store original data for comparison
+            originalData = JSON.parse(JSON.stringify(currentProductData));
         }
         
         function closeEditPanel() {
             document.getElementById('editPanel').classList.remove('active');
             document.getElementById('panelOverlay').classList.remove('active');
-            document.getElementById('floatingApplyBtn').classList.remove('active');
+            smallSaveButton.hide();
             currentProductId = null;
             currentProductData = null;
             uploadedImages = [];
             hasChanges = false;
+            originalData = null;
         }
         
         function createEditForm() {
@@ -1838,13 +1985,12 @@
                                class="edit-form-input" 
                                id="editName"
                                value="${currentProductData.name || ''}"
-                               required
-                               oninput="checkForChanges()">
+                               required>
                     </div>
                     
                     <div class="edit-form-group">
                         <label class="edit-form-label">Category</label>
-                        <select class="edit-form-select" id="editCategory" onchange="checkForChanges()">
+                        <select class="edit-form-select" id="editCategory">
                             <option value="">Select category</option>
                             ${formData.categories.map(cat => 
                                 `<option value="${cat}" ${currentProductData.category === cat ? 'selected' : ''}>${cat}</option>`
@@ -1854,7 +2000,7 @@
                     
                     <div class="edit-form-group">
                         <label class="edit-form-label">Description</label>
-                        <textarea class="edit-form-textarea" id="editDescription" rows="3" oninput="checkForChanges()">${currentProductData.description || ''}</textarea>
+                        <textarea class="edit-form-textarea" id="editDescription" rows="3">${currentProductData.description || ''}</textarea>
                     </div>
                     
                     <!-- Department -->
@@ -1869,8 +2015,7 @@
                                            id="edit-dept-${dept.name.toLowerCase()}" 
                                            class="checkbox-option" 
                                            value="${dept.name}"
-                                           ${isSelected ? 'checked' : ''}
-                                           onchange="checkForChanges()">
+                                           ${isSelected ? 'checked' : ''}>
                                     <label for="edit-dept-${dept.name.toLowerCase()}" class="checkbox-label">
                                         <i class="${dept.icon} checkbox-icon"></i>
                                         <span>${dept.name}</span>
@@ -1892,8 +2037,7 @@
                                            id="edit-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" 
                                            class="checkbox-option" 
                                            value="${color.name}"
-                                           ${isSelected ? 'checked' : ''}
-                                           onchange="checkForChanges()">
+                                           ${isSelected ? 'checked' : ''}>
                                     <label for="edit-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" class="checkbox-label">
                                         <span class="color-preview" style="background-color: ${color.hex}; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
                                         <span>${color.name}</span>
@@ -1915,8 +2059,7 @@
                                            id="edit-size-${size.name.toLowerCase()}" 
                                            class="checkbox-option" 
                                            value="${size.name}"
-                                           ${isSelected ? 'checked' : ''}
-                                           onchange="checkForChanges()">
+                                           ${isSelected ? 'checked' : ''}>
                                     <label for="edit-size-${size.name.toLowerCase()}" class="checkbox-label">
                                         <i class="${size.icon} checkbox-icon"></i>
                                         <span>${size.name}</span>
@@ -1938,8 +2081,7 @@
                                            id="edit-age-${age.name.toLowerCase()}" 
                                            class="checkbox-option" 
                                            value="${age.name}"
-                                           ${isSelected ? 'checked' : ''}
-                                           onchange="checkForChanges()">
+                                           ${isSelected ? 'checked' : ''}>
                                     <label for="edit-age-${age.name.toLowerCase()}" class="checkbox-label">
                                         <i class="${age.icon} checkbox-icon"></i>
                                         <span>${age.name}</span>
@@ -1961,8 +2103,7 @@
                                            id="edit-status-${status.name.toLowerCase()}" 
                                            class="checkbox-option" 
                                            value="${status.name}"
-                                           ${isSelected ? 'checked' : ''}
-                                           onchange="checkForChanges()">
+                                           ${isSelected ? 'checked' : ''}>
                                     <label for="edit-status-${status.name.toLowerCase()}" class="checkbox-label">
                                         <i class="${status.icon} checkbox-icon"></i>
                                         <span>${status.name}</span>
@@ -1980,8 +2121,7 @@
                                id="editPrice"
                                value="${currentProductData.price || ''}"
                                min="500" 
-                               max="1000000"
-                               oninput="checkForChanges()">
+                               max="1000000">
                     </div>
                     
                     <div class="edit-form-group">
@@ -1990,8 +2130,7 @@
                                class="edit-form-input" 
                                id="editOriginalPrice"
                                value="${currentProductData.originalPrice || ''}"
-                               min="0"
-                               oninput="checkForChanges()">
+                               min="0">
                     </div>
                     
                     <!-- Featured -->
@@ -1999,9 +2138,7 @@
                         <label class="edit-form-label">
                             <input type="checkbox" 
                                    id="editFeatured" 
-                                   ${currentProductData.featured ? 'checked' : ''}
-                                   onchange="checkForChanges()"
-                                   style="margin-right: 8px;">
+                                   ${currentProductData.featured ? 'checked' : ''}>
                             Featured Product
                         </label>
                     </div>
@@ -2011,9 +2148,7 @@
                         <label class="edit-form-label">
                             <input type="checkbox" 
                                    id="editActive" 
-                                   ${currentProductData.active ? 'checked' : ''}
-                                   onchange="checkForChanges()"
-                                   style="margin-right: 8px;">
+                                   ${currentProductData.active ? 'checked' : ''}>
                             Active Product
                         </label>
                     </div>
@@ -2058,17 +2193,17 @@
         }
         
         function checkForChanges() {
-            if (!currentProductId) return;
+            if (!currentProductId || !originalData) return;
             
-            // Collect form data for comparison
+            // Collect form data
             const newData = {
-                name: document.getElementById('editName').value.trim(),
-                category: document.getElementById('editCategory').value,
-                description: document.getElementById('editDescription').value.trim(),
-                price: parseInt(document.getElementById('editPrice').value) || 0,
-                originalPrice: parseInt(document.getElementById('editOriginalPrice').value) || null,
-                featured: document.getElementById('editFeatured').checked,
-                active: document.getElementById('editActive').checked
+                name: document.getElementById('editName')?.value.trim() || '',
+                category: document.getElementById('editCategory')?.value || '',
+                description: document.getElementById('editDescription')?.value.trim() || '',
+                price: parseInt(document.getElementById('editPrice')?.value) || 0,
+                originalPrice: parseInt(document.getElementById('editOriginalPrice')?.value) || null,
+                featured: document.getElementById('editFeatured')?.checked || false,
+                active: document.getElementById('editActive')?.checked || false
             };
             
             // Collect checkbox values
@@ -2082,35 +2217,34 @@
             
             Object.entries(checkboxes).forEach(([key, gridId]) => {
                 const grid = document.getElementById(gridId);
-                const checkedBoxes = grid.querySelectorAll('.checkbox-option:checked');
-                newData[key] = Array.from(checkedBoxes).map(cb => cb.value);
+                if (grid) {
+                    const checkedBoxes = grid.querySelectorAll('.checkbox-option:checked');
+                    newData[key] = Array.from(checkedBoxes).map(cb => cb.value);
+                } else {
+                    newData[key] = [];
+                }
             });
             
             // Compare with original data
             const hasFormChanges = 
-                newData.name !== currentProductData.name ||
-                newData.category !== currentProductData.category ||
-                newData.description !== currentProductData.description ||
-                newData.price !== currentProductData.price ||
-                newData.originalPrice !== currentProductData.originalPrice ||
-                newData.featured !== currentProductData.featured ||
-                newData.active !== currentProductData.active ||
-                JSON.stringify(newData.department) !== JSON.stringify(currentProductData.department) ||
-                JSON.stringify(newData.color) !== JSON.stringify(currentProductData.color) ||
-                JSON.stringify(newData.size) !== JSON.stringify(currentProductData.size) ||
-                JSON.stringify(newData.age) !== JSON.stringify(currentProductData.age) ||
-                JSON.stringify(newData.status) !== JSON.stringify(currentProductData.status) ||
-                JSON.stringify(uploadedImages) !== JSON.stringify(currentProductData.images);
+                newData.name !== originalData.name ||
+                newData.category !== originalData.category ||
+                newData.description !== originalData.description ||
+                newData.price !== originalData.price ||
+                newData.originalPrice !== originalData.originalPrice ||
+                newData.featured !== originalData.featured ||
+                newData.active !== originalData.active ||
+                JSON.stringify(newData.department) !== JSON.stringify(originalData.department) ||
+                JSON.stringify(newData.color) !== JSON.stringify(originalData.color) ||
+                JSON.stringify(newData.size) !== JSON.stringify(originalData.size) ||
+                JSON.stringify(newData.age) !== JSON.stringify(originalData.age) ||
+                JSON.stringify(newData.status) !== JSON.stringify(originalData.status) ||
+                JSON.stringify(uploadedImages) !== JSON.stringify(originalData.images);
             
             hasChanges = hasFormChanges;
             
-            // Show/hide apply button
-            const applyBtn = document.getElementById('floatingApplyBtn');
-            if (hasChanges) {
-                applyBtn.classList.add('active');
-            } else {
-                applyBtn.classList.remove('active');
-            }
+            // Update small save button visibility
+            smallSaveButton.updateVisibility(hasChanges);
         }
         
         function updateEditImagePreview() {
@@ -2215,18 +2349,22 @@
             const action = newStatus ? 'activate' : 'deactivate';
             const productName = currentProductData.name || 'this product';
             
+            // Use the confirmation popup with custom content
             confirmationPopup.show(
                 `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)}`,
                 'Product Status',
                 `Are you sure you want to ${action} "${productName}"?`,
-                newStatus ? 'Activate' : 'Deactivate',
-                newStatus ? 'info' : 'warning',
-                (confirmed) => {
-                    if (confirmed) {
+                (action) => {
+                    if (action === 'save') { // Using save as confirm in this context
                         toggleProductStatus();
                     }
                 }
             );
+            
+            // Update buttons for this context
+            document.getElementById('popupDiscardBtn').style.display = 'none';
+            document.getElementById('popupSaveBtn').textContent = newStatus ? 'Activate' : 'Deactivate';
+            document.getElementById('popupSaveBtn').style.background = newStatus ? '#17a2b8' : '#dc3545';
         }
         
         async function toggleProductStatus() {
@@ -2262,6 +2400,7 @@
             }
         }
         
+        // ==================== SAVE PRODUCT CHANGES ====================
         async function saveProductChanges() {
             if (!currentProductId) return;
             
@@ -2320,20 +2459,27 @@
                     
                     // Update local data
                     Object.assign(currentProductData, updatedData);
+                    originalData = JSON.parse(JSON.stringify(currentProductData)); // Update original data
+                    
+                    // Reset changes flag
+                    hasChanges = false;
                     
                     // Refresh products list
                     await loadAllProducts();
                     
-                    // Close edit panel
-                    closeEditPanel();
-                    
+                    // Show success notification
                     notificationSystem.show('success', 'Product updated successfully!', 3000);
+                    
                 }, 'Saving changes...');
             } catch (error) {
                 console.error('Save error:', error);
                 notificationSystem.show('error', `Failed to save changes: ${error.message}`, 4000);
+                throw error; // Re-throw for save button to handle
             }
         }
+        
+        // Make saveProductChanges globally available for save buttons
+        window.saveProductChanges = saveProductChanges;
     </script>
 </body>
 </html>
